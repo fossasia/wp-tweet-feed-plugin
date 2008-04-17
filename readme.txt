@@ -18,7 +18,7 @@ of a tweet or how log ago it happened (about 5 hours ago, etc).  Requires PHP5.
 
 == Installation ==
 
-1. Verify that you have PHP5, whoch is required for this plugin.
+1. Verify that you have PHP5, which is required for this plugin.
 1. Upload the whole `twitter-widget-pro` directory to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
