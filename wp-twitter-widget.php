@@ -3,13 +3,18 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username and link parsing, feeds that include friends or just one user, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
 /**
  * Changelog:
+ * 04/23/2008: 1.1.0
+ * 	- Most major fix is the inclusion of json_decode.php for users that don't have json_decode() which was added in PHP 5.2.0
+ * 	- Fixed problem with displaying a useless li when profile images aren't displayed on a single user widget
+ * 	- Default title is now set to "Twitter: UserName"
+ *
  * 04/17/2008: 1.0.0
  * 	- Released to wordpress.org repository
  *
@@ -92,7 +97,12 @@ class wpTwitterWidget
 		$feedUrl = $this->_getFeedUrl($widgetOptions);
 		$resp = $this->_fetch_remote_file($feedUrl);
 		if ( $resp->status >= 200 && $resp->status < 300 ) {
-			return json_decode($resp->results);
+	        if (function_exists('json_decode')) {
+	            return json_decode($resp->results);
+	        } else {
+				require_once('json_decode.php');
+	        	return Zend_Json_Decoder::decode($resp->results);
+			}
 		} else {
 			// Failed to fetch url;
 			return array();
@@ -249,13 +259,15 @@ class wpTwitterWidget
 			$before_title .= " <a class='twitterwidget' href='$twitterLink' title='" . attribute_escape("Twitter: {$tweets[0]->user->name}") . "'>";
 			$after_title = '</a>' . $after_title;
 		}
-		if ( !empty( $options[$number]['title'] ) ) { echo $before_title . $options[$number]['title'] . $after_title; } ?>
+		if (empty($options[$number]['title'])) {
+			$options[$number]['title'] = "Twitter: {$options[$number]['username']}";
+		}
+		echo $before_title . $options[$number]['title'] . $after_title;
+?>
 				<ul><?php
-				if ( $options[$number]['feed'] == 'user' && !empty($tweets) ) {
+				if ( $options[$number]['feed'] == 'user' && !empty($tweets)  && $options[$number]['avatar']) {
 					echo '<li>';
-					if ( $options[$number]['avatar']) {
-						echo $this->_getProfileImage($tweets[0]->user);
-					}
+					echo $this->_getProfileImage($tweets[0]->user);
 					echo '<div class="clear" />';
 					echo '</li>';
 				}
