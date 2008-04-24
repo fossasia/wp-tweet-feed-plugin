@@ -3,13 +3,17 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username and link parsing, feeds that include friends or just one user, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
 /**
  * Changelog:
+ * 04/23/2008: 1.1.1
+ * 	- Fixed issue with @username parsing of two names with one space between them (@test @ing)
+ * 	- Fixed readme typo
+ *
  * 04/23/2008: 1.1.0
  * 	- Most major fix is the inclusion of json_decode.php for users that don't have json_decode() which was added in PHP 5.2.0
  * 	- Fixed problem with displaying a useless li when profile images aren't displayed on a single user widget
@@ -136,7 +140,7 @@ class wpTwitterWidget
 	 * @return string - Tweet text with @replies linked
 	 */
 	public function linkTwitterUsers($text) {
-		$text = preg_replace('/(^|\s)@(\w*)(\s|$)/i', '$1@<a href="http://twitter.com/$2" class="twitter-user">$2</a>$3', $text);
+		$text = preg_replace('/(^|\s)@(\w*)/i', '$1@<a href="http://twitter.com/$2" class="twitter-user">$2</a>', $text);
 		return $text;
 	}
 
