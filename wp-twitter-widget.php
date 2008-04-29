@@ -3,13 +3,17 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username and link parsing, feeds that include friends or just one user, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
 /**
  * Changelog:
+ * 04/29/2008: 1.1.2
+ * 	- Title link always links to correct username, rather than the last person to tweet on that feed
+ * 	- Added option to hide RSS icon/link
+ *
  * 04/23/2008: 1.1.1
  * 	- Fixed issue with @username parsing of two names with one space between them (@test @ing)
  * 	- Fixed readme typo
@@ -245,24 +249,27 @@ class wpTwitterWidget
 			$options[$number]['showts'] = 86400;
 		}
 
+		$options[$number]['hiderss'] = (isset($options[$number]['hiderss']) && $options[$number]['hiderss']);
 		$options[$number]['avatar'] = (isset($options[$number]['avatar']) && $options[$number]['avatar']);
 
 		$tweets = $this->_getTweets($options[$number]);
 		$tweets = array_slice($tweets, 0, $options[$number]['items']);
 
 		echo $before_widget;
-		if ( file_exists(dirname(__FILE__) . '/rss.png') ) {
-			$icon = str_replace(ABSPATH, get_option('siteurl').'/', dirname(__FILE__)) . '/rss.png';
-		} else {
-			$icon = get_option('siteurl').'/wp-includes/images/rss.png';
+
+		// If "hide rss" hasn't been checked, show the linked icon
+		if (!$options[$number]['hiderss']) {
+			if ( file_exists(dirname(__FILE__) . '/rss.png') ) {
+				$icon = str_replace(ABSPATH, get_option('siteurl').'/', dirname(__FILE__)) . '/rss.png';
+			} else {
+				$icon = get_option('siteurl').'/wp-includes/images/rss.png';
+			}
+			$feedUrl = $this->_getFeedUrl($options[$number], 'rss', false);
+			$before_title .= "<a class='twitterwidget' href='{$feedUrl}' title='" . attribute_escape(__('Syndicate this content')) ."'><img style='background:orange;color:white;border:none;' width='14' height='14' src='{$icon}' alt='RSS' /></a> ";
 		}
-		$feedUrl = $this->_getFeedUrl($options[$number], 'rss', false);
-		$before_title .= "<a class='twitterwidget' href='{$feedUrl}' title='" . attribute_escape(__('Syndicate this content')) ."'><img style='background:orange;color:white;border:none;' width='14' height='14' src='{$icon}' alt='RSS' /></a>";
-		if (!empty($tweets)) {
-			$twitterLink = 'http://twitter.com/' . $tweets[0]->user->screen_name;
-			$before_title .= " <a class='twitterwidget' href='$twitterLink' title='" . attribute_escape("Twitter: {$tweets[0]->user->name}") . "'>";
-			$after_title = '</a>' . $after_title;
-		}
+		$twitterLink = 'http://twitter.com/' . $options[$number]['username'];
+		$before_title .= "<a class='twitterwidget' href='{$twitterLink}' title='" . attribute_escape("Twitter: {$options[$number]['username']}") . "'>";
+		$after_title = '</a>' . $after_title;
 		if (empty($options[$number]['title'])) {
 			$options[$number]['title'] = "Twitter: {$options[$number]['username']}";
 		}
@@ -397,6 +404,7 @@ profileImage;
 			$options[$number]['number'] = $number;
 			$options[$number]['title'] = attribute_escape($options[$number]['title']);
 			$options[$number]['username'] = attribute_escape($options[$number]['username']);
+			$options[$number]['hiderss'] = (bool) $options[$number]['hiderss'];
 			$options[$number]['avatar'] = (bool) $options[$number]['avatar'];
 			if (!isset($options[$number]['feed']) || !in_array($options[$number]['feed'], array('user', 'friends'))) {
 				$options[$number]['feed'] = 'user';
@@ -444,6 +452,7 @@ profileImage;
 
 		$defaultArgs = array(	'title'		=> '',
 								'username'	=> '',
+								'hiderss'	=> false,
 								'avatar'	=> false,
 								'feed'		=> 'user',
 								'items'		=> 10,
@@ -486,6 +495,9 @@ profileImage;
 			<p>
 				<label for="twitter-feed-<?php echo $number; ?>-user"><input class="checkbox" type="radio" id="twitter-feed-<?php echo $number; ?>-user" name="widget-twitter[<?php echo $number; ?>][feed]" value="user"<?php checked($feed, 'user'); ?> /> <?php _e('Just User'); ?></label><br />
 				<label for="twitter-feed-<?php echo $number; ?>-friends"><input class="checkbox" type="radio" id="twitter-feed-<?php echo $number; ?>-friends" name="widget-twitter[<?php echo $number; ?>][feed]" value="friends"<?php checked($feed, 'friends'); ?> /> <?php _e('With Friends'); ?></label>
+			</p>
+			<p>
+				<label for="twitter-hiderss-<?php echo $number; ?>"><input class="checkbox" type="checkbox" id="twitter-hiderss-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][hiderss]"<?php checked($hiderss, true); ?> /> <?php _e('Hide RSS Icon and Link'); ?></label>
 			</p>
 			<p>
 				<label for="twitter-avatar-<?php echo $number; ?>"><input class="checkbox" type="checkbox" id="twitter-avatar-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][avatar]"<?php checked($avatar, true); ?> /> <?php _e('Show Profile Image(s)'); ?></label>

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.5
 Tested up to: 2.5.1
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 
 A widget that properly handles twitter feeds (single user or including friends), including parsing @username and URLs into links. Requires PHP5.
 
