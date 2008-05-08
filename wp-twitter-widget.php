@@ -3,13 +3,16 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username and link parsing, feeds that include friends or just one user, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.1.2
+ * Version: 1.1.3
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
 /**
  * Changelog:
+ * 05/08/2008: 1.1.3
+ * 	- Fixed validation problems if source is a link containg an &
+ *
  * 04/29/2008: 1.1.2
  * 	- Title link always links to correct username, rather than the last person to tweet on that feed
  * 	- Added option to hide RSS icon/link
@@ -300,7 +303,7 @@ class wpTwitterWidget
 							<a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet->id; ?>">
 								<?php echo $tweet->ago; ?>
 							</a> from <?php
-							echo $tweet->source;
+							echo str_replace('&', '&amp;', $tweet->source);
 							if (isset($tweet->in_reply_to)) {
 								echo $this->_getReplyTo($tweet->in_reply_to);
 							} ?>
