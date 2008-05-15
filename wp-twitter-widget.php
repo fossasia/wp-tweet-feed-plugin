@@ -10,6 +10,10 @@
 
 /**
  * Changelog:
+ * 05/14/2008: 1.1.4
+ * 	- Added an error if there was a problem connecting to Twitter.
+ * 	- Added some text if there are no tweets.
+ *
  * 05/08/2008: 1.1.3
  * 	- Fixed validation problems if source is a link containg an &
  *
@@ -66,6 +70,8 @@
  * http://codex.wordpress.org/Writing_a_Plugin#Avoiding_Function_Name_Collisions
  */
 
+class wpTwitterWidgetException extends Exception {}
+
 class wpTwitterWidget
 {
 	/**
@@ -116,7 +122,7 @@ class wpTwitterWidget
 			}
 		} else {
 			// Failed to fetch url;
-			return array();
+			throw new wpTwitterWidgetException(__('Could not connect to Twitter'));
 		}
 	}
 
@@ -214,9 +220,13 @@ class wpTwitterWidget
 		$tweets = wp_cache_get($widgetOptions['feed'] . $widgetOptions['username'], 'widget_twitter');
 		// If there is no cache
 		if ($tweets == false) {
-			$tweets = $this->_parseFeed($widgetOptions);
-			// Cache for 60 seconds, Tweets are supposed to be current, so we don't cache for very long
-			wp_cache_set($widgetOptions['feed'] . $widgetOptions['username'], $tweets, 'widget_twitter', 60);
+			try {
+				$tweets = $this->_parseFeed($widgetOptions);
+				// Cache for 60 seconds, Tweets are supposed to be current, so we don't cache for very long
+				wp_cache_set($widgetOptions['feed'] . $widgetOptions['username'], $tweets, 'widget_twitter', 60);
+			} catch (wpTwitterWidgetException $e) {
+				throw $e;
+			}
 		}
 		return $tweets;
 	}
@@ -255,8 +265,13 @@ class wpTwitterWidget
 		$options[$number]['hiderss'] = (isset($options[$number]['hiderss']) && $options[$number]['hiderss']);
 		$options[$number]['avatar'] = (isset($options[$number]['avatar']) && $options[$number]['avatar']);
 
-		$tweets = $this->_getTweets($options[$number]);
-		$tweets = array_slice($tweets, 0, $options[$number]['items']);
+
+		try {
+			$tweets = $this->_getTweets($options[$number]);
+			$tweets = array_slice($tweets, 0, $options[$number]['items']);
+		} catch (wpTwitterWidgetException $e) {
+			$tweets = $e;
+		}
 
 		echo $before_widget;
 
@@ -277,6 +292,11 @@ class wpTwitterWidget
 			$options[$number]['title'] = "Twitter: {$options[$number]['username']}";
 		}
 		echo $before_title . $options[$number]['title'] . $after_title;
+		if (is_a($tweets, 'wpTwitterWidgetException')) {
+			echo '<ul><li class="wpTwitterWidgetError">' . $tweets->getMessage() . '</li></ul>';
+		} else if (count($tweets) == 0) {
+			echo '<ul><li class="wpTwitterWidgetEmpty">' . __('No Tweets Available') . '</li></ul>';
+		} else {
 ?>
 				<ul><?php
 				if ( $options[$number]['feed'] == 'user' && !empty($tweets)  && $options[$number]['avatar']) {
@@ -311,8 +331,9 @@ class wpTwitterWidget
 					</li>
 <?php
 				} ?></ul>
-			<?php echo $after_widget; ?>
-	<?php
+<?php
+		}
+		echo $after_widget;
 	}
 
 	/**
