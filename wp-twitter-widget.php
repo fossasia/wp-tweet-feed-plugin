@@ -111,6 +111,9 @@ class wpTwitterWidget
 		$this->userAgent = 'WordPress/' . $GLOBALS['wp_version'];
 	}
 
+	function admin_menu() {
+		add_options_page(__('Twitter Widget Pro'), __('Twitter Widget Pro'), 'manage_options', str_replace("\\", "/", __FILE__), array($this, 'options'));
+	}
 	/**
 	 * Pulls the JSON feed from Twitter and returns an array of objects
 	 *
@@ -642,6 +645,7 @@ $wpTwitterWidget = new wpTwitterWidget();
 /**
  * Add filters and actions
  */
+add_action('admin_menu', array($wpTwitterWidget,'admin_menu'));
 add_action('widgets_init', array($wpTwitterWidget, 'register'));
 add_filter('widget_twitter_content', array($wpTwitterWidget, 'linkTwitterUsers'));
 add_filter('widget_twitter_content', array($wpTwitterWidget, 'linkUrls'));
