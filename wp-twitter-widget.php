@@ -3,15 +3,19 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username and link parsing, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
-define('TWP_VERSION', '1.2.0');
+define('TWP_VERSION', '1.2.1');
 
 /**
  * Changelog:
+ * 06/09/2008: 1.2.0
+ * 	- Fixed some minor errors in the collection code
+ * 	- Added the admin options page (how did that get missed?!?)
+ *
  * 06/09/2008: 1.2.0
  * 	- Removed friends feed option, twitter removed this functionality
  * 	- Added an option to set your own message to display when twitter is down
@@ -114,6 +118,43 @@ class wpTwitterWidget
 	function admin_menu() {
 		add_options_page(__('Twitter Widget Pro'), __('Twitter Widget Pro'), 'manage_options', str_replace("\\", "/", __FILE__), array($this, 'options'));
 	}
+	/**
+	 * This is used to display the options page for this plugin
+	 */
+	function options() {
+		//Get our options
+		$o = get_option('twitter_widget_pro');
+?>
+		<div class="wrap">
+			<h2><?php _e('Twitter Widget Pro Options') ?></h2>
+			<form action="options.php" method="post" id="wp_twitter_widget_pro">
+				<?php wp_nonce_field('update-options'); ?>
+				<table class="form-table">
+					<tr valign="top">
+						<th scope="row">
+							<a title="<?php _e('Click for Help!'); ?>" href="#" onclick="jQuery('#twp_user_agreed_to_send_system_information_help').toggle(); return false;">
+								<?php _e('System Information:') ?>
+							</a>
+						</th>
+						<td>
+							<label for="twp_user_agreed_to_send_system_information"><input type="checkbox" name="twitter_widget_pro[user_agreed_to_send_system_information]" value="true" id="twp_user_agreed_to_send_system_information"<?php checked('true', $o['user_agreed_to_send_system_information']); ?> /> <?php _e('I agree to send anonymous system information'); ?></label><br />
+							<small id="twp_user_agreed_to_send_system_information_help" style="display:none;">
+								<?php _e('You can help by sending anonymous system information that will help Xavisys make better decisions about new features.'); ?><br />
+								<?php _e('The information will be sent anonymously, but a unique identifier will be sent to prevent duplicate entries from the same installation.'); ?>
+							</small>
+						</td>
+					</tr>
+				</table>
+				<p class="submit">
+					<input type="submit" name="Submit" value="<?php _e('Update Options &raquo;'); ?>" />
+				</p>
+				<input type="hidden" name="action" value="update" />
+				<input type="hidden" name="page_options" value="twitter_widget_pro" />
+			</form>
+		</div>
+<?php
+	}
+
 	/**
 	 * Pulls the JSON feed from Twitter and returns an array of objects
 	 *
@@ -577,8 +618,8 @@ profileImage;
 
 	function activatePlugin() {
 		// If the wga-id has not been generated, generate one and store it.
-		$o = get_option('twitter_widget_pro');
 		$id = $this->get_id();
+		$o = get_option('twitter_widget_pro');
 		if (!isset($o['user_agreed_to_send_system_information'])) {
 			$o['user_agreed_to_send_system_information'] = 'true';
 			update_option('twitter_widget_pro', $o);
@@ -586,19 +627,19 @@ profileImage;
 	}
 
 	function get_id() {
-		$o = get_option('twitter_widget_pro');
-		if (!isset($o['id'])) {
-			$o['id'] = sha1( get_bloginfo('url') . mt_rand() );
-			update_option('twitter_widget_pro', $o);
+		$id = get_option('twitter_widget_pro-id');
+		if ($id === false) {
+			$id = sha1( get_bloginfo('url') . mt_rand() );
+			update_option('twitter_widget_pro-id', $id);
 		}
-		return $o['id'];
+		return $id;
 	}
 	/**
 	 * if user agrees to send system information and the last sent info is outdated outputs a bunch of stuff that sends sysinfo without interrupting
 	 */
 	function outputSendInfoForm()
 	{
-		$o = get_option('wga');
+		$o = get_option('twitter_widget_pro');
 		if ($o['user_agreed_to_send_system_information'] == 'true') {
 			$lastSent = get_option('twp-sysinfo');
             $sysinfo = $this->get_sysinfo();
