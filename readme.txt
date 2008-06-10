@@ -4,17 +4,16 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.5
 Tested up to: 2.5.1
-Stable tag: 1.1.4
+Stable tag: 1.2.0
 
-A widget that properly handles twitter feeds (single user or including friends), including parsing @username and URLs into links. Requires PHP5.
+A widget that properly handles twitter feeds, including parsing @username and URLs into links. Requires PHP5.
 
 == Description ==
 
 A widget that properly handles twitter feeds, including @username and link
-parsing.  Feeds can be for a single user, or can include all their friends'
-tweets as well (like their Twitter home page does).  It supports displaying
-profiles images, and even lets you control whether to display the time and date
-of a tweet or how log ago it happened (about 5 hours ago, etc).  Requires PHP5.
+parsing.  It supports displaying profiles images, and even lets you control
+whether to display the time and date of a tweet or how log ago it happened
+(about 5 hours ago, etc).  Requires PHP5.
 
 == Installation ==
 
@@ -31,3 +30,7 @@ Yes, Twitter Widget Pro employs the multi-widget pattern, which allows you to no
 = Can I follow more than one feed? =
 
 Absolutely, each instance of the widget can have different settings and track different feeds.
+
+= Why can't I display a friends feed anymore? =
+
+Aparently the database queries required to display the friends feed was causing twitter to crash, so they removed it.  Unfortunately, this is outside my control.
