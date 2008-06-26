@@ -318,7 +318,7 @@ class Zend_Json_Decoder
                                 $result .= '\'';
                                 break;
                             default:
-                                throw new Zend_Json_Exception("Illegal escape "
+                                throw new Exception("Illegal escape "
                                     .  "sequence '" . $chr . "'");
                             }
                     } elseif ($chr == '"') {

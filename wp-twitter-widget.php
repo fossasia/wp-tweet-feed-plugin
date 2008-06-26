@@ -3,16 +3,20 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username and link parsing, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.2.1
+ * Version: 1.2.2
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
-define('TWP_VERSION', '1.2.1');
+define('TWP_VERSION', '1.2.2');
 
 /**
  * Changelog:
- * 06/09/2008: 1.2.0
+ * 06/09/2008: 1.2.2
+ * 	- Fixed minor issue with Zend JSON Decoder
+ * 	- Added an option for Twitter timeout.  2 seconds wasn't enough for some people
+ *
+ * 06/09/2008: 1.2.1
  * 	- Fixed some minor errors in the collection code
  * 	- Added the admin options page (how did that get missed?!?)
  *
@@ -163,7 +167,7 @@ class wpTwitterWidget
 	 */
 	private function _parseFeed($widgetOptions) {
 		$feedUrl = $this->_getFeedUrl($widgetOptions);
-		$resp = $this->_fetch_remote_file($feedUrl);
+		$resp = $this->_fetch_remote_file($feedUrl, $widgetOptions['fetchTimeOut']);
 		if ( $resp->status >= 200 && $resp->status < 300 ) {
 	        if (function_exists('json_decode')) {
 	            return json_decode($resp->results);
@@ -248,12 +252,13 @@ class wpTwitterWidget
 	 * @param array $headers - Raw headers to pass
 	 * @return Snoopy
 	 */
-	private function _fetch_remote_file ($url, $headers = "" ) {
+	private function _fetch_remote_file ($url, $timeout = 2, $headers = "" ) {
+		$timeout = (!empty($timeout))? (int) $timeout : 2;
 		require_once( ABSPATH . 'wp-includes/class-snoopy.php' );
 		// Snoopy is an HTTP client in PHP
 		$client = new Snoopy();
 		$client->agent = $this->userAgent;
-		$client->read_timeout = $this->fetchTimeOut;
+		$client->read_timeout = $timeout;
 		$client->use_gzip = $this->useGzip;
 		if (is_array($headers) ) {
 			$client->rawheaders = $headers;
@@ -472,6 +477,7 @@ profileImage;
 			$options[$number]['number'] = $number;
 			$options[$number]['title'] = attribute_escape($options[$number]['title']);
 			$options[$number]['errmsg'] = attribute_escape($options[$number]['errmsg']);
+			$options[$number]['fetchTimeOut'] = attribute_escape($options[$number]['fetchTimeOut']);
 			$options[$number]['username'] = attribute_escape($options[$number]['username']);
 			$options[$number]['hiderss'] = (bool) $options[$number]['hiderss'];
 			$options[$number]['avatar'] = (bool) $options[$number]['avatar'];
@@ -516,14 +522,15 @@ profileImage;
 	 */
 	private function _showForm($args) {
 
-		$defaultArgs = array(	'title'		=> '',
-								'errmsg'	=> '',
-								'username'	=> '',
-								'hiderss'	=> false,
-								'avatar'	=> false,
-								'items'		=> 10,
-								'showts'	=> 60 * 60 * 24,
-								'number'	=> '%i%' );
+		$defaultArgs = array(	'title'			=> '',
+								'errmsg'		=> '',
+								'fetchTimeOut'	=> '2',
+								'username'		=> '',
+								'hiderss'		=> false,
+								'avatar'		=> false,
+								'items'			=> 10,
+								'showts'		=> 60 * 60 * 24,
+								'number'		=> '%i%' );
 		$args = wp_parse_args( $args, $defaultArgs );
 		extract( $args );
 ?>
@@ -548,6 +555,10 @@ profileImage;
 			<p>
 				<label for="twitter-errmsg-<?php echo $number; ?>"><?php _e('What to display when Twitter is down (optional):'); ?></label>
 				<input class="widefat" id="twitter-errmsg-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][errmsg]" type="text" value="<?php echo $errmsg; ?>" />
+			</p>
+			<p>
+				<label for="twitter-fetchTimeOut-<?php echo $number; ?>"><?php _e('Number of seconds to wait for a response from Twitter (default 2):'); ?></label>
+				<input class="widefat" id="twitter-fetchTimeOut-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][fetchTimeOut]" type="text" value="<?php echo $fetchTimeOut; ?>" />
 			</p>
 			<p>
 				<label for="twitter-showts-<?php echo $number; ?>"><?php _e('Show date/time of Tweet (rather than 2 ____ ago):'); ?></label>
