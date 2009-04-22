@@ -3,15 +3,19 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username and link parsing, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
-define('TWP_VERSION', '1.3.0');
+define('TWP_VERSION', '1.3.1');
 
 /**
  * Changelog:
+ * 04/22/2009: 1.3.1
+ * 	- Added error handling after wp_remote_request call
+ * 	- Added link to Twitter Widget Pro page and option to turn it off per widget
+ *
  * 04/10/2009: 1.3.0
  * 	- Updated to use HTTP class and phased out Snoopy
  * 	- No longer relies on user having a caching solution in place.  Caches for 5 minutes using blog options
@@ -151,7 +155,7 @@ class wpTwitterWidget
 		$feedUrl = $this->_getFeedUrl($widgetOptions);
 		$resp = wp_remote_request($feedUrl, array('timeout' => $widgetOptions['fetchTimeOut']));
 
-		if ( $resp['response']['code'] >= 200 && $resp['response']['code'] < 300 ) {
+		if ( !is_wp_error($resp) && $resp['response']['code'] >= 200 && $resp['response']['code'] < 300 ) {
 	        if (function_exists('json_decode')) {
 	            return json_decode($resp['body']);
 	        } else {
@@ -277,6 +281,7 @@ class wpTwitterWidget
 
 		$options[$number]['hiderss'] = (isset($options[$number]['hiderss']) && $options[$number]['hiderss']);
 		$options[$number]['avatar'] = (isset($options[$number]['avatar']) && $options[$number]['avatar']);
+		$options[$number]['showXavisysLink'] = (!isset($options[$number]['showXavisysLink']) || $options[$number]['showXavisysLink']);
 
 
 		try {
@@ -305,40 +310,51 @@ class wpTwitterWidget
 			$options[$number]['title'] = "Twitter: {$options[$number]['username']}";
 		}
 		echo $before_title . $options[$number]['title'] . $after_title;
+		echo '<ul>';
 		if (is_a($tweets, 'wpTwitterWidgetException')) {
-			echo '<ul><li class="wpTwitterWidgetError">' . $tweets->getMessage() . '</li></ul>';
+			echo '<li class="wpTwitterWidgetError">' . $tweets->getMessage() . '</li>';
 		} else if (count($tweets) == 0) {
-			echo '<ul><li class="wpTwitterWidgetEmpty">' . __('No Tweets Available') . '</li></ul>';
+			echo '<li class="wpTwitterWidgetEmpty">' . __('No Tweets Available') . '</li>';
 		} else {
+			if (!empty($tweets)  && $options[$number]['avatar']) {
+				echo '<li>';
+				echo $this->_getProfileImage($tweets[0]->user);
+				echo '<div class="clear" />';
+				echo '</li>';
+			}
+			foreach ($tweets as $tweet) {
+				// Set our "ago" string which converts the date to "# ___(s) ago"
+				$tweet->ago = $this->_timeSince(strtotime($tweet->created_at), $options[$number]['showts']);
 ?>
-				<ul><?php
-				if (!empty($tweets)  && $options[$number]['avatar']) {
-					echo '<li>';
-					echo $this->_getProfileImage($tweets[0]->user);
-					echo '<div class="clear" />';
-					echo '</li>';
-				}
-				foreach ($tweets as $tweet) {
-					// Set our "ago" string which converts the date to "# ___(s) ago"
-					$tweet->ago = $this->_timeSince(strtotime($tweet->created_at), $options[$number]['showts']);
-?>
-					<li>
-						<span class="entry-content"><?php echo apply_filters( 'widget_twitter_content', $tweet->text ); ?></span>
-						<span class="entry-meta">
-							<a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet->id; ?>">
-								<?php echo $tweet->ago; ?>
-							</a> from <?php
-							echo str_replace('&', '&amp;', $tweet->source);
-							if (isset($tweet->in_reply_to)) {
-								echo $this->_getReplyTo($tweet->in_reply_to);
-							} ?>
-						</span>
-					</li>
+				<li>
+					<span class="entry-content"><?php echo apply_filters( 'widget_twitter_content', $tweet->text ); ?></span>
+					<span class="entry-meta">
+						<a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet->id; ?>">
+							<?php echo $tweet->ago; ?>
+						</a> from <?php
+						echo str_replace('&', '&amp;', $tweet->source);
+						if (isset($tweet->in_reply_to)) {
+							echo $this->_getReplyTo($tweet->in_reply_to);
+						} ?>
+					</span>
+				</li>
 <?php
-				} ?></ul>
+			}
+		}
+
+		if ($options[$number]['showXavisysLink']) {
+?>
+				<li class="xavisys-link">
+					<span class="xavisys-link-text">
+						Powered by
+						<a href="http://xavisys.com/2008/04/wordpress-twitter-widget/">
+							WordPress Twitter Widget Pro
+						</a>
+					</span>
+				</li>
 <?php
 		}
-		echo '</div>' . $after_widget;
+		echo '</ul></div>' . $after_widget;
 	}
 
 	/**
@@ -398,10 +414,12 @@ profileImage;
 		extract( $widget_args, EXTR_SKIP );
 
 		$options = get_option('widget_twitter');
+
 		if ( !is_array($options) )
 			$options = array();
 
 		if ( !$updated && !empty($_POST['sidebar']) ) {
+			echo 'HERE!!!!!';
 			$sidebar = (string) $_POST['sidebar'];
 
 			$sidebars_widgets = wp_get_sidebars_widgets();
@@ -442,6 +460,7 @@ profileImage;
 			$options[$number]['username'] = attribute_escape($options[$number]['username']);
 			$options[$number]['hiderss'] = (bool) $options[$number]['hiderss'];
 			$options[$number]['avatar'] = (bool) $options[$number]['avatar'];
+			$options[$number]['showXavisysLink'] = (!isset($options[$number]['showXavisysLink']) || $options[$number]['showXavisysLink']);
 		}
 		$this->_showForm($options[$number]);
 	}
@@ -483,15 +502,17 @@ profileImage;
 	 */
 	private function _showForm($args) {
 
-		$defaultArgs = array(	'title'			=> '',
-								'errmsg'		=> '',
-								'fetchTimeOut'	=> '2',
-								'username'		=> '',
-								'hiderss'		=> false,
-								'avatar'		=> false,
-								'items'			=> 10,
-								'showts'		=> 60 * 60 * 24,
-								'number'		=> '%i%' );
+		$defaultArgs = array(	'title'				=> '',
+								'errmsg'			=> '',
+								'fetchTimeOut'		=> '2',
+								'username'			=> '',
+								'hiderss'			=> false,
+								'avatar'			=> false,
+								'showXavisysLink'	=> true,
+								'items'				=> 10,
+								'showts'			=> 60 * 60 * 24,
+								'number'			=> '%i%' );
+
 		$args = wp_parse_args( $args, $defaultArgs );
 		extract( $args );
 ?>
@@ -538,6 +559,9 @@ profileImage;
 			</p>
 			<p>
 				<label for="twitter-avatar-<?php echo $number; ?>"><input class="checkbox" type="checkbox" id="twitter-avatar-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][avatar]"<?php checked($avatar, true); ?> /> <?php _e('Show Profile Image'); ?></label>
+			</p>
+			<p>
+				<label for="twitter-showXavisysLink-<?php echo $number; ?>"><input class="checkbox" type="checkbox" id="twitter-showXavisysLink-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][showXavisysLink]"<?php checked($showXavisysLink, true); ?> /> <?php _e('Show Link to Twitter Widget Pro'); ?></label>
 			</p>
 <?php
 	}
