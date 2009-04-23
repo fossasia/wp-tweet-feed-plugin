@@ -3,15 +3,18 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username and link parsing, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.3.1
+ * Version: 1.3.2
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
-define('TWP_VERSION', '1.3.1');
+define('TWP_VERSION', '1.3.2');
 
 /**
  * Changelog:
+ * 04/22/2009: 1.3.2
+ * 	- Fixed problem with link to Twitter Widget Pro page not turning off
+ *
  * 04/22/2009: 1.3.1
  * 	- Added error handling after wp_remote_request call
  * 	- Added link to Twitter Widget Pro page and option to turn it off per widget
@@ -419,7 +422,6 @@ profileImage;
 			$options = array();
 
 		if ( !$updated && !empty($_POST['sidebar']) ) {
-			echo 'HERE!!!!!';
 			$sidebar = (string) $_POST['sidebar'];
 
 			$sidebars_widgets = wp_get_sidebars_widgets();
@@ -439,6 +441,8 @@ profileImage;
 			foreach ( (array) $_POST['widget-twitter'] as $widget_number => $widget_twitter ) {
 				if ( !isset($widget_twitter['username']) && isset($options[$widget_number]) ) // user clicked cancel
 					continue;
+
+				$widget_twitter['showXavisysLink'] = empty($widget_twitter['showXavisysLink']);
 				$widget_twitter['title'] = stripslashes($widget_twitter['title']);
 				$widget_twitter['errmsg'] = stripslashes($widget_twitter['errmsg']);
 				if ( !current_user_can('unfiltered_html') ) {
