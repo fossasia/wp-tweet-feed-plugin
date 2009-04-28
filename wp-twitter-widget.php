@@ -3,15 +3,18 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username and link parsing, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.3.2
+ * Version: 1.3.3
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
-define('TWP_VERSION', '1.3.2');
+define('TWP_VERSION', '1.3.3');
 
 /**
  * Changelog:
+ * 04/28/2009: 1.3.3
+ * 	- Some configs still couldn't turn off the link to Twitter Widget Pro page
+ *
  * 04/22/2009: 1.3.2
  * 	- Fixed problem with link to Twitter Widget Pro page not turning off
  *
@@ -284,7 +287,7 @@ class wpTwitterWidget
 
 		$options[$number]['hiderss'] = (isset($options[$number]['hiderss']) && $options[$number]['hiderss']);
 		$options[$number]['avatar'] = (isset($options[$number]['avatar']) && $options[$number]['avatar']);
-		$options[$number]['showXavisysLink'] = (!isset($options[$number]['showXavisysLink']) || $options[$number]['showXavisysLink']);
+		$options[$number]['showXavisysLink'] = (!isset($options[$number]['showXavisysLink']) || $options[$number]['showXavisysLink'] != 'false');
 
 
 		try {
@@ -442,7 +445,6 @@ profileImage;
 				if ( !isset($widget_twitter['username']) && isset($options[$widget_number]) ) // user clicked cancel
 					continue;
 
-				$widget_twitter['showXavisysLink'] = empty($widget_twitter['showXavisysLink']);
 				$widget_twitter['title'] = stripslashes($widget_twitter['title']);
 				$widget_twitter['errmsg'] = stripslashes($widget_twitter['errmsg']);
 				if ( !current_user_can('unfiltered_html') ) {
@@ -464,7 +466,7 @@ profileImage;
 			$options[$number]['username'] = attribute_escape($options[$number]['username']);
 			$options[$number]['hiderss'] = (bool) $options[$number]['hiderss'];
 			$options[$number]['avatar'] = (bool) $options[$number]['avatar'];
-			$options[$number]['showXavisysLink'] = (!isset($options[$number]['showXavisysLink']) || $options[$number]['showXavisysLink']);
+			$options[$number]['showXavisysLink'] = (!isset($options[$number]['showXavisysLink']) || $options[$number]['showXavisysLink'] != 'false');
 		}
 		$this->_showForm($options[$number]);
 	}
@@ -517,8 +519,16 @@ profileImage;
 								'showts'			=> 60 * 60 * 24,
 								'number'			=> '%i%' );
 
+		echo '<!-- HERE 3:';
+		var_dump($args);
+		var_dump($defaultArgs);
+		echo '-->';
 		$args = wp_parse_args( $args, $defaultArgs );
 		extract( $args );
+		echo '<!-- HERE 4:';
+		var_dump($args);
+		var_dump($showXavisysLink);
+		echo '-->';
 ?>
 			<p>
 				<label for="twitter-username-<?php echo $number; ?>"><?php _e('Twitter username:'); ?></label>
@@ -565,7 +575,8 @@ profileImage;
 				<label for="twitter-avatar-<?php echo $number; ?>"><input class="checkbox" type="checkbox" id="twitter-avatar-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][avatar]"<?php checked($avatar, true); ?> /> <?php _e('Show Profile Image'); ?></label>
 			</p>
 			<p>
-				<label for="twitter-showXavisysLink-<?php echo $number; ?>"><input class="checkbox" type="checkbox" id="twitter-showXavisysLink-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][showXavisysLink]"<?php checked($showXavisysLink, true); ?> /> <?php _e('Show Link to Twitter Widget Pro'); ?></label>
+				<input type="hidden" name="widget-twitter[<?php echo $number; ?>][showXavisysLink]" value="false" />
+				<label for="twitter-showXavisysLink-<?php echo $number; ?>"><input class="checkbox" type="checkbox" value="true" id="twitter-showXavisysLink-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][showXavisysLink]"<?php checked($showXavisysLink, true); ?> /> <?php _e('Show Link to Twitter Widget Pro'); ?></label>
 			</p>
 <?php
 	}
