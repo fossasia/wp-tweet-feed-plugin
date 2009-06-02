@@ -3,15 +3,19 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username and link parsing, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.3.3
+ * Version: 1.3.4
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
-define('TWP_VERSION', '1.3.3');
+define('TWP_VERSION', '1.3.4');
 
 /**
  * Changelog:
+ * 05/02/2009: 1.3.4
+ * 	- Added convert_chars filter to the tweet text to properly handle special characters
+ * 	- Fixed "in reply to" text which stopped working when Twitter changed their API
+ *
  * 04/28/2009: 1.3.3
  * 	- Some configs still couldn't turn off the link to Twitter Widget Pro page
  *
@@ -339,8 +343,12 @@ class wpTwitterWidget
 							<?php echo $tweet->ago; ?>
 						</a> from <?php
 						echo str_replace('&', '&amp;', $tweet->source);
-						if (isset($tweet->in_reply_to)) {
-							echo $this->_getReplyTo($tweet->in_reply_to);
+						if (!empty($tweet->in_reply_to_screen_name)) {
+							echo <<<replyTo
+							<a href="http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}" class="reply-to">
+								in reply to {$tweet->in_reply_to_screen_name}
+							</a>
+replyTo;
 						} ?>
 					</span>
 				</li>
@@ -361,20 +369,6 @@ class wpTwitterWidget
 <?php
 		}
 		echo '</ul></div>' . $after_widget;
-	}
-
-	/**
-	 * Returns a "in reply to" link to the user passed
-	 *
-	 * @param object $replyTo - Tweet
-	 * @return string - Link to Twitter user (XHTML)
-	 */
-	private function _getReplyTo($replyTo) {
-		return <<<replyTo
-	<a href="http://twitter.com/{$replyTo->user->screen_name}/statuses/{$replyTo->id}">
-		in reply to {$replyTo->user->screen_name}
-	</a>
-replyTo;
 	}
 
 	/**
@@ -715,6 +709,7 @@ add_action( 'admin_menu', array($wpTwitterWidget,'admin_menu') );
 add_action( 'widgets_init', array($wpTwitterWidget, 'register') );
 add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkTwitterUsers') );
 add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkUrls') );
+add_filter( 'widget_twitter_content', 'convert_chars' );
 add_action( 'activate_twitter-widget-pro/wp-twitter-widget.php', array($wpTwitterWidget, 'activatePlugin') );
 add_action( 'admin_footer', array($wpTwitterWidget, 'outputSendInfoForm') );
 add_filter( 'plugin_action_links', array($wpTwitterWidget, 'addSettingLink'), 10, 2 );
