@@ -3,15 +3,22 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username and link parsing, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.3.4
+ * Version: 1.3.5
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
-define('TWP_VERSION', '1.3.4');
+/**
+ * @todo Clickable #hashtags
+ */
+
+define('TWP_VERSION', '1.3.5');
 
 /**
  * Changelog:
+ * 05/02/2009: 1.3.5
+ * 	- #Hashtags are now linked to twitter search
+ *
  * 05/02/2009: 1.3.4
  * 	- Added convert_chars filter to the tweet text to properly handle special characters
  * 	- Fixed "in reply to" text which stopped working when Twitter changed their API
@@ -204,8 +211,31 @@ class wpTwitterWidget
 	 * @return string - Tweet text with @replies linked
 	 */
 	public function linkTwitterUsers($text) {
-		$text = preg_replace('/(^|\s)@(\w*)/i', '$1@<a href="http://twitter.com/$2" class="twitter-user">$2</a>', $text);
+		$text = preg_replace('/(^|\s)@(\w*)/i', '$1<a href="http://twitter.com/$2" class="twitter-user">@$2</a>', $text);
 		return $text;
+	}
+
+	/**
+	 * Replace #hashtag with a link to search.twitter.com for that hashtag
+	 *
+	 * @param string $text - Tweet text
+	 * @return string - Tweet text with #hashtags linked
+	 */
+	public function linkHashtags($text) {
+		$text = preg_replace_callback('/(^|\s)(#\w*)/i', array($this, '_hashtagLink'), $text);
+		return $text;
+	}
+
+	/**
+	 * Replace #hashtag with a link to search.twitter.com for that hashtag
+	 *
+	 * @param array $matches - Tweet text
+	 * @return string - Tweet text with #hashtags linked
+	 */
+	private function _hashtagLink($matches) {
+		return "{$matches[1]}<a href='http://search.twitter.com/search?q="
+				. urlencode($matches[2])
+				. "' class='twitter-hashtag'>{$matches[2]}</a>";
 	}
 
 	/**
@@ -709,6 +739,7 @@ add_action( 'admin_menu', array($wpTwitterWidget,'admin_menu') );
 add_action( 'widgets_init', array($wpTwitterWidget, 'register') );
 add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkTwitterUsers') );
 add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkUrls') );
+add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkHashtags') );
 add_filter( 'widget_twitter_content', 'convert_chars' );
 add_action( 'activate_twitter-widget-pro/wp-twitter-widget.php', array($wpTwitterWidget, 'activatePlugin') );
 add_action( 'admin_footer', array($wpTwitterWidget, 'outputSendInfoForm') );
