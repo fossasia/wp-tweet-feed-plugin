@@ -2,21 +2,21 @@
 /**
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
- * Description: A widget that properly handles twitter feeds, including @username and link parsing, and can even display profile images for the users.  Requires PHP5.
- * Version: 1.3.5
+ * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
+ * Version: 1.3.6
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
-/**
- * @todo Clickable #hashtags
- */
-
-define('TWP_VERSION', '1.3.5');
+define('TWP_VERSION', '1.3.6');
 
 /**
  * Changelog:
- * 05/02/2009: 1.3.5
+ * 06/08/2009: 1.3.6
+ * 	- Fixes issue with linking URLs containing a ~
+ * 	- Removed some debugging stuff
+ *
+ * 06/04/2009: 1.3.5
  * 	- #Hashtags are now linked to twitter search
  *
  * 05/02/2009: 1.3.4
@@ -253,7 +253,7 @@ class wpTwitterWidget
 		 * $4 is the URL without the protocol://
 		 * $5 is the URL parameters
 		 */
-		$text = preg_replace("/(^|\s)(([a-zA-Z]+:\/\/)([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9\/*-?&%]*))/i", "$1<a href=\"$2\">$2</a>", $text);
+		$text = preg_replace("/(^|\s)(([a-zA-Z]+:\/\/)([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", "$1<a href=\"$2\">$2</a>", $text);
 
 		/**
 		 * match www.something.domain/path/file.extension?some=variable&another=asf%
@@ -263,7 +263,7 @@ class wpTwitterWidget
 		 * $4 is the URL matched without the www.
 		 * $5 is the URL parameters
 		 */
-		$text = preg_replace("/(^|\s)(www\.([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9\/*-?&%]*))/i", "$1<a href=\"http://$2\">$2</a>", $text);
+		$text = preg_replace("/(^|\s)(www\.([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", "$1<a href=\"http://$2\">$2</a>", $text);
 
 		return $text;
 	}
@@ -543,16 +543,8 @@ profileImage;
 								'showts'			=> 60 * 60 * 24,
 								'number'			=> '%i%' );
 
-		echo '<!-- HERE 3:';
-		var_dump($args);
-		var_dump($defaultArgs);
-		echo '-->';
 		$args = wp_parse_args( $args, $defaultArgs );
 		extract( $args );
-		echo '<!-- HERE 4:';
-		var_dump($args);
-		var_dump($showXavisysLink);
-		echo '-->';
 ?>
 			<p>
 				<label for="twitter-username-<?php echo $number; ?>"><?php _e('Twitter username:'); ?></label>
