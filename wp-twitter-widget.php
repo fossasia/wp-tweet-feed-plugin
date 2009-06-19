@@ -3,15 +3,18 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.3.6
+ * Version: 1.3.7
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
-define('TWP_VERSION', '1.3.6');
+define('TWP_VERSION', '1.3.7');
 
 /**
  * Changelog:
+ * 06/08/2009: 1.3.7
+ * 	- Added some spans with classes to make styling to meta data easier
+ *
  * 06/08/2009: 1.3.6
  * 	- Fixes issue with linking URLs containing a ~
  * 	- Removed some debugging stuff
@@ -359,7 +362,7 @@ class wpTwitterWidget
 			if (!empty($tweets)  && $options[$number]['avatar']) {
 				echo '<li>';
 				echo $this->_getProfileImage($tweets[0]->user);
-				echo '<div class="clear" />';
+				echo '<div class="clear"></div>';
 				echo '</li>';
 			}
 			foreach ($tweets as $tweet) {
@@ -369,17 +372,25 @@ class wpTwitterWidget
 				<li>
 					<span class="entry-content"><?php echo apply_filters( 'widget_twitter_content', $tweet->text ); ?></span>
 					<span class="entry-meta">
-						<a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet->id; ?>">
-							<?php echo $tweet->ago; ?>
-						</a> from <?php
-						echo str_replace('&', '&amp;', $tweet->source);
+						<span class="time-meta">
+							<a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet->id; ?>">
+								<?php echo $tweet->ago; ?>
+							</a>
+						</span>
+						<span class="from-meta">
+							from <?php echo str_replace('&', '&amp;', $tweet->source); ?>
+						</span>
+						<?php
 						if (!empty($tweet->in_reply_to_screen_name)) {
 							echo <<<replyTo
-							<a href="http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}" class="reply-to">
-								in reply to {$tweet->in_reply_to_screen_name}
-							</a>
+							<span class="in-reply-to-meta">
+								<a href="http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}" class="reply-to">
+									in reply to {$tweet->in_reply_to_screen_name}
+								</a>
+							</span>
 replyTo;
 						} ?>
+
 					</span>
 				</li>
 <?php
