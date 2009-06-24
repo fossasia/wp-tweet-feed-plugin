@@ -49,8 +49,8 @@ class wpTwitterWidget
 	}
 
 	public function init_locale(){
-		$plugin_dir = basename(dirname(__FILE__));
-		load_plugin_textdomain('twitter-widget-pro', 'wp-content/plugins/' . $plugin_dir, $plugin_dir);
+		$lang_dir = basename(dirname(__FILE__)) . '/languages';
+		load_plugin_textdomain('twitter-widget-pro', 'wp-content/plugins/' . $lang_dir, $lang_dir);
 	}
 
 	/**
