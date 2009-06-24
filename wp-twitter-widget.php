@@ -3,15 +3,18 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.3.7
+ * Version: 1.3.8
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  */
 
-define('TWP_VERSION', '1.3.7');
+define('TWP_VERSION', '1.3.8');
 
 /**
  * Changelog:
+ * 06/24/2009: 1.3.8
+ * 	- Making translatable
+ *
  * 06/08/2009: 1.3.7
  * 	- Added some spans with classes to make styling to meta data easier
  *
@@ -126,7 +129,7 @@ class wpTwitterWidget
 	public function __construct() {}
 
 	function admin_menu() {
-		add_options_page(__('Twitter Widget Pro'), __('Twitter Widget Pro'), 'manage_options', 'TwitterWidgetPro', array($this, 'options'));
+		add_options_page(__('Twitter Widget Pro', 'twitter-widget-pro'), __('Twitter Widget Pro', 'twitter-widget-pro'), 'manage_options', 'TwitterWidgetPro', array($this, 'options'));
 	}
 	/**
 	 * This is used to display the options page for this plugin
@@ -136,27 +139,27 @@ class wpTwitterWidget
 		$o = get_option('twitter_widget_pro');
 ?>
 		<div class="wrap">
-			<h2><?php _e('Twitter Widget Pro Options') ?></h2>
+			<h2><?php _e('Twitter Widget Pro Options', 'twitter-widget-pro') ?></h2>
 			<form action="options.php" method="post" id="wp_twitter_widget_pro">
 				<?php wp_nonce_field('update-options'); ?>
 				<table class="form-table">
 					<tr valign="top">
 						<th scope="row">
-							<a title="<?php _e('Click for Help!'); ?>" href="#" onclick="jQuery('#twp_user_agreed_to_send_system_information_help').toggle(); return false;">
-								<?php _e('System Information:') ?>
+							<a title="<?php _e('Click for Help!', 'twitter-widget-pro'); ?>" href="#" onclick="jQuery('#twp_user_agreed_to_send_system_information_help').toggle(); return false;">
+								<?php _e('System Information:', 'twitter-widget-pro') ?>
 							</a>
 						</th>
 						<td>
-							<label for="twp_user_agreed_to_send_system_information"><input type="checkbox" name="twitter_widget_pro[user_agreed_to_send_system_information]" value="true" id="twp_user_agreed_to_send_system_information"<?php checked('true', $o['user_agreed_to_send_system_information']); ?> /> <?php _e('I agree to send anonymous system information'); ?></label><br />
+							<label for="twp_user_agreed_to_send_system_information"><input type="checkbox" name="twitter_widget_pro[user_agreed_to_send_system_information]" value="true" id="twp_user_agreed_to_send_system_information"<?php checked('true', $o['user_agreed_to_send_system_information']); ?> /> <?php _e('I agree to send anonymous system information', 'twitter-widget-pro'); ?></label><br />
 							<small id="twp_user_agreed_to_send_system_information_help" style="display:none;">
-								<?php _e('You can help by sending anonymous system information that will help Xavisys make better decisions about new features.'); ?><br />
-								<?php _e('The information will be sent anonymously, but a unique identifier will be sent to prevent duplicate entries from the same installation.'); ?>
+								<?php _e('You can help by sending anonymous system information that will help Xavisys make better decisions about new features.', 'twitter-widget-pro'); ?><br />
+								<?php _e('The information will be sent anonymously, but a unique identifier will be sent to prevent duplicate entries from the same installation.', 'twitter-widget-pro'); ?>
 							</small>
 						</td>
 					</tr>
 				</table>
 				<p class="submit">
-					<input type="submit" name="Submit" value="<?php _e('Update Options &raquo;'); ?>" />
+					<input type="submit" name="Submit" value="<?php _e('Update Options &raquo;', 'twitter-widget-pro'); ?>" />
 				</p>
 				<input type="hidden" name="action" value="update" />
 				<input type="hidden" name="page_options" value="twitter_widget_pro" />
@@ -187,7 +190,7 @@ class wpTwitterWidget
 			if (empty($widgetOptions['errmsg'])) {
 				$widgetOptions['errmsg'] = 'Could not connect to Twitter';
 			}
-			throw new wpTwitterWidgetException(__($widgetOptions['errmsg']));
+			throw new wpTwitterWidgetException(__($widgetOptions['errmsg'], 'twitter-widget-pro'));
 		}
 	}
 
@@ -344,7 +347,7 @@ class wpTwitterWidget
 				$icon = get_option('siteurl').'/wp-includes/images/rss.png';
 			}
 			$feedUrl = $this->_getFeedUrl($options[$number], 'rss', false);
-			$before_title .= "<a class='twitterwidget' href='{$feedUrl}' title='" . attribute_escape(__('Syndicate this content')) ."'><img style='background:orange;color:white;border:none;' width='14' height='14' src='{$icon}' alt='RSS' /></a> ";
+			$before_title .= "<a class='twitterwidget' href='{$feedUrl}' title='" . attribute_escape(__('Syndicate this content', 'twitter-widget-pro')) ."'><img style='background:orange;color:white;border:none;' width='14' height='14' src='{$icon}' alt='RSS' /></a> ";
 		}
 		$twitterLink = 'http://twitter.com/' . $options[$number]['username'];
 		$before_title .= "<a class='twitterwidget' href='{$twitterLink}' title='" . attribute_escape("Twitter: {$options[$number]['username']}") . "'>";
@@ -357,7 +360,7 @@ class wpTwitterWidget
 		if (is_a($tweets, 'wpTwitterWidgetException')) {
 			echo '<li class="wpTwitterWidgetError">' . $tweets->getMessage() . '</li>';
 		} else if (count($tweets) == 0) {
-			echo '<li class="wpTwitterWidgetEmpty">' . __('No Tweets Available') . '</li>';
+			echo '<li class="wpTwitterWidgetEmpty">' . __('No Tweets Available', 'twitter-widget-pro') . '</li>';
 		} else {
 			if (!empty($tweets)  && $options[$number]['avatar']) {
 				echo '<li>';
@@ -378,7 +381,7 @@ class wpTwitterWidget
 							</a>
 						</span>
 						<span class="from-meta">
-							from <?php echo str_replace('&', '&amp;', $tweet->source); ?>
+							<?php echo __('from', 'twitter-widget-pro') . ' ' . str_replace('&', '&amp;', $tweet->source); ?>
 						</span>
 						<?php
 						if (!empty($tweet->in_reply_to_screen_name)) {
@@ -401,9 +404,9 @@ replyTo;
 ?>
 				<li class="xavisys-link">
 					<span class="xavisys-link-text">
-						Powered by
+						<?php _e('Powered by', 'twitter-widget-pro');?>
 						<a href="http://xavisys.com/2008/04/wordpress-twitter-widget/">
-							WordPress Twitter Widget Pro
+							<?php _e('WordPress Twitter Widget Pro', 'twitter-widget-pro');?>
 						</a>
 					</span>
 				</li>
@@ -514,9 +517,9 @@ profileImage;
 	public function register() {
 		if ( !$options = get_option('widget_twitter') )
 			$options = array();
-		$widget_ops = array('classname' => 'widget_twitter', 'description' => __('Follow a Twitter Feed'));
+		$widget_ops = array('classname' => 'widget_twitter', 'description' => __('Follow a Twitter Feed', 'twitter-widget-pro'));
 		$control_ops = array('width' => 400, 'height' => 350, 'id_base' => 'twitter');
-		$name = __('Twitter Feed');
+		$name = __('Twitter Feed', 'twitter-widget-pro');
 
 		$id = false;
 		foreach ( array_keys($options) as $o ) {
@@ -558,15 +561,15 @@ profileImage;
 		extract( $args );
 ?>
 			<p>
-				<label for="twitter-username-<?php echo $number; ?>"><?php _e('Twitter username:'); ?></label>
+				<label for="twitter-username-<?php echo $number; ?>"><?php _e('Twitter username:', 'twitter-widget-pro'); ?></label>
 				<input class="widefat" id="twitter-username-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][username]" type="text" value="<?php echo $username; ?>" />
 			</p>
 			<p>
-				<label for="twitter-title-<?php echo $number; ?>"><?php _e('Give the feed a title (optional):'); ?></label>
+				<label for="twitter-title-<?php echo $number; ?>"><?php _e('Give the feed a title (optional):', 'twitter-widget-pro'); ?></label>
 				<input class="widefat" id="twitter-title-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][title]" type="text" value="<?php echo $title; ?>" />
 			</p>
 			<p>
-				<label for="twitter-items-<?php echo $number; ?>"><?php _e('How many items would you like to display?'); ?></label>
+				<label for="twitter-items-<?php echo $number; ?>"><?php _e('How many items would you like to display?', 'twitter-widget-pro'); ?></label>
 				<select id="twitter-items-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][items]">
 					<?php
 						for ( $i = 1; $i <= 20; ++$i ) {
@@ -576,34 +579,34 @@ profileImage;
 				</select>
 			</p>
 			<p>
-				<label for="twitter-errmsg-<?php echo $number; ?>"><?php _e('What to display when Twitter is down (optional):'); ?></label>
+				<label for="twitter-errmsg-<?php echo $number; ?>"><?php _e('What to display when Twitter is down (optional):', 'twitter-widget-pro'); ?></label>
 				<input class="widefat" id="twitter-errmsg-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][errmsg]" type="text" value="<?php echo $errmsg; ?>" />
 			</p>
 			<p>
-				<label for="twitter-fetchTimeOut-<?php echo $number; ?>"><?php _e('Number of seconds to wait for a response from Twitter (default 2):'); ?></label>
+				<label for="twitter-fetchTimeOut-<?php echo $number; ?>"><?php _e('Number of seconds to wait for a response from Twitter (default 2):', 'twitter-widget-pro'); ?></label>
 				<input class="widefat" id="twitter-fetchTimeOut-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][fetchTimeOut]" type="text" value="<?php echo $fetchTimeOut; ?>" />
 			</p>
 			<p>
-				<label for="twitter-showts-<?php echo $number; ?>"><?php _e('Show date/time of Tweet (rather than 2 ____ ago):'); ?></label>
+				<label for="twitter-showts-<?php echo $number; ?>"><?php _e('Show date/time of Tweet (rather than 2 ____ ago):', 'twitter-widget-pro'); ?></label>
 				<select id="twitter-showts-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][showts]">
-					<option value="0" <?php echo selected($showts, '0'); ?>>Always</a>
-					<option value="3600" <?php echo selected($showts, '3600'); ?>>If over an hour old</a>
-					<option value="86400" <?php echo selected($showts, '86400'); ?>>If over a day old</a>
-					<option value="604800" <?php echo selected($showts, '604800'); ?>>If over a week old</a>
-					<option value="2592000" <?php echo selected($showts, '2592000'); ?>>If over a month old</a>
-					<option value="31536000" <?php echo selected($showts, '31536000'); ?>>If over a year old</a>
-					<option value="-1" <?php echo selected($showts, '-1'); ?>>Never</a>
+					<option value="0" <?php echo selected($showts, '0'); ?>><?php _e('Always', 'twitter-widget-pro');?></a>
+					<option value="3600" <?php echo selected($showts, '3600'); ?>><?php _e('If over an hour old', 'twitter-widget-pro');?></a>
+					<option value="86400" <?php echo selected($showts, '86400'); ?>><?php _e('If over a day old', 'twitter-widget-pro');?></a>
+					<option value="604800" <?php echo selected($showts, '604800'); ?>><?php _e('If over a week old', 'twitter-widget-pro');?></a>
+					<option value="2592000" <?php echo selected($showts, '2592000'); ?>><?php _e('If over a month old', 'twitter-widget-pro');?></a>
+					<option value="31536000" <?php echo selected($showts, '31536000'); ?>><?php _e('If over a year old', 'twitter-widget-pro');?></a>
+					<option value="-1" <?php echo selected($showts, '-1'); ?>><?php _e('Never', 'twitter-widget-pro');?></a>
 				</select>
 			</p>
 			<p>
-				<label for="twitter-hiderss-<?php echo $number; ?>"><input class="checkbox" type="checkbox" id="twitter-hiderss-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][hiderss]"<?php checked($hiderss, true); ?> /> <?php _e('Hide RSS Icon and Link'); ?></label>
+				<label for="twitter-hiderss-<?php echo $number; ?>"><input class="checkbox" type="checkbox" id="twitter-hiderss-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][hiderss]"<?php checked($hiderss, true); ?> /> <?php _e('Hide RSS Icon and Link', 'twitter-widget-pro'); ?></label>
 			</p>
 			<p>
-				<label for="twitter-avatar-<?php echo $number; ?>"><input class="checkbox" type="checkbox" id="twitter-avatar-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][avatar]"<?php checked($avatar, true); ?> /> <?php _e('Show Profile Image'); ?></label>
+				<label for="twitter-avatar-<?php echo $number; ?>"><input class="checkbox" type="checkbox" id="twitter-avatar-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][avatar]"<?php checked($avatar, true); ?> /> <?php _e('Show Profile Image', 'twitter-widget-pro'); ?></label>
 			</p>
 			<p>
 				<input type="hidden" name="widget-twitter[<?php echo $number; ?>][showXavisysLink]" value="false" />
-				<label for="twitter-showXavisysLink-<?php echo $number; ?>"><input class="checkbox" type="checkbox" value="true" id="twitter-showXavisysLink-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][showXavisysLink]"<?php checked($showXavisysLink, true); ?> /> <?php _e('Show Link to Twitter Widget Pro'); ?></label>
+				<label for="twitter-showXavisysLink-<?php echo $number; ?>"><input class="checkbox" type="checkbox" value="true" id="twitter-showXavisysLink-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][showXavisysLink]"<?php checked($showXavisysLink, true); ?> /> <?php _e('Show Link to Twitter Widget Pro', 'twitter-widget-pro'); ?></label>
 			</p>
 <?php
 	}
@@ -725,7 +728,7 @@ profileImage;
 
 		if ( $file == $this->_pluginBasename ) {
 			// Add settings link to our plugin
-			$link = '<a href="options-general.php?page=TwitterWidgetPro">' . __('Settings') . '</a>';
+			$link = '<a href="options-general.php?page=TwitterWidgetPro">' . __('Settings', 'twitter-widget-pro') . '</a>';
 			array_unshift( $links, $link );
 		}
 		return $links;
