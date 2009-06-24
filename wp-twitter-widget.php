@@ -3,17 +3,20 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.3.8
+ * Version: 1.4.0
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
+ * Text Domain: twitter-widget-pro
  */
 
-define('TWP_VERSION', '1.3.8');
+define('TWP_VERSION', '1.4.0');
 
 /**
  * Changelog:
- * 06/24/2009: 1.3.8
- * 	- Making translatable
+ * 06/24/2009: 1.4.0
+ * 	- Make translatable
+ * 	- Include POT file
+ * 	- Remove JS submitted for for stats and use HTTP class instead
  *
  * 06/08/2009: 1.3.7
  * 	- Added some spans with classes to make styling to meta data easier
@@ -128,13 +131,19 @@ class wpTwitterWidget
 
 	public function __construct() {}
 
-	function admin_menu() {
+	public function admin_menu() {
 		add_options_page(__('Twitter Widget Pro', 'twitter-widget-pro'), __('Twitter Widget Pro', 'twitter-widget-pro'), 'manage_options', 'TwitterWidgetPro', array($this, 'options'));
 	}
+
+	public function init_locale(){
+		$plugin_dir = basename(dirname(__FILE__));
+		load_plugin_textdomain('twitter-widget-pro', 'wp-content/plugins/' . $plugin_dir, $plugin_dir);
+	}
+
 	/**
 	 * This is used to display the options page for this plugin
 	 */
-	function options() {
+	public function options() {
 		//Get our options
 		$o = get_option('twitter_widget_pro');
 ?>
@@ -657,7 +666,7 @@ profileImage;
 	    return "about {$print} ago";
 	}
 
-	function activatePlugin() {
+	public function activatePlugin() {
 		// If the wga-id has not been generated, generate one and store it.
 		$id = $this->get_id();
 		$o = get_option('twitter_widget_pro');
@@ -667,7 +676,7 @@ profileImage;
 		}
 	}
 
-	function get_id() {
+	public function get_id() {
 		$id = get_option('twitter_widget_pro-id');
 		if ($id === false) {
 			$id = sha1( get_bloginfo('url') . mt_rand() );
@@ -676,36 +685,27 @@ profileImage;
 		return $id;
 	}
 	/**
-	 * if user agrees to send system information and the last sent info is outdated outputs a bunch of stuff that sends sysinfo without interrupting
+	 * if user agrees to send system information and the last sent info is
+	 * outdated then send the stats
 	 */
-	function outputSendInfoForm()
-	{
+	public function sendSysInfo() {
 		$o = get_option('twitter_widget_pro');
 		if ($o['user_agreed_to_send_system_information'] == 'true') {
 			$lastSent = get_option('twp-sysinfo');
-            $sysinfo = $this->get_sysinfo();
-            //if (serialize($lastSent) != serialize($sysinfo)) {
-?>
-	        	<iframe id="hidden_frame" name="hidden_frame" style="width:0px; height:0px; border: 0px" src="about:blank"></iframe>
-		        <form id="twp_send_info_form" target="hidden_frame" method="post" action="http://xavisys.com/plugin-info.php">
-		            <?php
-		                foreach($sysinfo as $k=>$v)
-		                {
-		                    ?>
-		                        <input type="hidden" name="<?php echo attribute_escape($k); ?>" value="<?php echo attribute_escape($v);?>"></input>
-		                    <?php
-		                }
-		            ?>
-		        </form>
-		        <script type='text/javascript'>
-		        jQuery('#twp_send_info_form').submit();
-		        </script>
-<?php
-				update_option('twp-sysinfo', $sysinfo);
-            //}
-	    }
+            $sysinfo = $this->_get_sysinfo();
+			if (serialize($lastSent) != serialize($sysinfo)) {
+				$params = array(
+					'method'	=> 'POST',
+					'blocking'	=> false,
+					'body'		=> $sysinfo,
+				);
+				$resp = wp_remote_request( 'http://xavisys.com/plugin-info.php', $params );
+				update_option( 'twp-sysinfo', $sysinfo );
+			}
+		}
 	}
-	function get_sysinfo()
+
+	private function _get_sysinfo()
 	{
 		global $wpdb;
 		$s = array();
@@ -733,7 +733,6 @@ profileImage;
 		}
 		return $links;
 	}
-
 }
 // Instantiate our class
 $wpTwitterWidget = new wpTwitterWidget();
@@ -742,11 +741,12 @@ $wpTwitterWidget = new wpTwitterWidget();
  * Add filters and actions
  */
 add_action( 'admin_menu', array($wpTwitterWidget,'admin_menu') );
+add_filter( 'init', array( $wpTwitterWidget, 'init_locale') );
+add_filter( 'admin_init', array( $wpTwitterWidget, 'sendSysInfo') );
 add_action( 'widgets_init', array($wpTwitterWidget, 'register') );
 add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkTwitterUsers') );
 add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkUrls') );
 add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkHashtags') );
 add_filter( 'widget_twitter_content', 'convert_chars' );
 add_action( 'activate_twitter-widget-pro/wp-twitter-widget.php', array($wpTwitterWidget, 'activatePlugin') );
-add_action( 'admin_footer', array($wpTwitterWidget, 'outputSendInfoForm') );
 add_filter( 'plugin_action_links', array($wpTwitterWidget, 'addSettingLink'), 10, 2 );
