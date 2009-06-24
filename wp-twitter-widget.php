@@ -3,13 +3,13 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.4.0
+ * Version: 1.4.1
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
  */
 
-define('TWP_VERSION', '1.4.0');
+define('TWP_VERSION', '1.4.1');
 
 /*  Copyright 2006  Aaron D. Campbell  (email : wp_plugins@xavisys.com)
 
@@ -110,9 +110,9 @@ class wpTwitterWidget
 		} else {
 			// Failed to fetch url;
 			if (empty($widgetOptions['errmsg'])) {
-				$widgetOptions['errmsg'] = 'Could not connect to Twitter';
+				$widgetOptions['errmsg'] = __('Could not connect to Twitter', 'twitter-widget-pro');
 			}
-			throw new wpTwitterWidgetException(__($widgetOptions['errmsg'], 'twitter-widget-pro'));
+			throw new wpTwitterWidgetException($widgetOptions['errmsg']);
 		}
 	}
 
@@ -303,14 +303,15 @@ class wpTwitterWidget
 							</a>
 						</span>
 						<span class="from-meta">
-							<?php echo __('from', 'twitter-widget-pro') . ' ' . str_replace('&', '&amp;', $tweet->source); ?>
+							<?php echo sprintf(__('from %s', 'twitter-widget-pro'), str_replace('&', '&amp;', $tweet->source)); ?>
 						</span>
 						<?php
 						if (!empty($tweet->in_reply_to_screen_name)) {
+							$rtLinkText = sprintf( __('in reply to %s', 'twitter-widget-pro'), $tweet->in_reply_to_screen_name );
 							echo <<<replyTo
 							<span class="in-reply-to-meta">
 								<a href="http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}" class="reply-to">
-									in reply to {$tweet->in_reply_to_screen_name}
+									{$rtLinkText}
 								</a>
 							</span>
 replyTo;
@@ -326,10 +327,7 @@ replyTo;
 ?>
 				<li class="xavisys-link">
 					<span class="xavisys-link-text">
-						<?php _e('Powered by', 'twitter-widget-pro');?>
-						<a href="http://xavisys.com/2008/04/wordpress-twitter-widget/">
-							<?php _e('WordPress Twitter Widget Pro', 'twitter-widget-pro');?>
-						</a>
+						<?php echo sprintf(__('Powered by <a href="%s" title="Get Twitter Widget for your WordPress site">WordPress Twitter Widget Pro</a>', 'twitter-widget-pro'), 'http://xavisys.com/2008/04/wordpress-twitter-widget/' );?>
 					</span>
 				</li>
 <?php
