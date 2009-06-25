@@ -7,13 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/twitter-widget-pro\n"
-"POT-Creation-Date: 2009-06-24 21:46+0000\n"
+"POT-Creation-Date: 2009-06-25 16:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: wp-twitter-widget.php:48
 msgid "Twitter Widget Pro"
@@ -152,6 +153,55 @@ msgstr ""
 msgid "Show Link to Twitter Widget Pro"
 msgstr ""
 
-#: wp-twitter-widget.php:642
+#: wp-twitter-widget.php:570
+#, php-format
+msgid "about %s year ago"
+msgid_plural "about %s years ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-twitter-widget.php:571
+#, php-format
+msgid "about %s month ago"
+msgid_plural "about %s months ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-twitter-widget.php:572
+#, php-format
+msgid "about %s week ago"
+msgid_plural "about %s weeks ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-twitter-widget.php:573
+#, php-format
+msgid "about %s day ago"
+msgid_plural "about %s days ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-twitter-widget.php:574
+#, php-format
+msgid "about %s hour ago"
+msgid_plural "about %s hours ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-twitter-widget.php:575
+#, php-format
+msgid "about %s minute ago"
+msgid_plural "about %s minutes ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-twitter-widget.php:576
+#, php-format
+msgid "about %s second ago"
+msgid_plural "about %s seconds ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: wp-twitter-widget.php:673
 msgid "Settings"
 msgstr ""
