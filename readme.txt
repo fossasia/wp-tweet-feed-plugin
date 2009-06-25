@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.7
 Tested up to: 2.8
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -46,7 +46,10 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Changelog ==
 
-= 1.4.0 =
+= 1.4.2 =
+* Thanks to RaveN and Dries Arnold for pointing out that the "about # ____ ago" phrases weren't translatable
+
+= 1.4.1 =
 * Fixed some translatable strings
 * Fixed readme text
 

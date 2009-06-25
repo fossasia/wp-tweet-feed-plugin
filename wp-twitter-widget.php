@@ -3,13 +3,13 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.4.1
+ * Version: 1.4.2
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
  */
 
-define('TWP_VERSION', '1.4.1');
+define('TWP_VERSION', '1.4.2');
 
 /*  Copyright 2006  Aaron D. Campbell  (email : wp_plugins@xavisys.com)
 
@@ -544,13 +544,13 @@ profileImage;
 	private function _timeSince($startTimestamp, $max) {
 	    // array of time period chunks
 	    $chunks = array(
-	        array('seconds' => 60 * 60 * 24 * 365, 'name' => 'year'),
-	        array('seconds' => 60 * 60 * 24 * 30,  'name' => 'month'),
-	        array('seconds' => 60 * 60 * 24 * 7,   'name' => 'week'),
-	        array('seconds' => 60 * 60 * 24,       'name' => 'day'),
-	        array('seconds' => 60 * 60,            'name' => 'hour'),
-	        array('seconds' => 60,                 'name' => 'minute'),
-	        array('seconds' => 1,                  'name' => 'second')
+			'year'		=> 60 * 60 * 24 * 365,	// 31,536,000 seconds
+			'month'		=> 60 * 60 * 24 * 7,	// 2,592,000 seconds
+			'week'		=> 60 * 60 * 24 * 7,	// 604,800 seconds
+			'day'		=> 60 * 60 * 24,		// 86,400 seconds
+			'hour'		=> 60 * 60,				// 3600 seconds
+			'minute'	=> 60,					// 60 seconds
+			'second'	=> 1					// 1 second
 	    );
 
 	    $since = time() - $startTimestamp;
@@ -559,6 +559,23 @@ profileImage;
 			return date('h:i:s A F d, Y', $startTimestamp);
 	    }
 
+		foreach ( $chunks as $key => $seconds ) {
+	        // finding the biggest chunk (if the chunk fits, break)
+	        if (($count = floor($since / $seconds)) != 0) {
+	            break;
+	        }
+		}
+
+	    $messages = array(
+			'year'		=> _n('about %s year ago', 'about %s years ago', $count),
+			'month'		=> _n('about %s month ago', 'about %s months ago', $count),
+			'week'		=> _n('about %s week ago', 'about %s weeks ago', $count),
+			'day'		=> _n('about %s day ago', 'about %s days ago', $count),
+			'hour'		=> _n('about %s hour ago', 'about %s hours ago', $count),
+			'minute'	=> _n('about %s minute ago', 'about %s minutes ago', $count),
+			'second'	=> _n('about %s second ago', 'about %s seconds ago', $count),
+	    );
+/*
 	    // $j saves performing the count function each time around the loop
 	    for ($i = 0, $j = count($chunks); $i < $j; $i++) {
 	    	extract($chunks[$i]);
@@ -574,7 +591,21 @@ profileImage;
 	    	$print .= 's';
 	    }
 
-	    return "about {$print} ago";
+	    // array of time period chunks
+	    $chunks = array(
+	        array(
+				'seconds'	=> 60 * 60 * 24 * 365,
+				'name'		=> _n('about %s year ago', 'about %s years ago', $count)
+			),
+	        array('seconds' => 60 * 60 * 24 * 30,  'name' => 'month'),
+	        array('seconds' => 60 * 60 * 24 * 7,   'name' => 'week'),
+	        array('seconds' => 60 * 60 * 24,       'name' => 'day'),
+	        array('seconds' => 60 * 60,            'name' => 'hour'),
+	        array('seconds' => 60,                 'name' => 'minute'),
+	        array('seconds' => 1,                  'name' => 'second')
+	    );
+ */
+	    return sprintf($messages[$key], $count);
 	}
 
 	public function activatePlugin() {
