@@ -9,7 +9,7 @@
  * Text Domain: twitter-widget-pro
  */
 
-define('TWP_VERSION', '1.4.2');
+define('TWP_VERSION', '1.4.3');
 
 /*  Copyright 2006  Aaron D. Campbell  (email : wp_plugins@xavisys.com)
 
@@ -72,6 +72,7 @@ class wpTwitterWidget
 							</a>
 						</th>
 						<td>
+							<input type="hidden" name="twitter_widget_pro[user_agreed_to_send_system_information]" value="false" />
 							<label for="twp_user_agreed_to_send_system_information"><input type="checkbox" name="twitter_widget_pro[user_agreed_to_send_system_information]" value="true" id="twp_user_agreed_to_send_system_information"<?php checked('true', $o['user_agreed_to_send_system_information']); ?> /> <?php _e('I agree to send anonymous system information', 'twitter-widget-pro'); ?></label><br />
 							<small id="twp_user_agreed_to_send_system_information_help" style="display:none;">
 								<?php _e('You can help by sending anonymous system information that will help Xavisys make better decisions about new features.', 'twitter-widget-pro'); ?><br />
@@ -567,44 +568,15 @@ profileImage;
 		}
 
 	    $messages = array(
-			'year'		=> _n('about %s year ago', 'about %s years ago', $count),
-			'month'		=> _n('about %s month ago', 'about %s months ago', $count),
-			'week'		=> _n('about %s week ago', 'about %s weeks ago', $count),
-			'day'		=> _n('about %s day ago', 'about %s days ago', $count),
-			'hour'		=> _n('about %s hour ago', 'about %s hours ago', $count),
-			'minute'	=> _n('about %s minute ago', 'about %s minutes ago', $count),
-			'second'	=> _n('about %s second ago', 'about %s seconds ago', $count),
+			'year'		=> _n('about %s year ago', 'about %s years ago', $count, 'twitter-widget-pro'),
+			'month'		=> _n('about %s month ago', 'about %s months ago', $count, 'twitter-widget-pro'),
+			'week'		=> _n('about %s week ago', 'about %s weeks ago', $count, 'twitter-widget-pro'),
+			'day'		=> _n('about %s day ago', 'about %s days ago', $count, 'twitter-widget-pro'),
+			'hour'		=> _n('about %s hour ago', 'about %s hours ago', $count, 'twitter-widget-pro'),
+			'minute'	=> _n('about %s minute ago', 'about %s minutes ago', $count, 'twitter-widget-pro'),
+			'second'	=> _n('about %s second ago', 'about %s seconds ago', $count, 'twitter-widget-pro'),
 	    );
-/*
-	    // $j saves performing the count function each time around the loop
-	    for ($i = 0, $j = count($chunks); $i < $j; $i++) {
-	    	extract($chunks[$i]);
 
-	        // finding the biggest chunk (if the chunk fits, break)
-	        if (($count = floor($since / $seconds)) != 0) {
-	            break;
-	        }
-	    }
-
-	    $print = "{$count} {$name}";
-	    if ($count > 1) {
-	    	$print .= 's';
-	    }
-
-	    // array of time period chunks
-	    $chunks = array(
-	        array(
-				'seconds'	=> 60 * 60 * 24 * 365,
-				'name'		=> _n('about %s year ago', 'about %s years ago', $count)
-			),
-	        array('seconds' => 60 * 60 * 24 * 30,  'name' => 'month'),
-	        array('seconds' => 60 * 60 * 24 * 7,   'name' => 'week'),
-	        array('seconds' => 60 * 60 * 24,       'name' => 'day'),
-	        array('seconds' => 60 * 60,            'name' => 'hour'),
-	        array('seconds' => 60,                 'name' => 'minute'),
-	        array('seconds' => 1,                  'name' => 'second')
-	    );
- */
 	    return sprintf($messages[$key], $count);
 	}
 
