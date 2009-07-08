@@ -3,13 +3,13 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.4.3
+ * Version: 1.4.4
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
  */
 
-define('TWP_VERSION', '1.4.3');
+define('TWP_VERSION', '1.4.4');
 
 /*  Copyright 2006  Aaron D. Campbell  (email : wp_plugins@xavisys.com)
 
@@ -38,11 +38,30 @@ class wpTwitterWidgetException extends Exception {}
 class wpTwitterWidget
 {
 	/**
-	 * @var string Stores the plugin file to test against on plugins page
+	 * Plugin file to test against on plugins page
+	 *
+	 * @var string
 	 */
 	private $_pluginBasename;
 
-	public function __construct() {}
+	/**
+	 * Repository base url
+	 *
+	 * @since 1.4.4
+	 * @var string
+	 */
+	private $_reposUrl = 'http://plugins.svn.wordpress.org/';
+
+	public function __construct() {
+		/**
+		 * Add update messages that can be attached to the CURRENT release (not
+		 * this one), but only for 2.8+
+		 */
+		global $wp_version;
+		if ( version_compare('2.8', $wp_version, '<=') ) {
+			add_action ( 'in_plugin_update_message-'.plugin_basename ( __FILE__ ) , array ( $this , '_changelog' ), null, 2 );
+		}
+	}
 
 	public function admin_menu() {
 		add_options_page(__('Twitter Widget Pro', 'twitter-widget-pro'), __('Twitter Widget Pro', 'twitter-widget-pro'), 'manage_options', 'TwitterWidgetPro', array($this, 'options'));
@@ -89,6 +108,15 @@ class wpTwitterWidget
 			</form>
 		</div>
 <?php
+	}
+
+	public function _changelog ($pluginData, $newPluginData) {
+		$url = "{$this->_reposUrl}/{$newPluginData->slug}/tags/{$newPluginData->new_version}/upgrade.html";
+		$response = wp_remote_get ( $url );
+		$code = (int) wp_remote_retrieve_response_code ( $response );
+		if ( $code == 200 ) {
+			echo wp_remote_retrieve_body ( $response );
+		}
 	}
 
 	/**
@@ -427,6 +455,10 @@ profileImage;
 			$options[$number]['avatar'] = (bool) $options[$number]['avatar'];
 			$options[$number]['showXavisysLink'] = (!isset($options[$number]['showXavisysLink']) || $options[$number]['showXavisysLink'] != 'false');
 		}
+		// Fix Undefined offset Notice
+		if ( empty($options[$number]) ) {
+			$options[$number] = array();
+		}
 		$this->_showForm($options[$number]);
 	}
 
@@ -662,5 +694,5 @@ add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkTwitterUsers'
 add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkUrls') );
 add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkHashtags') );
 add_filter( 'widget_twitter_content', 'convert_chars' );
-add_action( 'activate_twitter-widget-pro/wp-twitter-widget.php', array($wpTwitterWidget, 'activatePlugin') );
 add_filter( 'plugin_action_links', array($wpTwitterWidget, 'addSettingLink'), 10, 2 );
+register_activation_hook(__FILE__, array($wpTwitterWidget,'activatePlugin'));
