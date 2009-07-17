@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.7
 Tested up to: 2.8.1
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -45,6 +45,9 @@ Aparently the database queries required to display the friends feed was causing 
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
 
 == Changelog ==
+
+= 1.4.5 =
+* Switched to using date_i18n so dates are localized
 
 = 1.4.4 =
 * Added Danish translation - Props <a href="http://wordpress.blogos.dk/">Georg</a>

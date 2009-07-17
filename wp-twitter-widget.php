@@ -3,13 +3,13 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.4.4
+ * Version: 1.4.5
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
  */
 
-define('TWP_VERSION', '1.4.4');
+define('TWP_VERSION', '1.4.5');
 
 /*  Copyright 2006  Aaron D. Campbell  (email : wp_plugins@xavisys.com)
 
@@ -589,7 +589,7 @@ profileImage;
 	    $since = time() - $startTimestamp;
 
 	    if ($max != '-1' && $since >= $max) {
-			return date('h:i:s A F d, Y', $startTimestamp);
+			return date_i18n('h:i:s A F d, Y', $startTimestamp);
 	    }
 
 		foreach ( $chunks as $key => $seconds ) {
