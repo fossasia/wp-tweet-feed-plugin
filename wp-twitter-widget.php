@@ -3,13 +3,13 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.4.5
+ * Version: 1.4.6
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
  */
 
-define('TWP_VERSION', '1.4.5');
+define('TWP_VERSION', '1.4.6');
 
 /*  Copyright 2006  Aaron D. Campbell  (email : wp_plugins@xavisys.com)
 
@@ -157,7 +157,12 @@ class wpTwitterWidget
 		if (!in_array($type, array('rss', 'json'))) {
 			$type = 'json';
 		}
-		$count = ($count)? sprintf('?count=%u', $widgetOptions['items']) : '';
+		if ( $count ) {
+			$num = ($widgetOptions['hidereplies'])? 100:$widgetOptions['items'];
+			$count = sprintf('?count=%u', $num);
+		} else {
+			$count = '';
+		}
 		return sprintf('http://twitter.com/statuses/user_timeline/%1$s.%2$s%3$s', $widgetOptions['username'], $type, $count);
 	}
 
@@ -277,13 +282,13 @@ class wpTwitterWidget
 		}
 
 		$options[$number]['hiderss'] = (isset($options[$number]['hiderss']) && $options[$number]['hiderss']);
+		$options[$number]['hidereplies'] = (isset($options[$number]['hidereplies']) && $options[$number]['hidereplies']);
 		$options[$number]['avatar'] = (isset($options[$number]['avatar']) && $options[$number]['avatar']);
 		$options[$number]['showXavisysLink'] = (!isset($options[$number]['showXavisysLink']) || $options[$number]['showXavisysLink'] != 'false');
 
 
 		try {
 			$tweets = $this->_getTweets($options[$number]);
-			$tweets = array_slice($tweets, 0, $options[$number]['items']);
 		} catch (wpTwitterWidgetException $e) {
 			$tweets = $e;
 		}
@@ -319,9 +324,11 @@ class wpTwitterWidget
 				echo '<div class="clear"></div>';
 				echo '</li>';
 			}
+			$count = 0;
 			foreach ($tweets as $tweet) {
-				// Set our "ago" string which converts the date to "# ___(s) ago"
-				$tweet->ago = $this->_timeSince(strtotime($tweet->created_at), $options[$number]['showts']);
+				if (!$options[$number]['hidereplies'] || empty($tweet->in_reply_to_user_id)) {
+					// Set our "ago" string which converts the date to "# ___(s) ago"
+					$tweet->ago = $this->_timeSince(strtotime($tweet->created_at), $options[$number]['showts']);
 ?>
 				<li>
 					<span class="entry-content"><?php echo apply_filters( 'widget_twitter_content', $tweet->text ); ?></span>
@@ -349,6 +356,10 @@ replyTo;
 					</span>
 				</li>
 <?php
+					if (++$count >= $options[$number]['items']) {
+						break;
+					}
+				}
 			}
 		}
 
@@ -452,6 +463,7 @@ profileImage;
 			$options[$number]['fetchTimeOut'] = attribute_escape($options[$number]['fetchTimeOut']);
 			$options[$number]['username'] = attribute_escape($options[$number]['username']);
 			$options[$number]['hiderss'] = (bool) $options[$number]['hiderss'];
+			$options[$number]['hidereplies'] = (bool) $options[$number]['hidereplies'];
 			$options[$number]['avatar'] = (bool) $options[$number]['avatar'];
 			$options[$number]['showXavisysLink'] = (!isset($options[$number]['showXavisysLink']) || $options[$number]['showXavisysLink'] != 'false');
 		}
@@ -504,6 +516,7 @@ profileImage;
 								'fetchTimeOut'		=> '2',
 								'username'			=> '',
 								'hiderss'			=> false,
+								'hidereplies'		=> false,
 								'avatar'			=> false,
 								'showXavisysLink'	=> true,
 								'items'				=> 10,
@@ -530,6 +543,9 @@ profileImage;
 						}
 					?>
 				</select>
+			</p>
+			<p>
+				<label for="twitter-hidereplies-<?php echo $number; ?>"><input class="checkbox" type="checkbox" id="twitter-hidereplies-<?php echo $number; ?>" name="widget-twitter[<?php echo $number; ?>][hidereplies]"<?php checked($hidereplies, true); ?> /> <?php _e('Hide @replies', 'twitter-widget-pro'); ?></label>
 			</p>
 			<p>
 				<label for="twitter-errmsg-<?php echo $number; ?>"><?php _e('What to display when Twitter is down (optional):', 'twitter-widget-pro'); ?></label>
