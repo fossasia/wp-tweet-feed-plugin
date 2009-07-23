@@ -3,13 +3,11 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.4.6
+ * Version: 1.4.7
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
  */
-
-define('TWP_VERSION', '1.4.6');
 
 /*  Copyright 2006  Aaron D. Campbell  (email : wp_plugins@xavisys.com)
 
@@ -38,6 +36,11 @@ class wpTwitterWidgetException extends Exception {}
 class wpTwitterWidget
 {
 	/**
+	 * @var array Plugin settings
+	 */
+	private $_settings;
+
+	/**
 	 * Plugin file to test against on plugins page
 	 *
 	 * @var string
@@ -63,6 +66,10 @@ class wpTwitterWidget
 		}
 	}
 
+	public function registerSettings() {
+		register_setting( 'twitter_widget_pro_options', 'twitter_widget_pro' );
+	}
+
 	public function admin_menu() {
 		add_options_page(__('Twitter Widget Pro', 'twitter-widget-pro'), __('Twitter Widget Pro', 'twitter-widget-pro'), 'manage_options', 'TwitterWidgetPro', array($this, 'options'));
 	}
@@ -77,12 +84,12 @@ class wpTwitterWidget
 	 */
 	public function options() {
 		//Get our options
-		$o = get_option('twitter_widget_pro');
+		$this->_getSettings();
 ?>
 		<div class="wrap">
 			<h2><?php _e('Twitter Widget Pro Options', 'twitter-widget-pro') ?></h2>
 			<form action="options.php" method="post" id="wp_twitter_widget_pro">
-				<?php wp_nonce_field('update-options'); ?>
+				<?php settings_fields( 'twitter_widget_pro_options' ); ?>
 				<table class="form-table">
 					<tr valign="top">
 						<th scope="row">
@@ -92,7 +99,7 @@ class wpTwitterWidget
 						</th>
 						<td>
 							<input type="hidden" name="twitter_widget_pro[user_agreed_to_send_system_information]" value="false" />
-							<label for="twp_user_agreed_to_send_system_information"><input type="checkbox" name="twitter_widget_pro[user_agreed_to_send_system_information]" value="true" id="twp_user_agreed_to_send_system_information"<?php checked('true', $o['user_agreed_to_send_system_information']); ?> /> <?php _e('I agree to send anonymous system information', 'twitter-widget-pro'); ?></label><br />
+							<label for="twp_user_agreed_to_send_system_information"><input type="checkbox" name="twitter_widget_pro[user_agreed_to_send_system_information]" value="true" id="twp_user_agreed_to_send_system_information"<?php checked('true', $this->_settings['user_agreed_to_send_system_information']); ?> /> <?php _e('I agree to send anonymous system information', 'twitter-widget-pro'); ?></label><br />
 							<small id="twp_user_agreed_to_send_system_information_help" style="display:none;">
 								<?php _e('You can help by sending anonymous system information that will help Xavisys make better decisions about new features.', 'twitter-widget-pro'); ?><br />
 								<?php _e('The information will be sent anonymously, but a unique identifier will be sent to prevent duplicate entries from the same installation.', 'twitter-widget-pro'); ?>
@@ -103,8 +110,6 @@ class wpTwitterWidget
 				<p class="submit">
 					<input type="submit" name="Submit" value="<?php _e('Update Options &raquo;', 'twitter-widget-pro'); ?>" />
 				</p>
-				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="twitter_widget_pro" />
 			</form>
 		</div>
 <?php
@@ -628,31 +633,13 @@ profileImage;
 	    return sprintf($messages[$key], $count);
 	}
 
-	public function activatePlugin() {
-		// If the wga-id has not been generated, generate one and store it.
-		$id = $this->get_id();
-		$o = get_option('twitter_widget_pro');
-		if (!isset($o['user_agreed_to_send_system_information'])) {
-			$o['user_agreed_to_send_system_information'] = 'true';
-			update_option('twitter_widget_pro', $o);
-		}
-	}
-
-	public function get_id() {
-		$id = get_option('twitter_widget_pro-id');
-		if ($id === false) {
-			$id = sha1( get_bloginfo('url') . mt_rand() );
-			update_option('twitter_widget_pro-id', $id);
-		}
-		return $id;
-	}
 	/**
 	 * if user agrees to send system information and the last sent info is
 	 * outdated then send the stats
 	 */
 	public function sendSysInfo() {
-		$o = get_option('twitter_widget_pro');
-		if ($o['user_agreed_to_send_system_information'] == 'true') {
+		$this->_getSettings();
+		if ($this->_settings['user_agreed_to_send_system_information'] == 'true') {
 			$lastSent = get_option('twp-sysinfo');
             $sysinfo = $this->_get_sysinfo();
 			if (serialize($lastSent) != serialize($sysinfo)) {
@@ -667,13 +654,13 @@ profileImage;
 		}
 	}
 
-	private function _get_sysinfo()
-	{
+	private function _get_sysinfo() {
 		global $wpdb;
+		$pluginData = get_plugin_data(__FILE__);
 		$s = array();
-		$s['plugin'] = 'Twitter Widget Pro';
-		$s['id'] = $this->get_id();
-		$s['version'] = TWP_VERSION;
+		$s['plugin'] = $pluginData['Name'];
+		$s['id'] = $this->_get_id($pluginData['Name']);
+		$s['version'] = $pluginData['Version'];
 
 		$s['php_version'] = phpversion();
 		$s['mysql_version'] = @mysql_get_server_info($wpdb->dbh);
@@ -681,6 +668,25 @@ profileImage;
 		$s['memory_limit'] = ini_get('memory_limit');
 
 		return $s;
+	}
+
+	private function _get_id($name) {
+		$this->_getSettings();
+		if ( empty($this->_settings['sysinfo-id']) ) {
+			$this->_settings['sysinfo-id'] = sha1( get_bloginfo('url') . $name );
+			$this->_updateSettings();
+		}
+		return $this->_settings['sysinfo-id'];
+	}
+
+	private function _updateSettings() {
+		update_option('twitter_widget_pro', $this->_settings);
+	}
+	private function _getSettings() {
+		$defaults = array(
+		);
+		$this->_settings = get_option('twitter_widget_pro');
+		$this->_settings = wp_parse_args($this->_settings, $defaults);
 	}
 
 	public function addSettingLink( $links, $file ){
@@ -704,6 +710,7 @@ $wpTwitterWidget = new wpTwitterWidget();
  */
 add_action( 'admin_menu', array($wpTwitterWidget,'admin_menu') );
 add_filter( 'init', array( $wpTwitterWidget, 'init_locale') );
+add_filter( 'admin_init', array( $wpTwitterWidget, 'registerSettings') );
 add_filter( 'admin_init', array( $wpTwitterWidget, 'sendSysInfo') );
 add_action( 'widgets_init', array($wpTwitterWidget, 'register') );
 add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkTwitterUsers') );
@@ -711,4 +718,3 @@ add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkUrls') );
 add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkHashtags') );
 add_filter( 'widget_twitter_content', 'convert_chars' );
 add_filter( 'plugin_action_links', array($wpTwitterWidget, 'addSettingLink'), 10, 2 );
-register_activation_hook(__FILE__, array($wpTwitterWidget,'activatePlugin'));
