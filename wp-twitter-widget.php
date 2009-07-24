@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.4.7
+ * Version: 1.4.8
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -317,18 +317,17 @@ class wpTwitterWidget
 			$options[$number]['title'] = "Twitter: {$options[$number]['username']}";
 		}
 		echo $before_title . $options[$number]['title'] . $after_title;
+		if (!empty($tweets) && $options[$number]['avatar']) {
+			echo '<div class="twitter-avatar">';
+			echo $this->_getProfileImage($tweets[0]->user);
+			echo '</div>';
+		}
 		echo '<ul>';
 		if (is_a($tweets, 'wpTwitterWidgetException')) {
 			echo '<li class="wpTwitterWidgetError">' . $tweets->getMessage() . '</li>';
 		} else if (count($tweets) == 0) {
 			echo '<li class="wpTwitterWidgetEmpty">' . __('No Tweets Available', 'twitter-widget-pro') . '</li>';
 		} else {
-			if (!empty($tweets)  && $options[$number]['avatar']) {
-				echo '<li>';
-				echo $this->_getProfileImage($tweets[0]->user);
-				echo '<div class="clear"></div>';
-				echo '</li>';
-			}
 			$count = 0;
 			foreach ($tweets as $tweet) {
 				if (!$options[$number]['hidereplies'] || empty($tweet->in_reply_to_user_id)) {
@@ -489,7 +488,7 @@ profileImage;
 			$options = array();
 		$widget_ops = array('classname' => 'widget_twitter', 'description' => __('Follow a Twitter Feed', 'twitter-widget-pro'));
 		$control_ops = array('width' => 400, 'height' => 350, 'id_base' => 'twitter');
-		$name = __('Twitter Feed', 'twitter-widget-pro');
+		$name = __('Twitter Widget Pro', 'twitter-widget-pro');
 
 		$id = false;
 		foreach ( array_keys($options) as $o ) {
@@ -599,7 +598,7 @@ profileImage;
 	    // array of time period chunks
 	    $chunks = array(
 			'year'		=> 60 * 60 * 24 * 365,	// 31,536,000 seconds
-			'month'		=> 60 * 60 * 24 * 7,	// 2,592,000 seconds
+			'month'		=> 60 * 60 * 24 * 30,	// 2,592,000 seconds
 			'week'		=> 60 * 60 * 24 * 7,	// 604,800 seconds
 			'day'		=> 60 * 60 * 24,		// 86,400 seconds
 			'hour'		=> 60 * 60,				// 3600 seconds
