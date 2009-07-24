@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/twitter-widget-pro\n"
-"POT-Creation-Date: 2009-07-21 01:09+0000\n"
+"POT-Creation-Date: 2009-07-24 16:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,196 +16,192 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: wp-twitter-widget.php:67
+#: wp-twitter-widget.php:74 wp-twitter-widget.php:491
 msgid "Twitter Widget Pro"
 msgstr ""
 
-#: wp-twitter-widget.php:83
+#: wp-twitter-widget.php:90
 msgid "Twitter Widget Pro Options"
 msgstr ""
 
-#: wp-twitter-widget.php:89
+#: wp-twitter-widget.php:96
 msgid "Click for Help!"
 msgstr ""
 
-#: wp-twitter-widget.php:90
+#: wp-twitter-widget.php:97
 msgid "System Information:"
 msgstr ""
 
-#: wp-twitter-widget.php:95
+#: wp-twitter-widget.php:102
 msgid "I agree to send anonymous system information"
 msgstr ""
 
-#: wp-twitter-widget.php:97
+#: wp-twitter-widget.php:104
 msgid ""
 "You can help by sending anonymous system information that will help Xavisys "
 "make better decisions about new features."
 msgstr ""
 
-#: wp-twitter-widget.php:98
+#: wp-twitter-widget.php:105
 msgid ""
 "The information will be sent anonymously, but a unique identifier will be "
 "sent to prevent duplicate entries from the same installation."
 msgstr ""
 
-#: wp-twitter-widget.php:104
+#: wp-twitter-widget.php:111
 msgid "Update Options &raquo;"
 msgstr ""
 
-#: wp-twitter-widget.php:142
+#: wp-twitter-widget.php:147
 msgid "Could not connect to Twitter"
 msgstr ""
 
-#: wp-twitter-widget.php:306
+#: wp-twitter-widget.php:311
 msgid "Syndicate this content"
 msgstr ""
 
-#: wp-twitter-widget.php:319
+#: wp-twitter-widget.php:329
 msgid "No Tweets Available"
-msgstr ""
-
-#: wp-twitter-widget.php:342
-#, php-format
-msgid "from %s"
 msgstr ""
 
 #: wp-twitter-widget.php:346
 #, php-format
+msgid "from %s"
+msgstr ""
+
+#: wp-twitter-widget.php:350
+#, php-format
 msgid "in reply to %s"
 msgstr ""
 
-#: wp-twitter-widget.php:370
+#: wp-twitter-widget.php:374
 #, php-format
 msgid ""
 "Powered by <a href=\"%s\" title=\"Get Twitter Widget for your WordPress site"
 "\">WordPress Twitter Widget Pro</a>"
 msgstr ""
 
-#: wp-twitter-widget.php:485
+#: wp-twitter-widget.php:489
 msgid "Follow a Twitter Feed"
 msgstr ""
 
-#: wp-twitter-widget.php:487
-msgid "Twitter Feed"
-msgstr ""
-
-#: wp-twitter-widget.php:530
+#: wp-twitter-widget.php:534
 msgid "Twitter username:"
 msgstr ""
 
-#: wp-twitter-widget.php:534
+#: wp-twitter-widget.php:538
 msgid "Give the feed a title (optional):"
 msgstr ""
 
-#: wp-twitter-widget.php:538
+#: wp-twitter-widget.php:542
 msgid "How many items would you like to display?"
 msgstr ""
 
-#: wp-twitter-widget.php:548
+#: wp-twitter-widget.php:552
 msgid "Hide @replies"
 msgstr ""
 
-#: wp-twitter-widget.php:551
+#: wp-twitter-widget.php:555
 msgid "What to display when Twitter is down (optional):"
 msgstr ""
 
-#: wp-twitter-widget.php:555
+#: wp-twitter-widget.php:559
 msgid "Number of seconds to wait for a response from Twitter (default 2):"
 msgstr ""
 
-#: wp-twitter-widget.php:559
+#: wp-twitter-widget.php:563
 msgid "Show date/time of Tweet (rather than 2 ____ ago):"
 msgstr ""
 
-#: wp-twitter-widget.php:561
+#: wp-twitter-widget.php:565
 msgid "Always"
 msgstr ""
 
-#: wp-twitter-widget.php:562
+#: wp-twitter-widget.php:566
 msgid "If over an hour old"
 msgstr ""
 
-#: wp-twitter-widget.php:563
+#: wp-twitter-widget.php:567
 msgid "If over a day old"
 msgstr ""
 
-#: wp-twitter-widget.php:564
+#: wp-twitter-widget.php:568
 msgid "If over a week old"
 msgstr ""
 
-#: wp-twitter-widget.php:565
+#: wp-twitter-widget.php:569
 msgid "If over a month old"
 msgstr ""
 
-#: wp-twitter-widget.php:566
+#: wp-twitter-widget.php:570
 msgid "If over a year old"
 msgstr ""
 
-#: wp-twitter-widget.php:567
+#: wp-twitter-widget.php:571
 msgid "Never"
 msgstr ""
 
-#: wp-twitter-widget.php:571
+#: wp-twitter-widget.php:575
 msgid "Hide RSS Icon and Link"
 msgstr ""
 
-#: wp-twitter-widget.php:574
+#: wp-twitter-widget.php:578
 msgid "Show Profile Image"
 msgstr ""
 
-#: wp-twitter-widget.php:578
+#: wp-twitter-widget.php:582
 msgid "Show Link to Twitter Widget Pro"
 msgstr ""
 
-#: wp-twitter-widget.php:619
+#: wp-twitter-widget.php:623
 #, php-format
 msgid "about %s year ago"
 msgid_plural "about %s years ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:620
+#: wp-twitter-widget.php:624
 #, php-format
 msgid "about %s month ago"
 msgid_plural "about %s months ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:621
+#: wp-twitter-widget.php:625
 #, php-format
 msgid "about %s week ago"
 msgid_plural "about %s weeks ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:622
+#: wp-twitter-widget.php:626
 #, php-format
 msgid "about %s day ago"
 msgid_plural "about %s days ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:623
+#: wp-twitter-widget.php:627
 #, php-format
 msgid "about %s hour ago"
 msgid_plural "about %s hours ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:624
+#: wp-twitter-widget.php:628
 #, php-format
 msgid "about %s minute ago"
 msgid_plural "about %s minutes ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:625
+#: wp-twitter-widget.php:629
 #, php-format
 msgid "about %s second ago"
 msgid_plural "about %s seconds ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:693
+#: wp-twitter-widget.php:698
 msgid "Settings"
 msgstr ""

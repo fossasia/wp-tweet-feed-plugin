@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.7
 Tested up to: 2.8.2
-Stable tag: 1.4.7
+Stable tag: 1.4.8
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -39,12 +39,17 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Screenshots ==
 
-1. To user the widget, go to Appearance -> Widgets and choose to "Add" the "Twitter Feed" widget.
+1. To use the widget, go to Appearance -> Widgets and Add "Twitter Widget Pro" widget.
 2. Each widget has settings that need to be set, so the next step is to click "edit" on the newly added widget and adjust all the settings.  When you're done click "Save Changes"
 3. This is what the widget looks like in the default theme with no added styles.
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
 
 == Changelog ==
+
+= 1.4.8 =
+* The HTML has been changed for displaying profile images.  If you show profile images, you may need to update your CSS accordingly
+* Changed name of widget from "Twitter Feed" to "Twitter Widget Pro"
+* Fixed issue with calculation of "time since" for tweets that were months old
 
 = 1.4.7 =
 * Properly registering settings, should fix problem with WPMU
