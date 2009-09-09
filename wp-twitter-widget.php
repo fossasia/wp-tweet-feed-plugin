@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.4.9
+ * Version: 1.5.0
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -136,10 +136,23 @@ class wpTwitterWidget
 
 		if ( !is_wp_error($resp) && $resp['response']['code'] >= 200 && $resp['response']['code'] < 300 ) {
 	        if (function_exists('json_decode')) {
-	            return json_decode($resp['body']);
+	            $decodedResponse = json_decode($resp['body']);
 	        } else {
 				require_once('json_decode.php');
-	        	return Zend_Json_Decoder::decode($resp['body']);
+	        	$decodedResponse = Zend_Json_Decoder::decode($resp['body']);
+			}
+			if ( empty($decodedResponse) ) {
+				if (empty($widgetOptions['errmsg'])) {
+					$widgetOptions['errmsg'] = __('Invalid Twitter Response.', 'twitter-widget-pro');
+				}
+				throw new wpTwitterWidgetException($widgetOptions['errmsg']);
+			} elseif( !empty($decodedResponse->error) ) {
+				if (empty($widgetOptions['errmsg'])) {
+					$widgetOptions['errmsg'] = $decodedResponse->error;
+				}
+				throw new wpTwitterWidgetException($widgetOptions['errmsg']);
+			} else {
+				return $decodedResponse;
 			}
 		} else {
 			// Failed to fetch url;
@@ -246,7 +259,7 @@ class wpTwitterWidget
 		$tweets = get_option("wptw-{$feedHash}");
 		$cacheAge = get_option("wptw-{$feedHash}-time");
 		//If we don't have cache or it's more than 5 minutes old
-		if ( empty($tweets) || (time() - $cacheAge) > 300 ) {
+		if ( true || empty($tweets) || (time() - $cacheAge) > 300 ) {
 			try {
 				$tweets = $this->_parseFeed($widgetOptions);
 				update_option("wptw-{$feedHash}", $tweets);
