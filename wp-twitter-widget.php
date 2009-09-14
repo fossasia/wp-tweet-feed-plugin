@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 1.5.0
+ * Version: 1.5.1
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -259,7 +259,7 @@ class wpTwitterWidget
 		$tweets = get_option("wptw-{$feedHash}");
 		$cacheAge = get_option("wptw-{$feedHash}-time");
 		//If we don't have cache or it's more than 5 minutes old
-		if ( true || empty($tweets) || (time() - $cacheAge) > 300 ) {
+		if ( empty($tweets) || (time() - $cacheAge) > 300 ) {
 			try {
 				$tweets = $this->_parseFeed($widgetOptions);
 				update_option("wptw-{$feedHash}", $tweets);
