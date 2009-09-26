@@ -2,9 +2,9 @@
 Contributors: aaroncampbell
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%40xavisys%2ecom&item_name=Twitter%20Widget%20Pro&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 Tags: twitter, widget, feed
-Requires at least: 2.7
-Tested up to: 2.8.2
-Stable tag: 1.5.1
+Requires at least: 2.8
+Tested up to: 2.8.4
+Stable tag: 2.0.0
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -45,6 +45,11 @@ Aparently the database queries required to display the friends feed was causing 
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
 
 == Changelog ==
+
+= 2.0.0 =
+* Completely rewitten to use the new widget class introduced in WordPress 2.8
+* Now uses the json class that will be included in WordPress 2.9 for anyone on PHP < 5.2
+* The "Show Link to Twitter Widget Pro" is now off by default to comply with the latest decisions regarding the plugin repository
 
 = 1.5.1 =
 * Re-enables the caching that got inadvertantly disabled in 1.5.0.
