@@ -414,16 +414,16 @@ class wpTwitterWidget
 		/**
 		 * Add filters and actions
 		 */
-		add_action( 'admin_menu', array($wpTwitterWidget,'admin_menu') );
-		add_filter( 'init', array( $wpTwitterWidget, 'init_locale') );
-		add_filter( 'admin_init', array( $wpTwitterWidget, 'registerSettings') );
-		add_filter( 'admin_init', array( $wpTwitterWidget, 'sendSysInfo') );
-		add_action( 'widgets_init', array($wpTwitterWidget, 'register') );
-		add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkTwitterUsers') );
-		add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkUrls') );
-		add_filter( 'widget_twitter_content', array($wpTwitterWidget, 'linkHashtags') );
+		add_action( 'admin_menu', array($this,'admin_menu') );
+		add_filter( 'init', array( $this, 'init_locale') );
+		add_filter( 'admin_init', array( $this, 'registerSettings') );
+		add_filter( 'admin_init', array( $this, 'sendSysInfo') );
+		add_action( 'widgets_init', array($this, 'register') );
+		add_filter( 'widget_twitter_content', array($this, 'linkTwitterUsers') );
+		add_filter( 'widget_twitter_content', array($this, 'linkUrls') );
+		add_filter( 'widget_twitter_content', array($this, 'linkHashtags') );
 		add_filter( 'widget_twitter_content', 'convert_chars' );
-		add_filter( 'plugin_action_links', array($wpTwitterWidget, 'addSettingLink'), 10, 2 );
+		add_filter( 'plugin_action_links', array($this, 'addSettingLink'), 10, 2 );
 		add_action ( 'in_plugin_update_message-'.plugin_basename ( __FILE__ ) , array ( $this , '_changelog' ), null, 2 );
 	}
 
