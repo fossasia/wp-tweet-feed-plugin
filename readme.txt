@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.8
 Tested up to: 2.8.4
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -37,6 +37,10 @@ Absolutely, each instance of the widget can have different settings and track di
 
 Aparently the database queries required to display the friends feed was causing twitter to crash, so they removed it.  Unfortunately, this is outside my control.
 
+= I get an error similar to "Parse error: syntax error, unexpected T_STRING, expecting T_OLD_FUNCTION or T_FUNCTION or T_VAR or ‘}’ in /.../wp-twitter-widget.php on line ##" when I try to activate the plugin.  Is your plugin broke? =
+
+No.  This error occurs because the plugin requires PHP 5 and you’re running PHP 4. Most hosts offer PHP5 but sometimes you have to enable it in your control panel, through .htaccess, or by asking them.  There may be instructions for your specific host in the <a href="http://codex.wordpress.org/Switching_to_PHP5">Switching to PHP5</a> article in the codex.
+
 == Screenshots ==
 
 1. To use the widget, go to Appearance -> Widgets and Add "Twitter Widget Pro" widget.
@@ -45,6 +49,10 @@ Aparently the database queries required to display the friends feed was causing 
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
 
 == Changelog ==
+
+= 2.0.2 =
+* Fixed Profile image error
+* Added another FAQ (about PHP 5)
 
 = 2.0.1 =
 * Fixed problem with invalid actions introduced into 2.0.0
