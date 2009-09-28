@@ -37,9 +37,9 @@ Absolutely, each instance of the widget can have different settings and track di
 
 Aparently the database queries required to display the friends feed was causing twitter to crash, so they removed it.  Unfortunately, this is outside my control.
 
-= I get an error similar to "Parse error: syntax error, unexpected T_STRING, expecting T_OLD_FUNCTION or T_FUNCTION or T_VAR or ‘}’ in /.../wp-twitter-widget.php on line ##" when I try to activate the plugin.  Is your plugin broke? =
+= I get an error similar to "Parse error: syntax error, unexpected T_STRING, expecting T_OLD_FUNCTION or T_FUNCTION or T_VAR or '}' in /.../wp-twitter-widget.php on line ##" when I try to activate the plugin.  Is your plugin broke? =
 
-No.  This error occurs because the plugin requires PHP 5 and you’re running PHP 4. Most hosts offer PHP5 but sometimes you have to enable it in your control panel, through .htaccess, or by asking them.  There may be instructions for your specific host in the <a href="http://codex.wordpress.org/Switching_to_PHP5">Switching to PHP5</a> article in the codex.
+No.  This error occurs because the plugin requires PHP 5 and you're running PHP 4. Most hosts offer PHP5 but sometimes you have to enable it in your control panel, through .htaccess, or by asking them.  There may be instructions for your specific host in the <a href="http://codex.wordpress.org/Switching_to_PHP5">Switching to PHP5</a> article in the codex.
 
 == Screenshots ==
 
