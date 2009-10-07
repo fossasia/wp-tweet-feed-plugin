@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.0.2
+ * Version: 2.0.3
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -203,9 +203,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 					<span class="entry-content"><?php echo apply_filters( 'widget_twitter_content', $tweet->text ); ?></span>
 					<span class="entry-meta">
 						<span class="time-meta">
-							<a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet->id; ?>">
-								<?php echo $tweet->ago; ?>
-							</a>
+							<a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet->id; ?>"><?php echo $tweet->ago; ?></a>
 						</span>
 						<span class="from-meta">
 							<?php echo sprintf(__('from %s', 'twitter-widget-pro'), str_replace('&', '&amp;', $tweet->source)); ?>
@@ -215,9 +213,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 							$rtLinkText = sprintf( __('in reply to %s', 'twitter-widget-pro'), $tweet->in_reply_to_screen_name );
 							echo <<<replyTo
 							<span class="in-reply-to-meta">
-								<a href="http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}" class="reply-to">
-									{$rtLinkText}
-								</a>
+								<a href="http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}" class="reply-to">{$rtLinkText}</a>
 							</span>
 replyTo;
 						} ?>
@@ -389,9 +385,7 @@ replyTo;
 	 */
 	private function _getProfileImage($user) {
 		return <<<profileImage
-	<a title="{$user->name}" href="http://twitter.com/{$user->screen_name}">
-		<img alt="{$user->name}" src="{$user->profile_image_url}" />
-	</a>
+	<a title="{$user->name}" href="http://twitter.com/{$user->screen_name}"><img alt="{$user->name}" src="{$user->profile_image_url}" /></a>
 profileImage;
 	}
 }
@@ -468,9 +462,7 @@ class wpTwitterWidget
 				<table class="form-table">
 					<tr valign="top">
 						<th scope="row">
-							<a title="<?php _e('Click for Help!', 'twitter-widget-pro'); ?>" href="#" onclick="jQuery('#twp_user_agreed_to_send_system_information_help').toggle(); return false;">
-								<?php _e('System Information:', 'twitter-widget-pro') ?>
-							</a>
+							<a title="<?php _e('Click for Help!', 'twitter-widget-pro'); ?>" href="#" onclick="jQuery('#twp_user_agreed_to_send_system_information_help').toggle(); return false;"><?php _e('System Information:', 'twitter-widget-pro') ?></a>
 						</th>
 						<td>
 							<input type="hidden" name="twitter_widget_pro[user_agreed_to_send_system_information]" value="false" />
