@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.0.3
+ * Version: 2.0.4
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -173,10 +173,10 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				$icon = get_option('siteurl').'/wp-includes/images/rss.png';
 			}
 			$feedUrl = $this->_getFeedUrl($instance, 'rss', false);
-			$args['before_title'] .= "<a class='twitterwidget' href='{$feedUrl}' title='" . attribute_escape(__('Syndicate this content', 'twitter-widget-pro')) ."'><img style='background:orange;color:white;border:none;' width='14' height='14' src='{$icon}' alt='RSS' /></a> ";
+			$args['before_title'] .= "<a class='twitterwidget twitterwidget-rss' href='{$feedUrl}' title='" . attribute_escape(__('Syndicate this content', 'twitter-widget-pro')) ."'><img style='background:orange;color:white;border:none;' width='14' height='14' src='{$icon}' alt='RSS' /></a> ";
 		}
 		$twitterLink = 'http://twitter.com/' . $instance['username'];
-		$args['before_title'] .= "<a class='twitterwidget' href='{$twitterLink}' title='" . attribute_escape("Twitter: {$instance['username']}") . "'>";
+		$args['before_title'] .= "<a class='twitterwidget twitterwidget-title' href='{$twitterLink}' title='" . attribute_escape("Twitter: {$instance['username']}") . "'>";
 		$args['after_title'] = '</a>' . $args['after_title'];
 		if (empty($instance['title'])) {
 			$instance['title'] = "Twitter: {$instance['username']}";
@@ -203,7 +203,9 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 					<span class="entry-content"><?php echo apply_filters( 'widget_twitter_content', $tweet->text ); ?></span>
 					<span class="entry-meta">
 						<span class="time-meta">
-							<a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet->id; ?>"><?php echo $tweet->ago; ?></a>
+							<a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet->id; ?>">
+								<?php echo $tweet->ago; ?>
+							</a>
 						</span>
 						<span class="from-meta">
 							<?php echo sprintf(__('from %s', 'twitter-widget-pro'), str_replace('&', '&amp;', $tweet->source)); ?>
@@ -213,7 +215,9 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 							$rtLinkText = sprintf( __('in reply to %s', 'twitter-widget-pro'), $tweet->in_reply_to_screen_name );
 							echo <<<replyTo
 							<span class="in-reply-to-meta">
-								<a href="http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}" class="reply-to">{$rtLinkText}</a>
+								<a href="http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}" class="reply-to">
+									{$rtLinkText}
+								</a>
 							</span>
 replyTo;
 						} ?>
@@ -385,7 +389,9 @@ replyTo;
 	 */
 	private function _getProfileImage($user) {
 		return <<<profileImage
-	<a title="{$user->name}" href="http://twitter.com/{$user->screen_name}"><img alt="{$user->name}" src="{$user->profile_image_url}" /></a>
+	<a title="{$user->name}" href="http://twitter.com/{$user->screen_name}">
+		<img alt="{$user->name}" src="{$user->profile_image_url}" />
+	</a>
 profileImage;
 	}
 }
@@ -422,10 +428,7 @@ class wpTwitterWidget
 		/**
 		 * Add filters and actions
 		 */
-		add_action( 'admin_menu', array($this,'admin_menu') );
 		add_filter( 'init', array( $this, 'init_locale') );
-		add_filter( 'admin_init', array( $this, 'registerSettings') );
-		add_filter( 'admin_init', array( $this, 'sendSysInfo') );
 		add_action( 'widgets_init', array($this, 'register') );
 		add_filter( 'widget_twitter_content', array($this, 'linkTwitterUsers') );
 		add_filter( 'widget_twitter_content', array($this, 'linkUrls') );
@@ -435,51 +438,9 @@ class wpTwitterWidget
 		add_action ( 'in_plugin_update_message-'.plugin_basename ( __FILE__ ) , array ( $this , '_changelog' ), null, 2 );
 	}
 
-	public function registerSettings() {
-		register_setting( 'twitter_widget_pro_options', 'twitter_widget_pro' );
-	}
-
-	public function admin_menu() {
-		add_options_page(__('Twitter Widget Pro', 'twitter-widget-pro'), __('Twitter Widget Pro', 'twitter-widget-pro'), 'manage_options', 'TwitterWidgetPro', array($this, 'options'));
-	}
-
 	public function init_locale() {
 		$lang_dir = basename(dirname(__FILE__)) . '/languages';
 		load_plugin_textdomain('twitter-widget-pro', 'wp-content/plugins/' . $lang_dir, $lang_dir);
-	}
-
-	/**
-	 * This is used to display the options page for this plugin
-	 */
-	public function options() {
-		//Get our options
-		$this->_getSettings();
-?>
-		<div class="wrap">
-			<h2><?php _e('Twitter Widget Pro Options', 'twitter-widget-pro') ?></h2>
-			<form action="options.php" method="post" id="wp_twitter_widget_pro">
-				<?php settings_fields( 'twitter_widget_pro_options' ); ?>
-				<table class="form-table">
-					<tr valign="top">
-						<th scope="row">
-							<a title="<?php _e('Click for Help!', 'twitter-widget-pro'); ?>" href="#" onclick="jQuery('#twp_user_agreed_to_send_system_information_help').toggle(); return false;"><?php _e('System Information:', 'twitter-widget-pro') ?></a>
-						</th>
-						<td>
-							<input type="hidden" name="twitter_widget_pro[user_agreed_to_send_system_information]" value="false" />
-							<label for="twp_user_agreed_to_send_system_information"><input type="checkbox" name="twitter_widget_pro[user_agreed_to_send_system_information]" value="true" id="twp_user_agreed_to_send_system_information"<?php checked('true', $this->_settings['user_agreed_to_send_system_information']); ?> /> <?php _e('I agree to send anonymous system information', 'twitter-widget-pro'); ?></label><br />
-							<small id="twp_user_agreed_to_send_system_information_help" style="display:none;">
-								<?php _e('You can help by sending anonymous system information that will help Xavisys make better decisions about new features.', 'twitter-widget-pro'); ?><br />
-								<?php _e('The information will be sent anonymously, but a unique identifier will be sent to prevent duplicate entries from the same installation.', 'twitter-widget-pro'); ?>
-							</small>
-						</td>
-					</tr>
-				</table>
-				<p class="submit">
-					<input type="submit" name="Submit" value="<?php _e('Update Options &raquo;', 'twitter-widget-pro'); ?>" />
-				</p>
-			</form>
-		</div>
-<?php
 	}
 
 	public function _changelog ($pluginData, $newPluginData) {
@@ -503,62 +464,6 @@ class wpTwitterWidget
 		<a title="{$user->name}" href="http://twitter.com/{$user->screen_name}">{$user->screen_name}</a>
 	</strong>
 profileImage;
-	}
-
-	/**
-	 * if user agrees to send system information and the last sent info is
-	 * outdated then send the stats
-	 */
-	public function sendSysInfo() {
-		$this->_getSettings();
-		if ($this->_settings['user_agreed_to_send_system_information'] == 'true') {
-			$lastSent = get_option('twp-sysinfo');
-			$sysinfo = $this->_get_sysinfo();
-			if (serialize($lastSent) != serialize($sysinfo)) {
-				$params = array(
-					'method'	=> 'POST',
-					'blocking'	=> false,
-					'body'		=> $sysinfo,
-				);
-				$resp = wp_remote_request( 'http://xavisys.com/plugin-info.php', $params );
-				update_option( 'twp-sysinfo', $sysinfo );
-			}
-		}
-	}
-
-	private function _get_sysinfo() {
-		global $wpdb;
-		$pluginData = get_plugin_data(__FILE__);
-		$s = array();
-		$s['plugin'] = $pluginData['Name'];
-		$s['id'] = $this->_get_id($pluginData['Name']);
-		$s['version'] = $pluginData['Version'];
-
-		$s['php_version'] = phpversion();
-		$s['mysql_version'] = @mysql_get_server_info($wpdb->dbh);
-		$s['server_software'] = $_SERVER["SERVER_SOFTWARE"];
-		$s['memory_limit'] = ini_get('memory_limit');
-
-		return $s;
-	}
-
-	private function _get_id($name) {
-		$this->_getSettings();
-		if ( empty($this->_settings['sysinfo-id']) ) {
-			$this->_settings['sysinfo-id'] = sha1( get_bloginfo('url') . $name );
-			$this->_updateSettings();
-		}
-		return $this->_settings['sysinfo-id'];
-	}
-
-	private function _updateSettings() {
-		update_option('twitter_widget_pro', $this->_settings);
-	}
-	private function _getSettings() {
-		$defaults = array(
-		);
-		$this->_settings = get_option('twitter_widget_pro');
-		$this->_settings = wp_parse_args($this->_settings, $defaults);
 	}
 
 	public function addSettingLink( $links, $file ){
