@@ -50,6 +50,10 @@ No.  This error occurs because the plugin requires PHP 5 and you're running PHP 
 
 == Changelog ==
 
+= 2.0.4 =
+* Added twitterwidget-title and twitterwidget-rss classes to the title and rss links for separate styling
+* Removed the optional anonymous statistics collection.  Nothing is ever collected anymore.
+
 = 2.0.3 =
 * Removed some whitespace that was messing up styling for some people
 

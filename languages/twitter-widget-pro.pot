@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/twitter-widget-pro\n"
-"POT-Creation-Date: 2009-09-27 22:49+0000\n"
+"POT-Creation-Date: 2009-10-27 19:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 msgid "Follow a Twitter Feed"
 msgstr ""
 
-#: wp-twitter-widget.php:46 wp-twitter-widget.php:449
+#: wp-twitter-widget.php:46
 msgid "Twitter Widget Pro"
 msgstr ""
 
@@ -190,38 +190,6 @@ msgid_plural "about %s seconds ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:465
-msgid "Twitter Widget Pro Options"
-msgstr ""
-
-#: wp-twitter-widget.php:471
-msgid "Click for Help!"
-msgstr ""
-
-#: wp-twitter-widget.php:472
-msgid "System Information:"
-msgstr ""
-
-#: wp-twitter-widget.php:477
-msgid "I agree to send anonymous system information"
-msgstr ""
-
-#: wp-twitter-widget.php:479
-msgid ""
-"You can help by sending anonymous system information that will help Xavisys "
-"make better decisions about new features."
-msgstr ""
-
-#: wp-twitter-widget.php:480
-msgid ""
-"The information will be sent anonymously, but a unique identifier will be "
-"sent to prevent duplicate entries from the same installation."
-msgstr ""
-
-#: wp-twitter-widget.php:486
-msgid "Update Options &raquo;"
-msgstr ""
-
-#: wp-twitter-widget.php:579
+#: wp-twitter-widget.php:476
 msgid "Settings"
 msgstr ""
