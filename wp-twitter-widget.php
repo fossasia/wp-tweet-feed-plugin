@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.0.4
+ * Version: 2.0.5
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -410,13 +410,6 @@ class wpTwitterWidget
 	private $_settings;
 
 	/**
-	 * Plugin file to test against on plugins page
-	 *
-	 * @var string
-	 */
-	private $_pluginBasename;
-
-	/**
 	 * Repository base url
 	 *
 	 * @since 1.4.4
@@ -434,7 +427,7 @@ class wpTwitterWidget
 		add_filter( 'widget_twitter_content', array($this, 'linkUrls') );
 		add_filter( 'widget_twitter_content', array($this, 'linkHashtags') );
 		add_filter( 'widget_twitter_content', 'convert_chars' );
-		add_filter( 'plugin_action_links', array($this, 'addSettingLink'), 10, 2 );
+		add_filter( 'plugin_action_links', array($this, 'addWidgetLink'), 10, 2 );
 		add_action ( 'in_plugin_update_message-'.plugin_basename ( __FILE__ ) , array ( $this , '_changelog' ), null, 2 );
 	}
 
@@ -466,14 +459,10 @@ class wpTwitterWidget
 profileImage;
 	}
 
-	public function addSettingLink( $links, $file ){
-		if ( empty($this->_pluginBasename) ) {
-			$this->_pluginBasename = plugin_basename(__FILE__);
-		}
-
-		if ( $file == $this->_pluginBasename ) {
+	public function addWidgetLink( $links, $file ){
+		if ( $file == plugin_basename(__FILE__) ) {
 			// Add settings link to our plugin
-			$link = '<a href="options-general.php?page=TwitterWidgetPro">' . __('Settings', 'twitter-widget-pro') . '</a>';
+			$link = '<a href="widgets.php">' . __('Manage Widgets', 'twitter-widget-pro') . '</a>';
 			array_unshift( $links, $link );
 		}
 		return $links;
