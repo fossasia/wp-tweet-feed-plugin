@@ -358,7 +358,7 @@ replyTo;
 		$since = time() - $startTimestamp;
 
 		if ($max != '-1' && $since >= $max) {
-			return date_i18n('h:i:s A F d, Y', $startTimestamp);
+			return date_i18n(__('h:i:s A F d, Y', 'twitter-widget-pro'), $startTimestamp);
 		}
 
 		foreach ( $chunks as $key => $seconds ) {
