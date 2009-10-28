@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/twitter-widget-pro\n"
-"POT-Creation-Date: 2009-10-27 19:37+0000\n"
+"POT-Creation-Date: 2009-10-28 17:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -141,6 +141,10 @@ msgstr ""
 msgid "Could not connect to Twitter"
 msgstr ""
 
+#: wp-twitter-widget.php:361
+msgid "h:i:s A F d, Y"
+msgstr ""
+
 #: wp-twitter-widget.php:372
 #, php-format
 msgid "about %s year ago"
@@ -190,6 +194,6 @@ msgid_plural "about %s seconds ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:476
-msgid "Settings"
+#: wp-twitter-widget.php:465
+msgid "Manage Widgets"
 msgstr ""

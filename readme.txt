@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 2.0.4
+Stable tag: 2.0.5
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -49,6 +49,11 @@ No.  This error occurs because the plugin requires PHP 5 and you're running PHP 
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
 
 == Changelog ==
+
+= 2.0.5 =
+* Remove the settings link from the plugin line on the plugins page
+* Add a link to manage widgets to the plugin line on the plugins page
+* Make date string translatable
 
 = 2.0.4 =
 * Added twitterwidget-title and twitterwidget-rss classes to the title and rss links for separate styling
