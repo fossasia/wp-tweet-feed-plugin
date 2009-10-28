@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Twitter Widget Pro in italiano\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/twitter-widget-pro\n"
-"POT-Creation-Date: 2009-09-27 22:49+0000\n"
-"PO-Revision-Date: 2009-09-28 03:01+0100\n"
+"POT-Creation-Date: 2009-10-28 17:58+0000\n"
+"PO-Revision-Date: 2009-10-28 20:45+0100\n"
 "Last-Translator: Gianni Diurno (aka gidibao) <gidibao@gmail.com>\n"
 "Language-Team: Gianni Diurno | http://gidibao.net/ <gidibao@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,6 @@ msgid "Follow a Twitter Feed"
 msgstr "Segui un feed di Twitter"
 
 #: wp-twitter-widget.php:46
-#: wp-twitter-widget.php:449
 msgid "Twitter Widget Pro"
 msgstr "Twitter Widget Pro"
 
@@ -141,6 +140,10 @@ msgstr "Risposta da Twitter non valida."
 msgid "Could not connect to Twitter"
 msgstr "Non é stato possibile connettersi a Twitter"
 
+#: wp-twitter-widget.php:361
+msgid "h:i:s A F d, Y"
+msgstr "H:i:s F d Y"
+
 #: wp-twitter-widget.php:372
 #, php-format
 msgid "about %s year ago"
@@ -191,34 +194,32 @@ msgstr[0] "circa %s secondo fa"
 msgstr[1] "circa %s secondi fa"
 
 #: wp-twitter-widget.php:465
-msgid "Twitter Widget Pro Options"
-msgstr "Opzioni Twitter Widget Pro"
+msgid "Manage Widgets"
+msgstr "Gestione widget"
 
-#: wp-twitter-widget.php:471
-msgid "Click for Help!"
-msgstr "Supporto!"
-
-#: wp-twitter-widget.php:472
-msgid "System Information:"
-msgstr "Informazioni sul sistema:"
-
-#: wp-twitter-widget.php:477
-msgid "I agree to send anonymous system information"
-msgstr "Acconsento l'invio di informazioni anonime sul mio sistema"
-
-#: wp-twitter-widget.php:479
-msgid "You can help by sending anonymous system information that will help Xavisys make better decisions about new features."
-msgstr "L'invio di informazioni anonime sul sistema sarà di aiuto a Xavisys in modo tale che possa sviluppare al meglio il plugin."
-
-#: wp-twitter-widget.php:480
-msgid "The information will be sent anonymously, but a unique identifier will be sent to prevent duplicate entries from the same installation."
-msgstr "Le informazioni verrano inviate in forma anonima. Un identificatore unico sarà comunque inviato affinché non siano presi in considerazione i duplicati provenienti dalla stessa installazione."
-
-#: wp-twitter-widget.php:486
-msgid "Update Options &raquo;"
-msgstr "Aggiorna le opzioni &raquo;"
-
-#: wp-twitter-widget.php:579
-msgid "Settings"
-msgstr "Impostazioni"
+#~ msgid "Twitter Widget Pro Options"
+#~ msgstr "Opzioni Twitter Widget Pro"
+#~ msgid "Click for Help!"
+#~ msgstr "Supporto!"
+#~ msgid "System Information:"
+#~ msgstr "Informazioni sul sistema:"
+#~ msgid "I agree to send anonymous system information"
+#~ msgstr "Acconsento l'invio di informazioni anonime sul mio sistema"
+#~ msgid ""
+#~ "You can help by sending anonymous system information that will help "
+#~ "Xavisys make better decisions about new features."
+#~ msgstr ""
+#~ "L'invio di informazioni anonime sul sistema sarà di aiuto a Xavisys in "
+#~ "modo tale che possa sviluppare al meglio il plugin."
+#~ msgid ""
+#~ "The information will be sent anonymously, but a unique identifier will be "
+#~ "sent to prevent duplicate entries from the same installation."
+#~ msgstr ""
+#~ "Le informazioni verrano inviate in forma anonima. Un identificatore unico "
+#~ "sarà comunque inviato affinché non siano presi in considerazione i "
+#~ "duplicati provenienti dalla stessa installazione."
+#~ msgid "Update Options &raquo;"
+#~ msgstr "Aggiorna le opzioni &raquo;"
+#~ msgid "Settings"
+#~ msgstr "Impostazioni"
 
