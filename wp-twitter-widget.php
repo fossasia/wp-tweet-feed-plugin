@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Twitter Widget Pro
- * Plugin URI: http://xavisys.com/wordpress-twitter-widget/
+ * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
  * Version: 2.0.5
  * Author: Aaron D. Campbell
@@ -147,101 +147,273 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 
 	public function widget( $args, $instance ) {
 		$instance = $this->_getInstanceSettings( $instance );
+		$wpTwitterWidget = wpTwitterWidget::getInstance();
+		echo $wpTwitterWidget->display( wp_parse_args( $instance, $args ) );
+	}
+}
+
+
+/**
+ * wpTwitterWidget is the class that handles everything outside the widget. This
+ * includes filters that modify tweet content for things like linked usernames.
+ * It also helps us avoid name collisions.
+ */
+class wpTwitterWidget
+{
+	/**
+	 * Static property to hold our singleton instance
+	 */
+	static $instance = false;
+
+	/**
+	 * @var array Plugin settings
+	 */
+	private $_settings;
+
+	/**
+	 * Repository base url
+	 *
+	 * @since 1.4.4
+	 * @var string
+	 */
+	private $_reposUrl = 'http://plugins.svn.wordpress.org/';
+
+	/**
+	 * This is our constructor, which is private to force the use of getInstance()
+	 * @return void
+	 */
+	private function __construct() {
+		/**
+		 * Add filters and actions
+		 */
+		add_filter( 'init', array( $this, 'init_locale') );
+		add_action( 'widgets_init', array($this, 'register') );
+		add_filter( 'widget_twitter_content', array($this, 'linkTwitterUsers') );
+		add_filter( 'widget_twitter_content', array($this, 'linkUrls') );
+		add_filter( 'widget_twitter_content', array($this, 'linkHashtags') );
+		add_filter( 'widget_twitter_content', 'convert_chars' );
+		add_filter( 'plugin_action_links', array($this, 'addWidgetLink'), 10, 2 );
+		add_action ( 'in_plugin_update_message-'.plugin_basename ( __FILE__ ) , array ( $this , '_changelog' ), null, 2 );
+		add_shortcode( 'twitter-widget', array( $this, 'handleShortcodes' ) );
+	}
+
+	/**
+	 * Function to instantiate our class and make it a singleton
+	 */
+	public static function getInstance() {
+		if ( !self::$instance ) {
+			self::$instance = new self;
+		}
+		return self::$instance;
+	}
+
+	public function init_locale() {
+		$lang_dir = basename(dirname(__FILE__)) . '/languages';
+		load_plugin_textdomain('twitter-widget-pro', 'wp-content/plugins/' . $lang_dir, $lang_dir);
+	}
+
+	public function _changelog ($pluginData, $newPluginData) {
+		$url = "{$this->_reposUrl}/{$newPluginData->slug}/tags/{$newPluginData->new_version}/upgrade.html";
+		$response = wp_remote_get ( $url );
+		$code = (int) wp_remote_retrieve_response_code ( $response );
+		if ( $code == 200 ) {
+			echo wp_remote_retrieve_body ( $response );
+		}
+	}
+
+	/**
+	 * Returns the user's screen name as a link inside strong tags.
+	 *
+	 * @param object $user - Twitter user
+	 * @return string - Username as link (XHTML)
+	 */
+	private function _getUserName($user) {
+		return <<<profileImage
+	<strong>
+		<a title="{$user->name}" href="http://twitter.com/{$user->screen_name}">{$user->screen_name}</a>
+	</strong>
+profileImage;
+	}
+
+	public function addWidgetLink( $links, $file ){
+		if ( $file == plugin_basename(__FILE__) ) {
+			// Add settings link to our plugin
+			$link = '<a href="widgets.php">' . __('Manage Widgets', 'twitter-widget-pro') . '</a>';
+			array_unshift( $links, $link );
+		}
+		return $links;
+	}
+
+	/**
+	 * Replace @username with a link to that twitter user
+	 *
+	 * @param string $text - Tweet text
+	 * @return string - Tweet text with @replies linked
+	 */
+	public function linkTwitterUsers($text) {
+		$text = preg_replace('/(^|\s)@(\w*)/i', '$1<a href="http://twitter.com/$2" class="twitter-user">@$2</a>', $text);
+		return $text;
+	}
+
+	/**
+	 * Replace #hashtag with a link to search.twitter.com for that hashtag
+	 *
+	 * @param string $text - Tweet text
+	 * @return string - Tweet text with #hashtags linked
+	 */
+	public function linkHashtags($text) {
+		$text = preg_replace_callback('/(^|\s)(#\w*)/i', array($this, '_hashtagLink'), $text);
+		return $text;
+	}
+
+	/**
+	 * Replace #hashtag with a link to search.twitter.com for that hashtag
+	 *
+	 * @param array $matches - Tweet text
+	 * @return string - Tweet text with #hashtags linked
+	 */
+	private function _hashtagLink($matches) {
+		return "{$matches[1]}<a href='http://search.twitter.com/search?q="
+				. urlencode($matches[2])
+				. "' class='twitter-hashtag'>{$matches[2]}</a>";
+	}
+
+	/**
+	 * Turn URLs into links
+	 *
+	 * @param string $text - Tweet text
+	 * @return string - Tweet text with URLs repalced with links
+	 */
+	public function linkUrls($text) {
+		/**
+		 * match protocol://address/path/file.extension?some=variable&another=asf%
+		 * $1 is a possible space, this keeps us from linking href="[link]" etc
+		 * $2 is the whole URL
+		 * $3 is protocol://
+		 * $4 is the URL without the protocol://
+		 * $5 is the URL parameters
+		 */
+		$text = preg_replace("/(^|\s)(([a-zA-Z]+:\/\/)([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", "$1<a href=\"$2\">$2</a>", $text);
+
+		/**
+		 * match www.something.domain/path/file.extension?some=variable&another=asf%
+		 * $1 is a possible space, this keeps us from linking href="[link]" etc
+		 * $2 is the whole URL that was matched.  The protocol is missing, so we assume http://
+		 * $3 is www.
+		 * $4 is the URL matched without the www.
+		 * $5 is the URL parameters
+		 */
+		$text = preg_replace("/(^|\s)(www\.([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", "$1<a href=\"http://$2\">$2</a>", $text);
+
+		return $text;
+	}
+
+	function register() {
+		register_widget('WP_Widget_Twitter_Pro');
+	}
+
+	public function display( $args ) {
+		$args = wp_parse_args( $args );
 
 		// Validate our options
-		$instance['items'] = (int) $instance['items'];
-		if ( $instance['items'] < 1 || 20 < $instance['items'] ) {
-			$instance['items'] = 10;
+		$args['items'] = (int) $args['items'];
+		if ( $args['items'] < 1 || 20 < $args['items'] ) {
+			$args['items'] = 10;
 		}
-		if (!isset($instance['showts'])) {
-			$instance['showts'] = 86400;
+		if (!isset($args['showts'])) {
+			$args['showts'] = 86400;
 		}
 
 		try {
-			$tweets = $this->_getTweets($instance);
+			$tweets = $this->_getTweets($args);
 		} catch (wpTwitterWidgetException $e) {
 			$tweets = $e;
 		}
 
-		echo $args['before_widget'] . '<div>';
+		$widgetContent = $args['before_widget'] . '<div>';
 
 		// If "hide rss" hasn't been checked, show the linked icon
-		if ( $instance['hiderss'] != 'true' ) {
+		if ( $args['hiderss'] != 'true' ) {
 			if ( file_exists(dirname(__FILE__) . '/rss.png') ) {
 				$icon = str_replace(ABSPATH, get_option('siteurl').'/', dirname(__FILE__)) . '/rss.png';
 			} else {
 				$icon = get_option('siteurl').'/wp-includes/images/rss.png';
 			}
-			$feedUrl = $this->_getFeedUrl($instance, 'rss', false);
+			$feedUrl = $this->_getFeedUrl($args, 'rss', false);
 			$args['before_title'] .= "<a class='twitterwidget twitterwidget-rss' href='{$feedUrl}' title='" . attribute_escape(__('Syndicate this content', 'twitter-widget-pro')) ."'><img style='background:orange;color:white;border:none;' width='14' height='14' src='{$icon}' alt='RSS' /></a> ";
 		}
-		$twitterLink = 'http://twitter.com/' . $instance['username'];
-		$args['before_title'] .= "<a class='twitterwidget twitterwidget-title' href='{$twitterLink}' title='" . attribute_escape("Twitter: {$instance['username']}") . "'>";
+		$twitterLink = 'http://twitter.com/' . $args['username'];
+		$args['before_title'] .= "<a class='twitterwidget twitterwidget-title' href='{$twitterLink}' title='" . attribute_escape("Twitter: {$args['username']}") . "'>";
 		$args['after_title'] = '</a>' . $args['after_title'];
-		if (empty($instance['title'])) {
-			$instance['title'] = "Twitter: {$instance['username']}";
+		if (empty($args['title'])) {
+			$args['title'] = "Twitter: {$args['username']}";
 		}
-		echo $args['before_title'] . $instance['title'] . $args['after_title'];
-		if (!is_a($tweets, 'wpTwitterWidgetException') && !empty($tweets[0]) && $instance['avatar'] == 'true') {
-			echo '<div class="twitter-avatar">';
-			echo $this->_getProfileImage($tweets[0]->user);
-			echo '</div>';
+		$widgetContent .= $args['before_title'] . $args['title'] . $args['after_title'];
+		if (!is_a($tweets, 'wpTwitterWidgetException') && !empty($tweets[0]) && $args['avatar'] == 'true') {
+			$widgetContent .= '<div class="twitter-avatar">';
+			$widgetContent .= $this->_getProfileImage($tweets[0]->user);
+			$widgetContent .= '</div>';
 		}
-		echo '<ul>';
+		$widgetContent .= '<ul>';
 		if (is_a($tweets, 'wpTwitterWidgetException')) {
-			echo '<li class="wpTwitterWidgetError">' . $tweets->getMessage() . '</li>';
+			$widgetContent .= '<li class="wpTwitterWidgetError">' . $tweets->getMessage() . '</li>';
 		} else if (count($tweets) == 0) {
-			echo '<li class="wpTwitterWidgetEmpty">' . __('No Tweets Available', 'twitter-widget-pro') . '</li>';
+			$widgetContent .= '<li class="wpTwitterWidgetEmpty">' . __('No Tweets Available', 'twitter-widget-pro') . '</li>';
 		} else {
 			$count = 0;
 			foreach ($tweets as $tweet) {
-				if ( $instance['hidereplies'] != 'true' || empty($tweet->in_reply_to_user_id)) {
+				if ( $args['hidereplies'] != 'true' || empty($tweet->in_reply_to_user_id)) {
 					// Set our "ago" string which converts the date to "# ___(s) ago"
-					$tweet->ago = $this->_timeSince(strtotime($tweet->created_at), $instance['showts']);
-?>
+					$tweet->ago = $this->_timeSince(strtotime($tweet->created_at), $args['showts']);
+					$entryContent = apply_filters( 'widget_twitter_content', $tweet->text );
+					$from = sprintf(__('from %s', 'twitter-widget-pro'), str_replace('&', '&amp;', $tweet->source));
+					$widgetContent .= <<<WIDGET_START
 				<li>
-					<span class="entry-content"><?php echo apply_filters( 'widget_twitter_content', $tweet->text ); ?></span>
+					<span class="entry-content">{$entryContent}</span>
 					<span class="entry-meta">
 						<span class="time-meta">
-							<a href="http://twitter.com/<?php echo $tweet->user->screen_name; ?>/statuses/<?php echo $tweet->id; ?>">
-								<?php echo $tweet->ago; ?>
+							<a href="http://twitter.com/{$tweet->user->screen_name}/statuses/{$tweet->id}">
+								{$tweet->ago}
 							</a>
 						</span>
 						<span class="from-meta">
-							<?php echo sprintf(__('from %s', 'twitter-widget-pro'), str_replace('&', '&amp;', $tweet->source)); ?>
+							{$from}
 						</span>
-						<?php
+WIDGET_START;
 						if (!empty($tweet->in_reply_to_screen_name)) {
 							$rtLinkText = sprintf( __('in reply to %s', 'twitter-widget-pro'), $tweet->in_reply_to_screen_name );
-							echo <<<replyTo
+							$widgetContent .=  <<<replyTo
 							<span class="in-reply-to-meta">
 								<a href="http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}" class="reply-to">
 									{$rtLinkText}
 								</a>
 							</span>
 replyTo;
-						} ?>
-
+						}
+					$widgetContent .= <<<WIDGET_ENTRY_END
 					</span>
 				</li>
-<?php
-					if (++$count >= $instance['items']) {
+WIDGET_ENTRY_END;
+
+					if (++$count >= $args['items']) {
 						break;
 					}
 				}
 			}
 		}
 
-		if ( $instance['showXavisysLink'] == 'true' ) {
-?>
+		if ( $args['showXavisysLink'] == 'true' ) {
+			$xavisysLink = sprintf(__('Powered by <a href="%s" title="Get Twitter Widget for your WordPress site">WordPress Twitter Widget Pro</a>', 'twitter-widget-pro'), 'http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/' );
+			$widgetContent .= <<<XAVISYS_LINK
 				<li class="xavisys-link">
 					<span class="xavisys-link-text">
-						<?php echo sprintf(__('Powered by <a href="%s" title="Get Twitter Widget for your WordPress site">WordPress Twitter Widget Pro</a>', 'twitter-widget-pro'), 'http://xavisys.com/2008/04/wordpress-twitter-widget/' );?>
+						{$xavisysLink}
 					</span>
 				</li>
-<?php
+XAVISYS_LINK;
 		}
-		echo '</ul></div>' . $args['after_widget'];
+		$widgetContent .= '</ul></div>' . $args['after_widget'];
+		return $widgetContent;
 	}
 
 	/**
@@ -394,147 +566,53 @@ replyTo;
 	</a>
 profileImage;
 	}
-}
 
-
-/**
- * wpTwitterWidget is the class that handles everything outside the widget. This
- * includes filters that modify tweet content for things like linked usernames.
- * It also helps us avoid name collisions.
- */
-class wpTwitterWidget
-{
-	/**
-	 * @var array Plugin settings
-	 */
-	private $_settings;
-
-	/**
-	 * Repository base url
+    /**
+	 * Replace our shortCode with the "widget"
 	 *
-	 * @since 1.4.4
-	 * @var string
+	 * @param array $attr - array of attributes from the shortCode
+	 * @param string $content - Content of the shortCode
+	 * @return string - formatted XHTML replacement for the shortCode
 	 */
-	private $_reposUrl = 'http://plugins.svn.wordpress.org/';
-
-	public function __construct() {
-		/**
-		 * Add filters and actions
-		 */
-		add_filter( 'init', array( $this, 'init_locale') );
-		add_action( 'widgets_init', array($this, 'register') );
-		add_filter( 'widget_twitter_content', array($this, 'linkTwitterUsers') );
-		add_filter( 'widget_twitter_content', array($this, 'linkUrls') );
-		add_filter( 'widget_twitter_content', array($this, 'linkHashtags') );
-		add_filter( 'widget_twitter_content', 'convert_chars' );
-		add_filter( 'plugin_action_links', array($this, 'addWidgetLink'), 10, 2 );
-		add_action ( 'in_plugin_update_message-'.plugin_basename ( __FILE__ ) , array ( $this , '_changelog' ), null, 2 );
-	}
-
-	public function init_locale() {
-		$lang_dir = basename(dirname(__FILE__)) . '/languages';
-		load_plugin_textdomain('twitter-widget-pro', 'wp-content/plugins/' . $lang_dir, $lang_dir);
-	}
-
-	public function _changelog ($pluginData, $newPluginData) {
-		$url = "{$this->_reposUrl}/{$newPluginData->slug}/tags/{$newPluginData->new_version}/upgrade.html";
-		$response = wp_remote_get ( $url );
-		$code = (int) wp_remote_retrieve_response_code ( $response );
-		if ( $code == 200 ) {
-			echo wp_remote_retrieve_body ( $response );
+    public function handleShortcodes($attr, $content = '') {
+		$defaults = array(
+			'before_widget'		=> '',
+			'after_widget'		=> '',
+			'before_title'		=> '<h2>',
+			'after_title'		=> '</h2>',
+			'title'				=> '',
+			'errmsg'			=> '',
+			'fetchTimeOut'		=> '2',
+			'username'			=> '',
+			'hiderss'			=> false,
+			'hidereplies'		=> false,
+			'avatar'			=> false,
+			'showXavisysLink'	=> false,
+			'items'				=> 10,
+			'showts'			=> 60 * 60 * 24,
+		);
+		if ( !empty($content) && empty($attr['title']) ) {
+			$attr['title'] = $content;
 		}
-	}
 
-	/**
-	 * Returns the user's screen name as a link inside strong tags.
-	 *
-	 * @param object $user - Twitter user
-	 * @return string - Username as link (XHTML)
-	 */
-	private function _getUserName($user) {
-		return <<<profileImage
-	<strong>
-		<a title="{$user->name}" href="http://twitter.com/{$user->screen_name}">{$user->screen_name}</a>
-	</strong>
-profileImage;
-	}
+        $attr = shortcode_atts($defaults, $attr);
 
-	public function addWidgetLink( $links, $file ){
-		if ( $file == plugin_basename(__FILE__) ) {
-			// Add settings link to our plugin
-			$link = '<a href="widgets.php">' . __('Manage Widgets', 'twitter-widget-pro') . '</a>';
-			array_unshift( $links, $link );
+		if ( $attr['hiderss'] && $attr['hiderss'] != 'false' && $attr['hiderss'] != '0' ) {
+			$attr['hiderss'] == true;
 		}
-		return $links;
+		if ( $attr['hidereplies'] && $attr['hidereplies'] != 'false' && $attr['hidereplies'] != '0' ) {
+			$attr['hidereplies'] == true;
+		}
+		if ( $attr['avatar'] && $attr['avatar'] != 'false' && $attr['avatar'] != '0' ) {
+			$attr['avatar'] == true;
+		}
+		if ( $attr['showXavisysLink'] && $attr['showXavisysLink'] != 'false' && $attr['showXavisysLink'] != '0' ) {
+			$attr['showXavisysLink'] == true;
+		}
+
+		return $this->display($attr);
 	}
 
-	/**
-	 * Replace @username with a link to that twitter user
-	 *
-	 * @param string $text - Tweet text
-	 * @return string - Tweet text with @replies linked
-	 */
-	public function linkTwitterUsers($text) {
-		$text = preg_replace('/(^|\s)@(\w*)/i', '$1<a href="http://twitter.com/$2" class="twitter-user">@$2</a>', $text);
-		return $text;
-	}
-
-	/**
-	 * Replace #hashtag with a link to search.twitter.com for that hashtag
-	 *
-	 * @param string $text - Tweet text
-	 * @return string - Tweet text with #hashtags linked
-	 */
-	public function linkHashtags($text) {
-		$text = preg_replace_callback('/(^|\s)(#\w*)/i', array($this, '_hashtagLink'), $text);
-		return $text;
-	}
-
-	/**
-	 * Replace #hashtag with a link to search.twitter.com for that hashtag
-	 *
-	 * @param array $matches - Tweet text
-	 * @return string - Tweet text with #hashtags linked
-	 */
-	private function _hashtagLink($matches) {
-		return "{$matches[1]}<a href='http://search.twitter.com/search?q="
-				. urlencode($matches[2])
-				. "' class='twitter-hashtag'>{$matches[2]}</a>";
-	}
-
-	/**
-	 * Turn URLs into links
-	 *
-	 * @param string $text - Tweet text
-	 * @return string - Tweet text with URLs repalced with links
-	 */
-	public function linkUrls($text) {
-		/**
-		 * match protocol://address/path/file.extension?some=variable&another=asf%
-		 * $1 is a possible space, this keeps us from linking href="[link]" etc
-		 * $2 is the whole URL
-		 * $3 is protocol://
-		 * $4 is the URL without the protocol://
-		 * $5 is the URL parameters
-		 */
-		$text = preg_replace("/(^|\s)(([a-zA-Z]+:\/\/)([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", "$1<a href=\"$2\">$2</a>", $text);
-
-		/**
-		 * match www.something.domain/path/file.extension?some=variable&another=asf%
-		 * $1 is a possible space, this keeps us from linking href="[link]" etc
-		 * $2 is the whole URL that was matched.  The protocol is missing, so we assume http://
-		 * $3 is www.
-		 * $4 is the URL matched without the www.
-		 * $5 is the URL parameters
-		 */
-		$text = preg_replace("/(^|\s)(www\.([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", "$1<a href=\"http://$2\">$2</a>", $text);
-
-		return $text;
-	}
-
-	function register() {
-		register_widget('WP_Widget_Twitter_Pro');
-	}
 }
 // Instantiate our class
-$wpTwitterWidget = new wpTwitterWidget();
+$wpTwitterWidget = wpTwitterWidget::getInstance();
