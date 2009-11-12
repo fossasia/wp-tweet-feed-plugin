@@ -45,6 +45,7 @@ page.  The simplest form of this would be `[twitter-widget username="yourTwitter
 = How exactly do you use the twitter-widget shortcode? =
 The simplest form of this would be `[twitter-widget username="yourTwitterUsername"]`
 However, there are more things you can control.
+
 * before_widget - This is inserted before the widget.
 * after_widget - This is inserted after the widget, and is often used to close tags opened in before_widget
 * before_title - This is inserted before the title and defults to <h2>
@@ -59,6 +60,7 @@ However, there are more things you can control.
 * title - The title of the widget (defaults 'Twitter: Username')
 
 You can see these put into action by trying something like:
+
 * `[twitter-widget username="wpinformer" before_widget="<div class='half-box'>" after_widget="</div>" before_title="<h1>" after_title="</h1>" errmsg="Uh oh!" hiderss="true" hidereplies="true" avatar="1" showXavisysLink="1" items="3" showts="60"]Your Title[/twitter-widget]`
 * `[twitter-widget username="wpinformer" before_widget="<div class='half-box'>" after_widget="</div>" before_title="<h1>" after_title="</h1>" errmsg="Uh oh!" hiderss="true" hidereplies="true" avatar="1" showXavisysLink="1" items="3" showts="60" title="Your Title"]`
 * `[twitter-widget username="wpinformer"]`
