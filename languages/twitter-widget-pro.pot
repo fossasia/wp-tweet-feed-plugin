@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/twitter-widget-pro\n"
-"POT-Creation-Date: 2009-10-28 17:58+0000\n"
+"POT-Creation-Date: 2009-11-11 22:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,92 +108,92 @@ msgstr ""
 msgid "Show Link to Twitter Widget Pro"
 msgstr ""
 
-#: wp-twitter-widget.php:176
+#: wp-twitter-widget.php:241
+msgid "Manage Widgets"
+msgstr ""
+
+#: wp-twitter-widget.php:343
 msgid "Syndicate this content"
 msgstr ""
 
-#: wp-twitter-widget.php:194
+#: wp-twitter-widget.php:361
 msgid "No Tweets Available"
 msgstr ""
 
-#: wp-twitter-widget.php:211
+#: wp-twitter-widget.php:369
 #, php-format
 msgid "from %s"
 msgstr ""
 
-#: wp-twitter-widget.php:215
+#: wp-twitter-widget.php:384
 #, php-format
 msgid "in reply to %s"
 msgstr ""
 
-#: wp-twitter-widget.php:239
+#: wp-twitter-widget.php:406
 #, php-format
 msgid ""
 "Powered by <a href=\"%s\" title=\"Get Twitter Widget for your WordPress site"
 "\">WordPress Twitter Widget Pro</a>"
 msgstr ""
 
-#: wp-twitter-widget.php:295
+#: wp-twitter-widget.php:467
 msgid "Invalid Twitter Response."
 msgstr ""
 
-#: wp-twitter-widget.php:309
+#: wp-twitter-widget.php:481
 msgid "Could not connect to Twitter"
 msgstr ""
 
-#: wp-twitter-widget.php:361
+#: wp-twitter-widget.php:533
 msgid "h:i:s A F d, Y"
 msgstr ""
 
-#: wp-twitter-widget.php:372
+#: wp-twitter-widget.php:544
 #, php-format
 msgid "about %s year ago"
 msgid_plural "about %s years ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:373
+#: wp-twitter-widget.php:545
 #, php-format
 msgid "about %s month ago"
 msgid_plural "about %s months ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:374
+#: wp-twitter-widget.php:546
 #, php-format
 msgid "about %s week ago"
 msgid_plural "about %s weeks ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:375
+#: wp-twitter-widget.php:547
 #, php-format
 msgid "about %s day ago"
 msgid_plural "about %s days ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:376
+#: wp-twitter-widget.php:548
 #, php-format
 msgid "about %s hour ago"
 msgid_plural "about %s hours ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:377
+#: wp-twitter-widget.php:549
 #, php-format
 msgid "about %s minute ago"
 msgid_plural "about %s minutes ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:378
+#: wp-twitter-widget.php:550
 #, php-format
 msgid "about %s second ago"
 msgid_plural "about %s seconds ago"
 msgstr[0] ""
 msgstr[1] ""
-
-#: wp-twitter-widget.php:465
-msgid "Manage Widgets"
-msgstr ""

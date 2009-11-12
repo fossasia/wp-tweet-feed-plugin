@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.0.5
+ * Version: 2.1.0
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -171,14 +171,6 @@ class wpTwitterWidget
 	private $_settings;
 
 	/**
-	 * Repository base url
-	 *
-	 * @since 1.4.4
-	 * @var string
-	 */
-	private $_reposUrl = 'http://plugins.svn.wordpress.org/';
-
-	/**
 	 * This is our constructor, which is private to force the use of getInstance()
 	 * @return void
 	 */
@@ -213,12 +205,23 @@ class wpTwitterWidget
 	}
 
 	public function _changelog ($pluginData, $newPluginData) {
-		$url = "{$this->_reposUrl}/{$newPluginData->slug}/tags/{$newPluginData->new_version}/upgrade.html";
-		$response = wp_remote_get ( $url );
-		$code = (int) wp_remote_retrieve_response_code ( $response );
-		if ( $code == 200 ) {
-			echo wp_remote_retrieve_body ( $response );
+		require_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
+
+		$plugin = plugins_api( 'plugin_information', array( 'slug' => $newPluginData->slug ) );
+
+		if ( !$plugin || is_wp_error( $plugin ) || empty( $plugin->sections['changelog'] ) ) {
+			return;
 		}
+
+		$changes = $plugin->sections['changelog'];
+
+		$pos = strpos( $changes, '<h4>' . $pluginData['Version'] );
+		$changes = trim( substr( $changes, 0, $pos ) );
+		$replace = array(
+			'<ul>'	=> '<ul style="list-style: disc inside; padding-left: 15px; font-weight: normal;">',
+			'<h4>'	=> '<h4 style="margin-bottom:0;">',
+		);
+		echo str_replace( array_keys($replace), $replace, $changes );
 	}
 
 	/**
