@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.1.0
+ * Version: 2.1.0-dev
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -57,6 +57,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 								'hidereplies'		=> false,
 								'avatar'			=> false,
 								'showXavisysLink'	=> false,
+								'targetBlank'		=> false,
 								'items'				=> 10,
 								'showts'			=> 60 * 60 * 24,
 		);
@@ -112,6 +113,10 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('hiderss'); ?>" name="<?php echo $this->get_field_name('hiderss'); ?>"<?php checked($instance['hiderss'], 'true'); ?> />
 				<label for="<?php echo $this->get_field_id('hiderss'); ?>"><?php _e('Hide RSS Icon and Link', 'twitter-widget-pro'); ?></label>
+			</p>
+			<p>
+				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('targetBlank'); ?>" name="<?php echo $this->get_field_name('targetBlank'); ?>"<?php checked($instance['targetBlank'], 'true'); ?> />
+				<label for="<?php echo $this->get_field_id('targetBlank'); ?>"><?php _e('Open links in a new window', 'twitter-widget-pro'); ?></label>
 			</p>
 			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('avatar'); ?>" name="<?php echo $this->get_field_name('avatar'); ?>"<?php checked($instance['avatar'], 'true'); ?> />
@@ -231,11 +236,11 @@ class wpTwitterWidget
 	 * @return string - Username as link (XHTML)
 	 */
 	private function _getUserName($user) {
-		return <<<profileImage
-	<strong>
-		<a title="{$user->name}" href="http://twitter.com/{$user->screen_name}">{$user->screen_name}</a>
-	</strong>
-profileImage;
+		$attrs = array(
+			'href'	=> "http://twitter.com/{$user->screen_name}",
+			'title'	=> $user->name
+		);
+		return '<strong>' . $this->_buildLink($user->screen_name, $attrs) . '</strong>';
 	}
 
 	public function addWidgetLink( $links, $file ){
@@ -254,8 +259,16 @@ profileImage;
 	 * @return string - Tweet text with @replies linked
 	 */
 	public function linkTwitterUsers($text) {
-		$text = preg_replace('/(^|\s)@(\w*)/i', '$1<a href="http://twitter.com/$2" class="twitter-user">@$2</a>', $text);
+		$text = preg_replace_callback('/(^|\s)@(\w*)/i', array($this, '_linkTwitterUsersCallback'), $text);
 		return $text;
+	}
+
+	private function _linkTwitterUsersCallback($matches) {
+		$linkAttrs = array(
+			'href'	=> 'http://twitter.com/' . urlencode($matches[2]),
+			'class'	=> 'twitter-user'
+		);
+		return $matches[1] . $this->_buildLink('@'.$matches[2], $linkAttrs);
 	}
 
 	/**
@@ -276,9 +289,11 @@ profileImage;
 	 * @return string - Tweet text with #hashtags linked
 	 */
 	private function _hashtagLink($matches) {
-		return "{$matches[1]}<a href='http://search.twitter.com/search?q="
-				. urlencode($matches[2])
-				. "' class='twitter-hashtag'>{$matches[2]}</a>";
+		$linkAttrs = array(
+			'href'	=> 'http://search.twitter.com/search?q=' . urlencode($matches[2]),
+			'class'	=> 'twitter-hashtag'
+		);
+		return $matches[1] . $this->_buildLink($matches[2], $linkAttrs);
 	}
 
 	/**
@@ -296,7 +311,7 @@ profileImage;
 		 * $4 is the URL without the protocol://
 		 * $5 is the URL parameters
 		 */
-		$text = preg_replace("/(^|\s)(([a-zA-Z]+:\/\/)([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", "$1<a href=\"$2\">$2</a>", $text);
+		$text = preg_replace_callback("/(^|\s)(([a-zA-Z]+:\/\/)([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", array($this, '_linkUrlsCallback'), $text);
 
 		/**
 		 * match www.something.domain/path/file.extension?some=variable&another=asf%
@@ -306,17 +321,56 @@ profileImage;
 		 * $4 is the URL matched without the www.
 		 * $5 is the URL parameters
 		 */
-		$text = preg_replace("/(^|\s)(www\.([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", "$1<a href=\"http://$2\">$2</a>", $text);
+		$text = preg_replace_callback("/(^|\s)(www\.([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", array($this, '_linkUrlsCallback'), $text);
 
 		return $text;
 	}
 
-	function register() {
+	private function _linkUrlsCallback ($matches) {
+		$linkAttrs = array(
+			'href'	=> $matches[2]
+		);
+		return $matches[1] . $this->_buildLink($matches[2], $linkAttrs);
+	}
+
+	private function _notEmpty( $v ) {
+		return !(empty($v));
+	}
+
+	private function _buildLink( $text, $attributes = array(), $noFilter = false ) {
+		$attributes = array_filter( wp_parse_args( $attributes ), array($this, '_notEmpty' ) );
+		$attributes = apply_filters( 'widget_twitter_link_attributes', $attributes );
+		$attributes = wp_parse_args( $attributes );
+		$text = apply_filters( 'widget_twitter_link_text', $text );
+		$link = '<a';
+		foreach ( $attributes as $name => $value ) {
+			$link .= ' ' . esc_attr($name) . '="' . esc_attr($value) . '"';
+		}
+		$link .= '>';
+		if ( $no_filter ) {
+			$link .= esc_html($text);
+		} else {
+			$link .= $text;
+		}
+		$link .= '</a>';
+		return $link;
+	}
+
+	public function register() {
 		register_widget('WP_Widget_Twitter_Pro');
+	}
+
+	public function targetBlank($attributes) {
+		$attributes['target'] = '_blank';
+		return $attributes;
 	}
 
 	public function display( $args ) {
 		$args = wp_parse_args( $args );
+
+		if ( $args['targetBlank'] ) {
+			add_filter('widget_twitter_link_attributes', array($this, 'targetBlank'));
+		}
 
 		// Validate our options
 		$args['items'] = (int) $args['items'];
@@ -343,14 +397,26 @@ profileImage;
 				$icon = get_option('siteurl').'/wp-includes/images/rss.png';
 			}
 			$feedUrl = $this->_getFeedUrl($args, 'rss', false);
-			$args['before_title'] .= "<a class='twitterwidget twitterwidget-rss' href='{$feedUrl}' title='" . attribute_escape(__('Syndicate this content', 'twitter-widget-pro')) ."'><img style='background:orange;color:white;border:none;' width='14' height='14' src='{$icon}' alt='RSS' /></a> ";
+			$linkAttrs = array(
+				'class'	=> 'twitterwidget twitterwidget-rss',
+				'title'	=> __('Syndicate this content', 'twitter-widget-pro'),
+				'href'	=> $feedUrl
+			);
+
+			$args['before_title'] .= $this->_buildLink("<img style='background:orange;color:white;border:none;' width='14' height='14' src='{$icon}' alt='RSS' />", $linkAttrs, true);
 		}
 		$twitterLink = 'http://twitter.com/' . $args['username'];
-		$args['before_title'] .= "<a class='twitterwidget twitterwidget-title' href='{$twitterLink}' title='" . attribute_escape("Twitter: {$args['username']}") . "'>";
+
 		$args['after_title'] = '</a>' . $args['after_title'];
 		if (empty($args['title'])) {
 			$args['title'] = "Twitter: {$args['username']}";
 		}
+		$linkAttrs = array(
+			'class'	=> 'twitterwidget twitterwidget-title',
+			'title'	=> "Twitter: {$args['username']}",
+			'href'	=> $twitterLink
+		);
+		$args['title'] = $this->_buildLink($args['title'], $linkAttrs, current_user_can('unfiltered_html'));
 		$widgetContent .= $args['before_title'] . $args['title'] . $args['after_title'];
 		if (!is_a($tweets, 'wpTwitterWidgetException') && !empty($tweets[0]) && $args['avatar'] == 'true') {
 			$widgetContent .= '<div class="twitter-avatar">';
@@ -370,33 +436,27 @@ profileImage;
 					$tweet->ago = $this->_timeSince(strtotime($tweet->created_at), $args['showts']);
 					$entryContent = apply_filters( 'widget_twitter_content', $tweet->text );
 					$from = sprintf(__('from %s', 'twitter-widget-pro'), str_replace('&', '&amp;', $tweet->source));
-					$widgetContent .= <<<WIDGET_START
-				<li>
-					<span class="entry-content">{$entryContent}</span>
-					<span class="entry-meta">
-						<span class="time-meta">
-							<a href="http://twitter.com/{$tweet->user->screen_name}/statuses/{$tweet->id}">
-								{$tweet->ago}
-							</a>
-						</span>
-						<span class="from-meta">
-							{$from}
-						</span>
-WIDGET_START;
-						if (!empty($tweet->in_reply_to_screen_name)) {
-							$rtLinkText = sprintf( __('in reply to %s', 'twitter-widget-pro'), $tweet->in_reply_to_screen_name );
-							$widgetContent .=  <<<replyTo
-							<span class="in-reply-to-meta">
-								<a href="http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}" class="reply-to">
-									{$rtLinkText}
-								</a>
-							</span>
-replyTo;
-						}
-					$widgetContent .= <<<WIDGET_ENTRY_END
-					</span>
-				</li>
-WIDGET_ENTRY_END;
+					$widgetContent .= '<li>';
+					$widgetContent .= "<span class='entry-content'>{$entryContent}</span>";
+					$widgetContent .= "<span class='entry-meta'>";
+					$widgetContent .= "<span class='time-meta'>";
+					$linkAttrs = array(
+						'href'	=> "http://twitter.com/{$tweet->user->screen_name}/statuses/{$tweet->id}"
+					);
+					$widgetContent .= $this->_buildLink($tweet->ago, $linkAttrs);
+					$widgetContent .= '</span>';
+					$widgetContent .= "<span class='from-meta'>{$from}</span>";
+					if ( !empty($tweet->in_reply_to_screen_name) ) {
+						$rtLinkText = sprintf( __('in reply to %s', 'twitter-widget-pro'), $tweet->in_reply_to_screen_name );
+						$widgetContent .=  '<span class="in-reply-to-meta">';
+						$linkAttrs = array(
+							'href'	=> "http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}",
+							'class'	=> 'reply-to'
+						);
+						$widgetContent .= $this->_buildLink($rtLinkText, $linkAttrs);
+						$widgetContent .= '</span>';
+					}
+					$widgetContent .= '</span></li>';
 
 					if (++$count >= $args['items']) {
 						break;
@@ -406,14 +466,14 @@ WIDGET_ENTRY_END;
 		}
 
 		if ( $args['showXavisysLink'] == 'true' ) {
-			$xavisysLink = sprintf(__('Powered by <a href="%s" title="Get Twitter Widget for your WordPress site">WordPress Twitter Widget Pro</a>', 'twitter-widget-pro'), 'http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/' );
-			$widgetContent .= <<<XAVISYS_LINK
-				<li class="xavisys-link">
-					<span class="xavisys-link-text">
-						{$xavisysLink}
-					</span>
-				</li>
-XAVISYS_LINK;
+			$widgetContent .= '<li class="xavisys-link"><span class="xavisys-link-text">';
+			$linkAttrs = array(
+				'href'	=> 'http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/',
+				'title'	=> __('Get Twitter Widget for your WordPress site', 'twitter-widget-pro')
+			);
+			$widgetContent .= __('Powered by', 'twitter-widget-pro');
+			$widgetContent .= $this->_buildLink('WordPress Twitter Widget Pro', $linkAttrs);
+			$widgetContent .= '</span></li>';
 		}
 		$widgetContent .= '</ul></div>' . $args['after_widget'];
 		return $widgetContent;
@@ -563,11 +623,11 @@ XAVISYS_LINK;
 	 * @return string - Linked image (XHTML)
 	 */
 	private function _getProfileImage($user) {
-		return <<<profileImage
-	<a title="{$user->name}" href="http://twitter.com/{$user->screen_name}">
-		<img alt="{$user->name}" src="{$user->profile_image_url}" />
-	</a>
-profileImage;
+		$linkAttrs = array(
+			'href'	=> "http://twitter.com/{$user->screen_name}",
+			'title'	=> $user->name
+		);
+		return $this->_buildLink("<img alt='{$user->name}' src='{$user->profile_image_url}' />", $linkAttrs, true);
 	}
 
     /**
@@ -591,6 +651,7 @@ profileImage;
 			'hidereplies'		=> false,
 			'avatar'			=> false,
 			'showXavisysLink'	=> false,
+			'targetBlank'		=> false,
 			'items'				=> 10,
 			'showts'			=> 60 * 60 * 24,
 		);
@@ -611,6 +672,9 @@ profileImage;
 		}
 		if ( $attr['showXavisysLink'] && $attr['showXavisysLink'] != 'false' && $attr['showXavisysLink'] != '0' ) {
 			$attr['showXavisysLink'] == true;
+		}
+		if ( $attr['targetBlank'] && $attr['targetBlank'] != 'false' && $attr['targetBlank'] != '0' ) {
+			$attr['targetBlank'] == true;
 		}
 
 		return $this->display($attr);
