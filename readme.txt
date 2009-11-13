@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -15,13 +15,12 @@ link parsing.  It supports displaying profiles images, and even lets you control
 whether to display the time and date of a tweet or how log ago it happened
 (about 5 hours ago, etc).  Requires PHP5.
 
-You may also be interested in WordPress tips and tricks at <a href="http://wpinformer.com">WordPress Informer</a> or gerneral <a href="http://webdevnews.net">Web Developer News</a>
-
 == Installation ==
 
 1. Verify that you have PHP5, which is required for this plugin.
 1. Upload the whole `twitter-widget-pro` directory to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
+1. In WordPress admin go to 'Appearance' -> 'Widgets' and add "Twitter Widget Pro" to one of your widget-ready areas of your site
 
 == Frequently Asked Questions ==
 
@@ -54,6 +53,7 @@ However, there are more things you can control.
 * hiderss - set to true to hide the RSS icon (defaults to false)
 * hidereplies - set to true to hide @replies that are sent from the account (defaults to false)
 * avatar - set to true to display the avatar from the Twitter account (defaults to false)
+* targetBlank - set to true to have all links open in a new window (defaults to false)
 * showXavisysLink - set to true to display a link to the Twitter Widget Pro page.  We greatly appreciate your support in linking to this page so others can find this useful plugin too!  (defaults to false)
 * items - The number of items to display (defaults to 10)
 * showts - Number of seconds old a tweet has to be to show ___ ago rather than a date/time (defaults to 86400 seconds which is 24 hours)
@@ -61,8 +61,8 @@ However, there are more things you can control.
 
 You can see these put into action by trying something like:
 
-* `[twitter-widget username="wpinformer" before_widget="<div class='half-box'>" after_widget="</div>" before_title="<h1>" after_title="</h1>" errmsg="Uh oh!" hiderss="true" hidereplies="true" avatar="1" showXavisysLink="1" items="3" showts="60"]Your Title[/twitter-widget]`
-* `[twitter-widget username="wpinformer" before_widget="<div class='half-box'>" after_widget="</div>" before_title="<h1>" after_title="</h1>" errmsg="Uh oh!" hiderss="true" hidereplies="true" avatar="1" showXavisysLink="1" items="3" showts="60" title="Your Title"]`
+* `[twitter-widget username="wpinformer" before_widget="<div class='half-box'>" after_widget="</div>" before_title="<h1>" after_title="</h1>" errmsg="Uh oh!" hiderss="true" hidereplies="true" targetBlank="true" avatar="1" showXavisysLink="1" items="3" showts="60"]Your Title[/twitter-widget]`
+* `[twitter-widget username="wpinformer" before_widget="<div class='half-box'>" after_widget="</div>" before_title="<h1>" after_title="</h1>" errmsg="Uh oh!" hiderss="true" hidereplies="true" targetBlank="true" avatar="1" showXavisysLink="1" items="3" showts="60" title="Your Title"]`
 * `[twitter-widget username="wpinformer"]`
 
 = Why can't I display a friends feed anymore? =
@@ -77,6 +77,9 @@ Aparently the database queries required to display the friends feed was causing 
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
 
 == Changelog ==
+
+= 2.1.1 =
+* Added an option to open links in new windows
 
 = 2.1.0 =
 * Added a shortcode to allow you to embed a widget in any post or page
