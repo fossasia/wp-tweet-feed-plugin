@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -77,6 +77,10 @@ Aparently the database queries required to display the friends feed was causing 
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
 
 == Changelog ==
+
+= 2.1.2 =
+* Fixed spacing issue that was introduced in 2.1.1
+* Added links to the <a href="http://xavisys.com/support/forum/twitter-widget-pro/">Support Forum</a>
 
 = 2.1.1 =
 * Added an option to open links in new windows
