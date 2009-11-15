@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Twitter Widget Pro in italiano\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/twitter-widget-pro\n"
-"POT-Creation-Date: 2009-10-28 17:58+0000\n"
-"PO-Revision-Date: 2009-10-28 20:45+0100\n"
+"POT-Creation-Date: 2009-11-15 15:52+0000\n"
+"PO-Revision-Date: 2009-11-15 17:11+0100\n"
 "Last-Translator: Gianni Diurno (aka gidibao) <gidibao@gmail.com>\n"
 "Language-Team: Gianni Diurno | http://gidibao.net/ <gidibao@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -25,178 +25,195 @@ msgstr "Segui un feed di Twitter"
 msgid "Twitter Widget Pro"
 msgstr "Twitter Widget Pro"
 
-#: wp-twitter-widget.php:71
+#: wp-twitter-widget.php:73
 msgid "Twitter username:"
 msgstr "Nome utente Twitter:"
 
-#: wp-twitter-widget.php:72
+#: wp-twitter-widget.php:74
 msgid "username"
 msgstr "Nome utente"
 
-#: wp-twitter-widget.php:75
+#: wp-twitter-widget.php:77
 msgid "Give the feed a title (optional):"
 msgstr "Nome per il feed (facoltativo):"
 
-#: wp-twitter-widget.php:76
+#: wp-twitter-widget.php:78
 msgid "title"
 msgstr "Titolo"
 
-#: wp-twitter-widget.php:79
+#: wp-twitter-widget.php:81
 msgid "How many items would you like to display?"
 msgstr "Quanti messaggi desideri mostrare?"
 
-#: wp-twitter-widget.php:90
+#: wp-twitter-widget.php:92
 msgid "Hide @replies"
 msgstr "nascondi @replies"
 
-#: wp-twitter-widget.php:93
+#: wp-twitter-widget.php:95
 msgid "What to display when Twitter is down (optional):"
 msgstr "Mostra quando Twitter é fuori servizio (facoltativo):"
 
-#: wp-twitter-widget.php:94
+#: wp-twitter-widget.php:96
 msgid "errmsg"
 msgstr "errmsg"
 
-#: wp-twitter-widget.php:97
+#: wp-twitter-widget.php:99
 msgid "Number of seconds to wait for a response from Twitter (default 2):"
 msgstr "Secondi di attesa per una risposta da Twitter (predefinito 2):"
 
-#: wp-twitter-widget.php:98
+#: wp-twitter-widget.php:100
 msgid "fetchTimeOut"
 msgstr "fetchTimeOut"
 
-#: wp-twitter-widget.php:101
+#: wp-twitter-widget.php:103
 msgid "Show date/time of Tweet (rather than 2 ____ ago):"
 msgstr "Mostra data/ora del messaggio (piuttosto che 2 ____ fa):"
 
-#: wp-twitter-widget.php:103
+#: wp-twitter-widget.php:105
 msgid "Always"
 msgstr "sempre"
 
-#: wp-twitter-widget.php:104
+#: wp-twitter-widget.php:106
 msgid "If over an hour old"
 msgstr "se più di un'ora"
 
-#: wp-twitter-widget.php:105
+#: wp-twitter-widget.php:107
 msgid "If over a day old"
 msgstr "se più di un giorno"
 
-#: wp-twitter-widget.php:106
+#: wp-twitter-widget.php:108
 msgid "If over a week old"
 msgstr "se più di una settimana"
 
-#: wp-twitter-widget.php:107
+#: wp-twitter-widget.php:109
 msgid "If over a month old"
 msgstr "se più di un mese"
 
-#: wp-twitter-widget.php:108
+#: wp-twitter-widget.php:110
 msgid "If over a year old"
 msgstr "se più di un anno"
 
-#: wp-twitter-widget.php:109
+#: wp-twitter-widget.php:111
 msgid "Never"
 msgstr "mai"
 
-#: wp-twitter-widget.php:114
+#: wp-twitter-widget.php:116
 msgid "Hide RSS Icon and Link"
 msgstr "nascondi icona e link RSS"
 
-#: wp-twitter-widget.php:118
+#: wp-twitter-widget.php:120
+msgid "Open links in a new window"
+msgstr "Apri i link in una nuova finestra."
+
+#: wp-twitter-widget.php:124
 msgid "Show Profile Image"
 msgstr "mostra immagine profilo"
 
-#: wp-twitter-widget.php:122
+#: wp-twitter-widget.php:128
 msgid "Show Link to Twitter Widget Pro"
 msgstr "mostra il link a Twitter Widget Pro"
 
-#: wp-twitter-widget.php:176
+#: wp-twitter-widget.php:251
+msgid "Manage Widgets"
+msgstr "Gestione widget"
+
+#: wp-twitter-widget.php:262
+msgid "Support Forum"
+msgstr "Forum di supporto"
+
+#: wp-twitter-widget.php:412
 msgid "Syndicate this content"
 msgstr "Abbonati a questo contenuto"
 
-#: wp-twitter-widget.php:194
+#: wp-twitter-widget.php:440
 msgid "No Tweets Available"
 msgstr "Nessun messaggio disponibile"
 
-#: wp-twitter-widget.php:211
+#: wp-twitter-widget.php:448
 #, php-format
 msgid "from %s"
 msgstr "da %s"
 
-#: wp-twitter-widget.php:215
+#: wp-twitter-widget.php:460
 #, php-format
 msgid "in reply to %s"
 msgstr "in risposta a %s"
 
-#: wp-twitter-widget.php:239
-#, php-format
-msgid "Powered by <a href=\"%s\" title=\"Get Twitter Widget for your WordPress site\">WordPress Twitter Widget Pro</a>"
-msgstr "Powered by <a href=\"%s\" title=\"Get Twitter Widget for your WordPress site\">WordPress Twitter Widget Pro</a>"
+#: wp-twitter-widget.php:482
+msgid "Get Twitter Widget for your WordPress site"
+msgstr "Usa Twitter Widget per il tuo sito WordPress"
 
-#: wp-twitter-widget.php:295
+#: wp-twitter-widget.php:484
+msgid "Powered by"
+msgstr "Powered by"
+
+#: wp-twitter-widget.php:540
 msgid "Invalid Twitter Response."
 msgstr "Risposta da Twitter non valida."
 
-#: wp-twitter-widget.php:309
+#: wp-twitter-widget.php:554
 msgid "Could not connect to Twitter"
 msgstr "Non é stato possibile connettersi a Twitter"
 
-#: wp-twitter-widget.php:361
+#: wp-twitter-widget.php:606
 msgid "h:i:s A F d, Y"
 msgstr "H:i:s F d Y"
 
-#: wp-twitter-widget.php:372
+#: wp-twitter-widget.php:617
 #, php-format
 msgid "about %s year ago"
 msgid_plural "about %s years ago"
 msgstr[0] "circa %s anno fa"
 msgstr[1] "circa %s anni fa"
 
-#: wp-twitter-widget.php:373
+#: wp-twitter-widget.php:618
 #, php-format
 msgid "about %s month ago"
 msgid_plural "about %s months ago"
 msgstr[0] "circa %s mese fa"
 msgstr[1] "circa %s mesi fa"
 
-#: wp-twitter-widget.php:374
+#: wp-twitter-widget.php:619
 #, php-format
 msgid "about %s week ago"
 msgid_plural "about %s weeks ago"
 msgstr[0] "circa %s settimana fa"
 msgstr[1] "circa %s settimane fa"
 
-#: wp-twitter-widget.php:375
+#: wp-twitter-widget.php:620
 #, php-format
 msgid "about %s day ago"
 msgid_plural "about %s days ago"
 msgstr[0] "circa %s giorno fa"
 msgstr[1] "circa %s giorni fa"
 
-#: wp-twitter-widget.php:376
+#: wp-twitter-widget.php:621
 #, php-format
 msgid "about %s hour ago"
 msgid_plural "about %s hours ago"
 msgstr[0] "circa %s ora fa"
 msgstr[1] "circa %s ore fa"
 
-#: wp-twitter-widget.php:377
+#: wp-twitter-widget.php:622
 #, php-format
 msgid "about %s minute ago"
 msgid_plural "about %s minutes ago"
 msgstr[0] "circa %s minunto fa"
 msgstr[1] "circa %s minunti fa"
 
-#: wp-twitter-widget.php:378
+#: wp-twitter-widget.php:623
 #, php-format
 msgid "about %s second ago"
 msgid_plural "about %s seconds ago"
 msgstr[0] "circa %s secondo fa"
 msgstr[1] "circa %s secondi fa"
 
-#: wp-twitter-widget.php:465
-msgid "Manage Widgets"
-msgstr "Gestione widget"
-
+#~ msgid ""
+#~ "Powered by <a href=\"%s\" title=\"Get Twitter Widget for your WordPress "
+#~ "site\">WordPress Twitter Widget Pro</a>"
+#~ msgstr ""
+#~ "Powered by <a href=\"%s\" title=\"Get Twitter Widget for your WordPress "
+#~ "site\">WordPress Twitter Widget Pro</a>"
 #~ msgid "Twitter Widget Pro Options"
 #~ msgstr "Opzioni Twitter Widget Pro"
 #~ msgid "Click for Help!"
