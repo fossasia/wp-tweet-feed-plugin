@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.1.1
+ * Version: 2.1.2
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -67,6 +67,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 
 	public function form( $instance ) {
 		$instance = $this->_getInstanceSettings( $instance );
+		$wpTwitterWidget = wpTwitterWidget::getInstance();
 ?>
 			<p>
 				<label for="<?php echo $this->get_field_id('username'); ?>"><?php _e('Twitter username:', 'twitter-widget-pro'); ?></label>
@@ -126,6 +127,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('showXavisysLink'); ?>" name="<?php echo $this->get_field_name('showXavisysLink'); ?>"<?php checked($instance['showXavisysLink'], 'true'); ?> />
 				<label for="<?php echo $this->get_field_id('showXavisysLink'); ?>"><?php _e('Show Link to Twitter Widget Pro', 'twitter-widget-pro'); ?></label>
 			</p>
+			<p><?php echo $wpTwitterWidget->getSupportForumLink(); ?></p>
 <?php
 		return;
 	}
@@ -183,13 +185,13 @@ class wpTwitterWidget
 		/**
 		 * Add filters and actions
 		 */
-		add_filter( 'init', array( $this, 'init_locale') );
-		add_action( 'widgets_init', array($this, 'register') );
-		add_filter( 'widget_twitter_content', array($this, 'linkTwitterUsers') );
-		add_filter( 'widget_twitter_content', array($this, 'linkUrls') );
-		add_filter( 'widget_twitter_content', array($this, 'linkHashtags') );
+		add_filter( 'init', array( $this, 'init_locale' ) );
+		add_action( 'widgets_init', array( $this, 'register' ) );
+		add_filter( 'widget_twitter_content', array( $this, 'linkTwitterUsers' ) );
+		add_filter( 'widget_twitter_content', array( $this, 'linkUrls' ) );
+		add_filter( 'widget_twitter_content', array( $this, 'linkHashtags' ) );
 		add_filter( 'widget_twitter_content', 'convert_chars' );
-		add_filter( 'plugin_action_links', array($this, 'addWidgetLink'), 10, 2 );
+		add_filter( 'plugin_action_links', array( $this, 'addPluginPageLinks' ), 10, 2 );
 		add_action ( 'in_plugin_update_message-'.plugin_basename ( __FILE__ ) , array ( $this , '_changelog' ), null, 2 );
 		add_shortcode( 'twitter-widget', array( $this, 'handleShortcodes' ) );
 	}
@@ -243,13 +245,21 @@ class wpTwitterWidget
 		return '<strong>' . $this->_buildLink($user->screen_name, $attrs) . '</strong>';
 	}
 
-	public function addWidgetLink( $links, $file ){
+	public function addPluginPageLinks( $links, $file ){
 		if ( $file == plugin_basename(__FILE__) ) {
-			// Add settings link to our plugin
+			// Add Widget Page link to our plugin
 			$link = '<a href="widgets.php">' . __('Manage Widgets', 'twitter-widget-pro') . '</a>';
+			array_unshift( $links, $link );
+
+			// Add Support Forum link to our plugin
+			$link = $this->getSupportForumLink();
 			array_unshift( $links, $link );
 		}
 		return $links;
+	}
+
+	public function getSupportForumLink() {
+		return '<a href="http://xavisys.com/support/forum/twitter-widget-pro/">' . __('Support Forum', 'efficient_related_posts') . '</a>';
 	}
 
 	/**
@@ -438,14 +448,14 @@ class wpTwitterWidget
 					$from = sprintf(__('from %s', 'twitter-widget-pro'), str_replace('&', '&amp;', $tweet->source));
 					$widgetContent .= '<li>';
 					$widgetContent .= "<span class='entry-content'>{$entryContent}</span>";
-					$widgetContent .= "<span class='entry-meta'>";
+					$widgetContent .= " <span class='entry-meta'>";
 					$widgetContent .= "<span class='time-meta'>";
 					$linkAttrs = array(
 						'href'	=> "http://twitter.com/{$tweet->user->screen_name}/statuses/{$tweet->id}"
 					);
 					$widgetContent .= $this->_buildLink($tweet->ago, $linkAttrs);
 					$widgetContent .= '</span>';
-					$widgetContent .= "<span class='from-meta'>{$from}</span>";
+					$widgetContent .= " <span class='from-meta'>{$from}</span>";
 					if ( !empty($tweet->in_reply_to_screen_name) ) {
 						$rtLinkText = sprintf( __('in reply to %s', 'twitter-widget-pro'), $tweet->in_reply_to_screen_name );
 						$widgetContent .=  '<span class="in-reply-to-meta">';
