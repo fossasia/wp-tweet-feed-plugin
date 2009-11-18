@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -57,7 +57,8 @@ However, there are more things you can control.
 * showXavisysLink - set to true to display a link to the Twitter Widget Pro page.  We greatly appreciate your support in linking to this page so others can find this useful plugin too!  (defaults to false)
 * items - The number of items to display (defaults to 10)
 * showts - Number of seconds old a tweet has to be to show ___ ago rather than a date/time (defaults to 86400 seconds which is 24 hours)
-* title - The title of the widget (defaults 'Twitter: Username')
+* dateFormat - The format for dates (defaults to'h:i:s A F d, Y' or it's localization)
+* title - The title of the widget (defaults to 'Twitter: Username')
 
 You can see these put into action by trying something like:
 
@@ -72,11 +73,15 @@ Aparently the database queries required to display the friends feed was causing 
 == Screenshots ==
 
 1. To use the widget, go to Appearance -> Widgets and Add "Twitter Widget Pro" widget.
-2. Each widget has settings that need to be set, so the next step is to click "edit" on the newly added widget and adjust all the settings.  When you're done click "Save Changes"
+2. Each widget has settings that need to be set, so the next step is to click the down arrow on the right of the newly added widget and adjust all the settings.  When you're done click "Save"
 3. This is what the widget looks like in the default theme with no added styles.
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
 
 == Changelog ==
+
+= 2.1.2 =
+* Fixed extraneous closing tag that caused invalid HTML
+* You can now specify your own date format as a per-widget option
 
 = 2.1.2 =
 * Fixed spacing issue that was introduced in 2.1.1
