@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.1.2
+ * Version: 2.1.3
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -60,6 +60,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 								'targetBlank'		=> false,
 								'items'				=> 10,
 								'showts'			=> 60 * 60 * 24,
+								'dateFormat'		=> __('h:i:s A F d, Y', 'twitter-widget-pro'),
 		);
 
 		return wp_parse_args( $instance, $defaultArgs );
@@ -110,6 +111,10 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 					<option value="31536000" <?php selected($instance['showts'], '31536000'); ?>><?php _e('If over a year old', 'twitter-widget-pro');?></option>
 					<option value="-1" <?php selected($instance['showts'], '-1'); ?>><?php _e('Never', 'twitter-widget-pro');?></option>
 				</select>
+			</p>
+			<p>
+				<label for="<?php echo $this->get_field_id('dateFormat'); ?>"><?php echo sprintf(__('Format to dispaly the date in, uses <a href="%s">PHP date()</a> format:', 'twitter-widget-pro'), 'http://php.net/date'); ?></label>
+				<input class="widefat" id="<?php echo $this->get_field_id('dateFormat'); ?>" name="<?php echo $this->get_field_name('dateFormat'); ?>" type="text" value="<?php esc_attr_e($instance['dateFormat']); ?>" />
 			</p>
 			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('hiderss'); ?>" name="<?php echo $this->get_field_name('hiderss'); ?>"<?php checked($instance['hiderss'], 'true'); ?> />
@@ -417,7 +422,6 @@ class wpTwitterWidget
 		}
 		$twitterLink = 'http://twitter.com/' . $args['username'];
 
-		$args['after_title'] = '</a>' . $args['after_title'];
 		if (empty($args['title'])) {
 			$args['title'] = "Twitter: {$args['username']}";
 		}
@@ -443,7 +447,7 @@ class wpTwitterWidget
 			foreach ($tweets as $tweet) {
 				if ( $args['hidereplies'] != 'true' || empty($tweet->in_reply_to_user_id)) {
 					// Set our "ago" string which converts the date to "# ___(s) ago"
-					$tweet->ago = $this->_timeSince(strtotime($tweet->created_at), $args['showts']);
+					$tweet->ago = $this->_timeSince(strtotime($tweet->created_at), $args['showts'], $args['dateFormat']);
 					$entryContent = apply_filters( 'widget_twitter_content', $tweet->text );
 					$from = sprintf(__('from %s', 'twitter-widget-pro'), str_replace('&', '&amp;', $tweet->source));
 					$widgetContent .= '<li>';
@@ -588,7 +592,7 @@ class wpTwitterWidget
 	 * @param int $max - Max number of seconds to conver to "ago" messages.  0 for all, -1 for none
 	 * @return string
 	 */
-	private function _timeSince($startTimestamp, $max) {
+	private function _timeSince($startTimestamp, $max, $dateFormat) {
 		// array of time period chunks
 		$chunks = array(
 			'year'		=> 60 * 60 * 24 * 365,	// 31,536,000 seconds
@@ -603,7 +607,7 @@ class wpTwitterWidget
 		$since = time() - $startTimestamp;
 
 		if ($max != '-1' && $since >= $max) {
-			return date_i18n(__('h:i:s A F d, Y', 'twitter-widget-pro'), $startTimestamp);
+			return date_i18n( $dateFormat, $startTimestamp);
 		}
 
 		foreach ( $chunks as $key => $seconds ) {
@@ -664,6 +668,7 @@ class wpTwitterWidget
 			'targetBlank'		=> false,
 			'items'				=> 10,
 			'showts'			=> 60 * 60 * 24,
+			'dateFormat'		=> __('h:i:s A F d, Y', 'twitter-widget-pro'),
 		);
 		if ( !empty($content) && empty($attr['title']) ) {
 			$attr['title'] = $content;
