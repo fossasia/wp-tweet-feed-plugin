@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -79,7 +79,11 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Changelog ==
 
-= 2.1.2 =
+= 2.1.4 =
+* Mixed-case attributes now work properly in the shortcode
+* Fixed issue with matching only @ as a username
+
+= 2.1.3 =
 * Fixed extraneous closing tag that caused invalid HTML
 * You can now specify your own date format as a per-widget option
 

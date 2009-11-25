@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.1.3
+ * Version: 2.1.4-dev
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -274,7 +274,7 @@ class wpTwitterWidget
 	 * @return string - Tweet text with @replies linked
 	 */
 	public function linkTwitterUsers($text) {
-		$text = preg_replace_callback('/(^|\s)@(\w*)/i', array($this, '_linkTwitterUsersCallback'), $text);
+		$text = preg_replace_callback('/(^|\s)@(\w+)/i', array($this, '_linkTwitterUsersCallback'), $text);
 		return $text;
 	}
 
@@ -670,11 +670,36 @@ class wpTwitterWidget
 			'showts'			=> 60 * 60 * 24,
 			'dateFormat'		=> __('h:i:s A F d, Y', 'twitter-widget-pro'),
 		);
+
+		/**
+		 * Attribute names are strtolower'd, so we need to fix them to match
+		 * the names used through the rest of the plugin
+		 */
+		if ( array_key_exists( 'fetchtimeout', $attr ) ) {
+			$attr['fetchTimeOut'] = $attr['fetchtimeout'];
+			unset($attr['fetchtimeout']);
+		}
+		if ( array_key_exists( 'showxavisyslink', $attr ) ) {
+			$attr['showXavisysLink'] = $attr['showxavisyslink'];
+			unset($attr['showxavisyslink']);
+		}
+		if ( array_key_exists( 'targetblank', $attr ) ) {
+			$attr['targetBlank'] = $attr['targetblank'];
+			unset($attr['targetblank']);
+		}
+		if ( array_key_exists( 'dateformat', $attr ) ) {
+			$attr['dateFormat'] = $attr['dateformat'];
+			unset($attr['dateformat']);
+		}
+
 		if ( !empty($content) && empty($attr['title']) ) {
 			$attr['title'] = $content;
 		}
 
+		dump($attr, '$attr');
+
         $attr = shortcode_atts($defaults, $attr);
+		dump($attr, '$attr');
 
 		if ( $attr['hiderss'] && $attr['hiderss'] != 'false' && $attr['hiderss'] != '0' ) {
 			$attr['hiderss'] == true;
