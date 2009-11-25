@@ -696,10 +696,7 @@ class wpTwitterWidget
 			$attr['title'] = $content;
 		}
 
-		dump($attr, '$attr');
-
         $attr = shortcode_atts($defaults, $attr);
-		dump($attr, '$attr');
 
 		if ( $attr['hiderss'] && $attr['hiderss'] != 'false' && $attr['hiderss'] != '0' ) {
 			$attr['hiderss'] == true;
