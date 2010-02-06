@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 2.1.4
+Stable tag: 2.2.0
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -56,6 +56,7 @@ However, there are more things you can control.
 * targetBlank - set to true to have all links open in a new window (defaults to false)
 * showXavisysLink - set to true to display a link to the Twitter Widget Pro page.  We greatly appreciate your support in linking to this page so others can find this useful plugin too!  (defaults to false)
 * items - The number of items to display (defaults to 10)
+* fetchTimeOut - The number of seconds to wait for a response from Twitter (defaults to 2)
 * showts - Number of seconds old a tweet has to be to show ___ ago rather than a date/time (defaults to 86400 seconds which is 24 hours)
 * dateFormat - The format for dates (defaults to'h:i:s A F d, Y' or it's localization)
 * title - The title of the widget (defaults to 'Twitter: Username')
@@ -78,6 +79,13 @@ Aparently the database queries required to display the friends feed was causing 
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
 
 == Changelog ==
+
+= 2.2.0 =
+* Now uses the Xavisys WordPress Plugin Framework - http://xavisys.com/xavisys-wordpress-plugin-framework/
+* Added an options page where you can set defaults that apply to widgets, shortcodes, and php calls (everything can be overridden)
+* Added the Xavisys feed to the dashboard (which can be hidden using the screen options)
+* Fixed problem for people with certain WP configs and PHP 5.0-5.1.x that caused the Services_JSON class to get included twice.
+* Fixed issue with urls in the form www.site.com
 
 = 2.1.4 =
 * Mixed-case attributes now work properly in the shortcode
