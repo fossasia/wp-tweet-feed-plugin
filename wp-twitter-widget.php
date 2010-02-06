@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.1.4
+ * Version: 2.2.0
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -27,6 +27,7 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once('xavisys-plugin-framework.php');
 class wpTwitterWidgetException extends Exception {}
 
 /**
@@ -34,36 +35,24 @@ class wpTwitterWidgetException extends Exception {}
  */
 class WP_Widget_Twitter_Pro extends WP_Widget {
 	public function WP_Widget_Twitter_Pro () {
+		$wpTwitterWidget = wpTwitterWidget::getInstance();
 		$widget_ops = array(
 			'classname' => 'widget_twitter',
-			'description' => __( 'Follow a Twitter Feed', 'twitter-widget-pro' )
+			'description' => __( 'Follow a Twitter Feed', $wpTwitterWidget->get_slug() )
 		);
 		$control_ops = array(
 			'width' => 400,
 			'height' => 350,
 			'id_base' => 'twitter'
 		);
-		$name = __( 'Twitter Widget Pro', 'twitter-widget-pro' );
+		$name = __( 'Twitter Widget Pro', $wpTwitterWidget->get_slug() );
 
 		$this->WP_Widget('twitter', $name, $widget_ops, $control_ops);
 	}
 
 	private function _getInstanceSettings ( $instance ) {
-		$defaultArgs = array(	'title'				=> '',
-								'errmsg'			=> '',
-								'fetchTimeOut'		=> '2',
-								'username'			=> '',
-								'hiderss'			=> false,
-								'hidereplies'		=> false,
-								'avatar'			=> false,
-								'showXavisysLink'	=> false,
-								'targetBlank'		=> false,
-								'items'				=> 10,
-								'showts'			=> 60 * 60 * 24,
-								'dateFormat'		=> __('h:i:s A F d, Y', 'twitter-widget-pro'),
-		);
-
-		return wp_parse_args( $instance, $defaultArgs );
+		$wpTwitterWidget = wpTwitterWidget::getInstance();
+		return $wpTwitterWidget->getSettings( $instance );
 	}
 
 	public function form( $instance ) {
@@ -71,15 +60,15 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 		$wpTwitterWidget = wpTwitterWidget::getInstance();
 ?>
 			<p>
-				<label for="<?php echo $this->get_field_id('username'); ?>"><?php _e('Twitter username:', 'twitter-widget-pro'); ?></label>
+				<label for="<?php echo $this->get_field_id('username'); ?>"><?php _e('Twitter username:', $this->_slug); ?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id('username'); ?>" name="<?php echo $this->get_field_name('username'); ?>" type="text" value="<?php esc_attr_e($instance['username']); ?>" />
 			</p>
 			<p>
-				<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Give the feed a title (optional):', 'twitter-widget-pro'); ?></label>
+				<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Give the feed a title (optional):', $this->_slug); ?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php esc_attr_e($instance['title']); ?>" />
 			</p>
 			<p>
-				<label for="<?php echo $this->get_field_id('items'); ?>"><?php _e('How many items would you like to display?', 'twitter-widget-pro'); ?></label>
+				<label for="<?php echo $this->get_field_id('items'); ?>"><?php _e('How many items would you like to display?', $this->_slug); ?></label>
 				<select id="<?php echo $this->get_field_id('items'); ?>" name="<?php echo $this->get_field_name('items'); ?>">
 					<?php
 						for ( $i = 1; $i <= 20; ++$i ) {
@@ -90,47 +79,47 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 			</p>
 			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('hidereplies'); ?>" name="<?php echo $this->get_field_name('hidereplies'); ?>"<?php checked($instance['hidereplies'], 'true'); ?> />
-				<label for="<?php echo $this->get_field_id('hidereplies'); ?>"><?php _e('Hide @replies', 'twitter-widget-pro'); ?></label>
+				<label for="<?php echo $this->get_field_id('hidereplies'); ?>"><?php _e('Hide @replies', $this->_slug); ?></label>
 			</p>
 			<p>
-				<label for="<?php echo $this->get_field_id('errmsg'); ?>"><?php _e('What to display when Twitter is down (optional):', 'twitter-widget-pro'); ?></label>
+				<label for="<?php echo $this->get_field_id('errmsg'); ?>"><?php _e('What to display when Twitter is down (optional):', $this->_slug); ?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id('errmsg'); ?>" name="<?php echo $this->get_field_name('errmsg'); ?>" type="text" value="<?php esc_attr_e($instance['errmsg']); ?>" />
 			</p>
 			<p>
-				<label for="<?php echo $this->get_field_id('fetchTimeOut'); ?>"><?php _e('Number of seconds to wait for a response from Twitter (default 2):', 'twitter-widget-pro'); ?></label>
+				<label for="<?php echo $this->get_field_id('fetchTimeOut'); ?>"><?php _e('Number of seconds to wait for a response from Twitter (default 2):', $this->_slug); ?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id('fetchTimeOut'); ?>" name="<?php echo $this->get_field_name('fetchTimeOut'); ?>" type="text" value="<?php esc_attr_e($instance['fetchTimeOut']); ?>" />
 			</p>
 			<p>
-				<label for="<?php echo $this->get_field_id('showts'); ?>"><?php _e('Show date/time of Tweet (rather than 2 ____ ago):', 'twitter-widget-pro'); ?></label>
+				<label for="<?php echo $this->get_field_id('showts'); ?>"><?php _e('Show date/time of Tweet (rather than 2 ____ ago):', $this->_slug); ?></label>
 				<select id="<?php echo $this->get_field_id('showts'); ?>" name="<?php echo $this->get_field_name('showts'); ?>">
-					<option value="0" <?php selected($instance['showts'], '0'); ?>><?php _e('Always', 'twitter-widget-pro');?></option>
-					<option value="3600" <?php selected($instance['showts'], '3600'); ?>><?php _e('If over an hour old', 'twitter-widget-pro');?></option>
-					<option value="86400" <?php selected($instance['showts'], '86400'); ?>><?php _e('If over a day old', 'twitter-widget-pro');?></option>
-					<option value="604800" <?php selected($instance['showts'], '604800'); ?>><?php _e('If over a week old', 'twitter-widget-pro');?></option>
-					<option value="2592000" <?php selected($instance['showts'], '2592000'); ?>><?php _e('If over a month old', 'twitter-widget-pro');?></option>
-					<option value="31536000" <?php selected($instance['showts'], '31536000'); ?>><?php _e('If over a year old', 'twitter-widget-pro');?></option>
-					<option value="-1" <?php selected($instance['showts'], '-1'); ?>><?php _e('Never', 'twitter-widget-pro');?></option>
+					<option value="0" <?php selected($instance['showts'], '0'); ?>><?php _e('Always', $this->_slug);?></option>
+					<option value="3600" <?php selected($instance['showts'], '3600'); ?>><?php _e('If over an hour old', $this->_slug);?></option>
+					<option value="86400" <?php selected($instance['showts'], '86400'); ?>><?php _e('If over a day old', $this->_slug);?></option>
+					<option value="604800" <?php selected($instance['showts'], '604800'); ?>><?php _e('If over a week old', $this->_slug);?></option>
+					<option value="2592000" <?php selected($instance['showts'], '2592000'); ?>><?php _e('If over a month old', $this->_slug);?></option>
+					<option value="31536000" <?php selected($instance['showts'], '31536000'); ?>><?php _e('If over a year old', $this->_slug);?></option>
+					<option value="-1" <?php selected($instance['showts'], '-1'); ?>><?php _e('Never', $this->_slug);?></option>
 				</select>
 			</p>
 			<p>
-				<label for="<?php echo $this->get_field_id('dateFormat'); ?>"><?php echo sprintf(__('Format to dispaly the date in, uses <a href="%s">PHP date()</a> format:', 'twitter-widget-pro'), 'http://php.net/date'); ?></label>
+				<label for="<?php echo $this->get_field_id('dateFormat'); ?>"><?php echo sprintf(__('Format to dispaly the date in, uses <a href="%s">PHP date()</a> format:', $this->_slug), 'http://php.net/date'); ?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id('dateFormat'); ?>" name="<?php echo $this->get_field_name('dateFormat'); ?>" type="text" value="<?php esc_attr_e($instance['dateFormat']); ?>" />
 			</p>
 			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('hiderss'); ?>" name="<?php echo $this->get_field_name('hiderss'); ?>"<?php checked($instance['hiderss'], 'true'); ?> />
-				<label for="<?php echo $this->get_field_id('hiderss'); ?>"><?php _e('Hide RSS Icon and Link', 'twitter-widget-pro'); ?></label>
+				<label for="<?php echo $this->get_field_id('hiderss'); ?>"><?php _e('Hide RSS Icon and Link', $this->_slug); ?></label>
 			</p>
 			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('targetBlank'); ?>" name="<?php echo $this->get_field_name('targetBlank'); ?>"<?php checked($instance['targetBlank'], 'true'); ?> />
-				<label for="<?php echo $this->get_field_id('targetBlank'); ?>"><?php _e('Open links in a new window', 'twitter-widget-pro'); ?></label>
+				<label for="<?php echo $this->get_field_id('targetBlank'); ?>"><?php _e('Open links in a new window', $this->_slug); ?></label>
 			</p>
 			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('avatar'); ?>" name="<?php echo $this->get_field_name('avatar'); ?>"<?php checked($instance['avatar'], 'true'); ?> />
-				<label for="<?php echo $this->get_field_id('avatar'); ?>"><?php _e('Show Profile Image', 'twitter-widget-pro'); ?></label>
+				<label for="<?php echo $this->get_field_id('avatar'); ?>"><?php _e('Show Profile Image', $this->_slug); ?></label>
 			</p>
 			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('showXavisysLink'); ?>" name="<?php echo $this->get_field_name('showXavisysLink'); ?>"<?php checked($instance['showXavisysLink'], 'true'); ?> />
-				<label for="<?php echo $this->get_field_id('showXavisysLink'); ?>"><?php _e('Show Link to Twitter Widget Pro', 'twitter-widget-pro'); ?></label>
+				<label for="<?php echo $this->get_field_id('showXavisysLink'); ?>"><?php _e('Show Link to Twitter Widget Pro', $this->_slug); ?></label>
 			</p>
 			<p><?php echo $wpTwitterWidget->getSupportForumLink(); ?></p>
 <?php
@@ -170,34 +159,33 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
  * includes filters that modify tweet content for things like linked usernames.
  * It also helps us avoid name collisions.
  */
-class wpTwitterWidget
-{
+class wpTwitterWidget extends XavisysPlugin {
 	/**
-	 * Static property to hold our singleton instance
+	 * @var wpTwitterWidget - Static property to hold our singleton instance
 	 */
 	static $instance = false;
 
-	/**
-	 * @var array Plugin settings
-	 */
-	private $_settings;
+	protected function _init() {
+		$this->_hook = 'twitterWidgetPro';
+		$this->_file = plugin_basename( __FILE__ );
+		$this->_pageTitle = __( 'Twitter Widget Pro', $this->_slug );
+		$this->_menuTitle = __( 'Twitter Widget', $this->_slug );
+		$this->_accessLevel = 'manage_options';
+		$this->_optionGroup = 'twp-options';
+		$this->_optionNames = array('twp');
+		$this->_optionCallbacks = array();
+		$this->_slug = 'twitter-widget-pro';
+		$this->_paypalButtonId = '9993090';
 
-	/**
-	 * This is our constructor, which is private to force the use of getInstance()
-	 * @return void
-	 */
-	private function __construct() {
 		/**
 		 * Add filters and actions
 		 */
-		add_filter( 'init', array( $this, 'init_locale' ) );
 		add_action( 'widgets_init', array( $this, 'register' ) );
 		add_filter( 'widget_twitter_content', array( $this, 'linkTwitterUsers' ) );
 		add_filter( 'widget_twitter_content', array( $this, 'linkUrls' ) );
 		add_filter( 'widget_twitter_content', array( $this, 'linkHashtags' ) );
 		add_filter( 'widget_twitter_content', 'convert_chars' );
-		add_filter( 'plugin_action_links', array( $this, 'addPluginPageLinks' ), 10, 2 );
-		add_action ( 'in_plugin_update_message-'.plugin_basename ( __FILE__ ) , array ( $this , '_changelog' ), null, 2 );
+		add_filter( $this->_slug .'-opt-twp', array( $this, 'filterSettings' ) );
 		add_shortcode( 'twitter-widget', array( $this, 'handleShortcodes' ) );
 	}
 
@@ -211,29 +199,110 @@ class wpTwitterWidget
 		return self::$instance;
 	}
 
-	public function init_locale() {
-		$lang_dir = basename(dirname(__FILE__)) . '/languages';
-		load_plugin_textdomain('twitter-widget-pro', 'wp-content/plugins/' . $lang_dir, $lang_dir);
+	public function get_slug() {
+		return $this->_slug;
 	}
 
-	public function _changelog ($pluginData, $newPluginData) {
-		require_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
+	public function addOptionsMetaBoxes() {
+		add_meta_box( $this->_slug . '-general-settings', __('General Settings', $this->_slug), array($this, 'generalSettingsMetaBox'), 'xavisys-' . $this->_slug, 'main');
+	}
 
-		$plugin = plugins_api( 'plugin_information', array( 'slug' => $newPluginData->slug ) );
-
-		if ( !$plugin || is_wp_error( $plugin ) || empty( $plugin->sections['changelog'] ) ) {
-			return;
-		}
-
-		$changes = $plugin->sections['changelog'];
-
-		$pos = strpos( $changes, '<h4>' . $pluginData['Version'] );
-		$changes = trim( substr( $changes, 0, $pos ) );
-		$replace = array(
-			'<ul>'	=> '<ul style="list-style: disc inside; padding-left: 15px; font-weight: normal;">',
-			'<h4>'	=> '<h4 style="margin-bottom:0;">',
-		);
-		echo str_replace( array_keys($replace), $replace, $changes );
+	public function generalSettingsMetaBox() {
+		?>
+				<table class="form-table">
+					<tr valign="top">
+						<th scope="row">
+							<label for="twp_username"><?php _e('Twitter username:', $this->_slug); ?></label>
+						</th>
+						<td>
+							<input id="twp_username" name="twp[username]" type="text" class="regular-text code" value="<?php esc_attr_e($this->_settings['twp']['username']); ?>" size="40" />
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row">
+							<label for="twp_title"><?php _e('Give the feed a title (optional):', $this->_slug); ?></label>
+						</th>
+						<td>
+							<input id="twp_title" name="twp[title]" type="text" class="regular-text code" value="<?php esc_attr_e($this->_settings['twp']['title']); ?>" size="40" />
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row">
+							<label for="twp_items"><?php _e('How many items would you like to display?', $this->_slug); ?></label>
+						</th>
+						<td>
+							<select id="twp_items" name="twp[items]">
+								<?php
+									for ( $i = 1; $i <= 20; ++$i ) {
+										echo "<option value='$i' ". selected($this->_settings['twp']['items'], $i, false). ">$i</option>";
+									}
+								?>
+							</select>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row">
+							<label for="twp_errmsg"><?php _e('What to display when Twitter is down (optional):', $this->_slug); ?></label>
+						</th>
+						<td>
+							<input id="twp_errmsg" name="twp[errmsg]" type="text" class="regular-text code" value="<?php esc_attr_e($this->_settings['twp']['errmsg']); ?>" size="40" />
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row">
+							<label for="twp_fetchTimeOut"><?php _e('Number of seconds to wait for a response from Twitter (default 2):', $this->_slug); ?></label>
+						</th>
+						<td>
+							<input id="twp_fetchTimeOut" name="twp[fetchTimeOut]" type="text" class="regular-text code" value="<?php esc_attr_e($this->_settings['twp']['fetchTimeOut']); ?>" size="40" />
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row">
+							<label for="twp_showts"><?php _e('Show date/time of Tweet (rather than 2 ____ ago):', $this->_slug); ?></label>
+						</th>
+						<td>
+							<select id="twp_showts" name="twp[showts]">
+								<option value="0" <?php selected($this->_settings['twp']['showts'], '0'); ?>><?php _e('Always', $this->_slug);?></option>
+								<option value="3600" <?php selected($this->_settings['twp']['showts'], '3600'); ?>><?php _e('If over an hour old', $this->_slug);?></option>
+								<option value="86400" <?php selected($this->_settings['twp']['showts'], '86400'); ?>><?php _e('If over a day old', $this->_slug);?></option>
+								<option value="604800" <?php selected($this->_settings['twp']['showts'], '604800'); ?>><?php _e('If over a week old', $this->_slug);?></option>
+								<option value="2592000" <?php selected($this->_settings['twp']['showts'], '2592000'); ?>><?php _e('If over a month old', $this->_slug);?></option>
+								<option value="31536000" <?php selected($this->_settings['twp']['showts'], '31536000'); ?>><?php _e('If over a year old', $this->_slug);?></option>
+								<option value="-1" <?php selected($this->_settings['twp']['showts'], '-1'); ?>><?php _e('Never', $this->_slug);?></option>
+							</select>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row">
+							<label for="twp_dateFormat"><?php echo sprintf(__('Format to dispaly the date in, uses <a href="%s">PHP date()</a> format:', $this->_slug), 'http://php.net/date'); ?></label>
+						</th>
+						<td>
+							<input id="twp_dateFormat" name="twp[dateFormat]" type="text" class="regular-text code" value="<?php esc_attr_e($this->_settings['twp']['dateFormat']); ?>" size="40" />
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row">
+							<?php _e("Other Setting:", $this->_slug);?>
+						</th>
+						<td>
+							<input class="checkbox" type="checkbox" value="true" id="twp_hidereplies" name="twp[hidereplies]"<?php checked($this->_settings['twp']['hidereplies'], 'true'); ?> />
+							<label for="twp_hidereplies"><?php _e('Hide @replies', $this->_slug); ?></label>
+							<br />
+							<input class="checkbox" type="checkbox" value="true" id="twp_hiderss" name="twp[hiderss]"<?php checked($this->_settings['twp']['hiderss'], 'true'); ?> />
+							<label for="twp_hiderss"><?php _e('Hide RSS Icon and Link', $this->_slug); ?></label>
+							<br />
+							<input class="checkbox" type="checkbox" value="true" id="twp_targetBlank" name="twp[targetBlank]"<?php checked($this->_settings['twp']['targetBlank'], 'true'); ?> />
+							<label for="twp_targetBlank"><?php _e('Open links in a new window', $this->_slug); ?></label>
+							<br />
+							<input class="checkbox" type="checkbox" value="true" id="twp_avatar" name="twp[avatar]"<?php checked($this->_settings['twp']['avatar'], 'true'); ?> />
+							<label for="twp_avatar"><?php _e('Show Profile Image', $this->_slug); ?></label>
+							<br />
+							<input class="checkbox" type="checkbox" value="true" id="twp_showXavisysLink" name="twp[showXavisysLink]"<?php checked($this->_settings['twp']['showXavisysLink'], 'true'); ?> />
+							<label for="twp_showXavisysLink"><?php _e('Show Link to Twitter Widget Pro', $this->_slug); ?></label>
+						</td>
+					</tr>
+				</table>
+		<?php
 	}
 
 	/**
@@ -248,23 +317,6 @@ class wpTwitterWidget
 			'title'	=> $user->name
 		);
 		return '<strong>' . $this->_buildLink($user->screen_name, $attrs) . '</strong>';
-	}
-
-	public function addPluginPageLinks( $links, $file ){
-		if ( $file == plugin_basename(__FILE__) ) {
-			// Add Widget Page link to our plugin
-			$link = '<a href="widgets.php">' . __('Manage Widgets', 'twitter-widget-pro') . '</a>';
-			array_unshift( $links, $link );
-
-			// Add Support Forum link to our plugin
-			$link = $this->getSupportForumLink();
-			array_unshift( $links, $link );
-		}
-		return $links;
-	}
-
-	public function getSupportForumLink() {
-		return '<a href="http://xavisys.com/support/forum/twitter-widget-pro/">' . __('Support Forum', 'efficient_related_posts') . '</a>';
 	}
 
 	/**
@@ -356,16 +408,19 @@ class wpTwitterWidget
 		$attributes = array_filter( wp_parse_args( $attributes ), array($this, '_notEmpty' ) );
 		$attributes = apply_filters( 'widget_twitter_link_attributes', $attributes );
 		$attributes = wp_parse_args( $attributes );
+		if ( strtolower( 'www' == substr($attributes['href'], 0, 3) ) ) {
+			$attributes['href'] = 'http://' . $attributes['href'];
+		}
 		$text = apply_filters( 'widget_twitter_link_text', $text );
 		$link = '<a';
 		foreach ( $attributes as $name => $value ) {
 			$link .= ' ' . esc_attr($name) . '="' . esc_attr($value) . '"';
 		}
 		$link .= '>';
-		if ( $no_filter ) {
-			$link .= esc_html($text);
-		} else {
+		if ( $noFilter ) {
 			$link .= $text;
+		} else {
+			$link .= esc_html($text);
 		}
 		$link .= '</a>';
 		return $link;
@@ -414,7 +469,7 @@ class wpTwitterWidget
 			$feedUrl = $this->_getFeedUrl($args, 'rss', false);
 			$linkAttrs = array(
 				'class'	=> 'twitterwidget twitterwidget-rss',
-				'title'	=> __('Syndicate this content', 'twitter-widget-pro'),
+				'title'	=> __('Syndicate this content', $this->_slug),
 				'href'	=> $feedUrl
 			);
 
@@ -441,7 +496,7 @@ class wpTwitterWidget
 		if (is_a($tweets, 'wpTwitterWidgetException')) {
 			$widgetContent .= '<li class="wpTwitterWidgetError">' . $tweets->getMessage() . '</li>';
 		} else if (count($tweets) == 0) {
-			$widgetContent .= '<li class="wpTwitterWidgetEmpty">' . __('No Tweets Available', 'twitter-widget-pro') . '</li>';
+			$widgetContent .= '<li class="wpTwitterWidgetEmpty">' . __('No Tweets Available', $this->_slug) . '</li>';
 		} else {
 			$count = 0;
 			foreach ($tweets as $tweet) {
@@ -449,7 +504,7 @@ class wpTwitterWidget
 					// Set our "ago" string which converts the date to "# ___(s) ago"
 					$tweet->ago = $this->_timeSince(strtotime($tweet->created_at), $args['showts'], $args['dateFormat']);
 					$entryContent = apply_filters( 'widget_twitter_content', $tweet->text );
-					$from = sprintf(__('from %s', 'twitter-widget-pro'), str_replace('&', '&amp;', $tweet->source));
+					$from = sprintf(__('from %s', $this->_slug), str_replace('&', '&amp;', $tweet->source));
 					$widgetContent .= '<li>';
 					$widgetContent .= "<span class='entry-content'>{$entryContent}</span>";
 					$widgetContent .= " <span class='entry-meta'>";
@@ -461,7 +516,7 @@ class wpTwitterWidget
 					$widgetContent .= '</span>';
 					$widgetContent .= " <span class='from-meta'>{$from}</span>";
 					if ( !empty($tweet->in_reply_to_screen_name) ) {
-						$rtLinkText = sprintf( __('in reply to %s', 'twitter-widget-pro'), $tweet->in_reply_to_screen_name );
+						$rtLinkText = sprintf( __('in reply to %s', $this->_slug), $tweet->in_reply_to_screen_name );
 						$widgetContent .=  '<span class="in-reply-to-meta">';
 						$linkAttrs = array(
 							'href'	=> "http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}",
@@ -483,9 +538,9 @@ class wpTwitterWidget
 			$widgetContent .= '<li class="xavisys-link"><span class="xavisys-link-text">';
 			$linkAttrs = array(
 				'href'	=> 'http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/',
-				'title'	=> __('Get Twitter Widget for your WordPress site', 'twitter-widget-pro')
+				'title'	=> __('Get Twitter Widget for your WordPress site', $this->_slug)
 			);
-			$widgetContent .= __('Powered by', 'twitter-widget-pro');
+			$widgetContent .= __('Powered by', $this->_slug);
 			$widgetContent .= $this->_buildLink('WordPress Twitter Widget Pro', $linkAttrs);
 			$widgetContent .= '</span></li>';
 		}
@@ -530,10 +585,12 @@ class wpTwitterWidget
 			if (function_exists('json_decode')) {
 				$decodedResponse = json_decode( $resp['body'] );
 			} else {
-				global $wp_json;
-
-				if ( !is_a($wp_json, 'Services_JSON') ) {
+				if ( !class_exists('Services_JSON') ) {
 					require_once( 'class-json.php' );
+				}
+
+				global $wp_json;
+				if ( !is_a($wp_json, 'Services_JSON') ) {
 					$wp_json = new Services_JSON();
 				}
 
@@ -541,7 +598,7 @@ class wpTwitterWidget
 			}
 			if ( empty($decodedResponse) ) {
 				if (empty($widgetOptions['errmsg'])) {
-					$widgetOptions['errmsg'] = __('Invalid Twitter Response.', 'twitter-widget-pro');
+					$widgetOptions['errmsg'] = __('Invalid Twitter Response.', $this->_slug);
 				}
 				throw new wpTwitterWidgetException($widgetOptions['errmsg']);
 			} elseif( !empty($decodedResponse->error) ) {
@@ -555,7 +612,7 @@ class wpTwitterWidget
 		} else {
 			// Failed to fetch url;
 			if (empty($widgetOptions['errmsg'])) {
-				$widgetOptions['errmsg'] = __('Could not connect to Twitter', 'twitter-widget-pro');
+				$widgetOptions['errmsg'] = __('Could not connect to Twitter', $this->_slug);
 			}
 			throw new wpTwitterWidgetException($widgetOptions['errmsg']);
 		}
@@ -618,13 +675,13 @@ class wpTwitterWidget
 		}
 
 		$messages = array(
-			'year'		=> _n('about %s year ago', 'about %s years ago', $count, 'twitter-widget-pro'),
-			'month'		=> _n('about %s month ago', 'about %s months ago', $count, 'twitter-widget-pro'),
-			'week'		=> _n('about %s week ago', 'about %s weeks ago', $count, 'twitter-widget-pro'),
-			'day'		=> _n('about %s day ago', 'about %s days ago', $count, 'twitter-widget-pro'),
-			'hour'		=> _n('about %s hour ago', 'about %s hours ago', $count, 'twitter-widget-pro'),
-			'minute'	=> _n('about %s minute ago', 'about %s minutes ago', $count, 'twitter-widget-pro'),
-			'second'	=> _n('about %s second ago', 'about %s seconds ago', $count, 'twitter-widget-pro'),
+			'year'		=> _n('about %s year ago', 'about %s years ago', $count, $this->_slug),
+			'month'		=> _n('about %s month ago', 'about %s months ago', $count, $this->_slug),
+			'week'		=> _n('about %s week ago', 'about %s weeks ago', $count, $this->_slug),
+			'day'		=> _n('about %s day ago', 'about %s days ago', $count, $this->_slug),
+			'hour'		=> _n('about %s hour ago', 'about %s hours ago', $count, $this->_slug),
+			'minute'	=> _n('about %s minute ago', 'about %s minutes ago', $count, $this->_slug),
+			'second'	=> _n('about %s second ago', 'about %s seconds ago', $count, $this->_slug),
 		);
 
 		return sprintf($messages[$key], $count);
@@ -668,7 +725,7 @@ class wpTwitterWidget
 			'targetBlank'		=> false,
 			'items'				=> 10,
 			'showts'			=> 60 * 60 * 24,
-			'dateFormat'		=> __('h:i:s A F d, Y', 'twitter-widget-pro'),
+			'dateFormat'		=> __('h:i:s A F d, Y', $this->_slug),
 		);
 
 		/**
@@ -717,6 +774,27 @@ class wpTwitterWidget
 		return $this->display($attr);
 	}
 
+	public function filterSettings($settings) {
+		$defaultArgs = array(	'title'				=> '',
+								'errmsg'			=> '',
+								'fetchTimeOut'		=> '2',
+								'username'			=> '',
+								'hiderss'			=> false,
+								'hidereplies'		=> false,
+								'avatar'			=> false,
+								'showXavisysLink'	=> false,
+								'targetBlank'		=> false,
+								'items'				=> 10,
+								'showts'			=> 60 * 60 * 24,
+								'dateFormat'		=> __('h:i:s A F d, Y', $this->_slug),
+		);
+
+		return wp_parse_args( $settings, $defaultArgs );
+	}
+
+	public function getSettings( $settings ) {
+		return wp_parse_args( $settings, $this->_settings['twp'] );
+	}
 }
 // Instantiate our class
 $wpTwitterWidget = wpTwitterWidget::getInstance();
