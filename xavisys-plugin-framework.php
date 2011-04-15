@@ -1,9 +1,38 @@
 <?php
 /**
- * Version: 1.0.4
+ * Version: 1.0.13
  */
 /**
  * Changelog:
+ *
+ * 1.0.13:
+ *  - Add the 'xpf-dashboard-widget' filter
+ *
+ * 1.0.12:
+ *  - Add the xpf-show-general-settings-submit filter
+ *
+ * 1.0.11:
+ *  - Add the xpf-pre-main-metabox action
+ *
+ * 1.0.10:
+ *  - Allow the screen icon to be overridden
+ *
+ * 1.0.9:
+ *  - Allow removal of Xavisys sidebar boxes
+ *
+ * 1.0.8:
+ *  - Allow an auto-created options page that doesn't have a main meta box
+ *
+ * 1.0.7:
+ *  - Add the ability to modify the form action on the options page
+ *  - Add an action in the options page form tag
+ *
+ * 1.0.6:
+ *  - Add ability to not have a settings page
+ *
+ * 1.0.5:
+ *  - Added XavisysPlugin::_feed_url
+ *  - Changed feed to the feed burner URL because of a redirect issue with 2.9.x
  *
  * 1.0.4:
  *  - Added donate link to the plugin meta
@@ -69,9 +98,17 @@ if (!class_exists('XavisysPlugin')) {
 		protected $_slug = '';
 
 		/**
+		 * @var string - The feed URL for Xavisys
+		 */
+		//protected $_feed_url = 'http://xavisys.com/feed/';
+		protected $_feed_url = 'http://feeds.feedburner.com/Xavisys';
+
+		/**
 		 * @var string - The button ID for the PayPal button, override this generic one with a plugin-specific one
 		 */
 		protected $_paypalButtonId = '9925248';
+
+		protected $_optionsPageAction = 'options.php';
 
 		/**
 		 * This is our constructor, which is private to force the use of getInstance()
@@ -157,8 +194,8 @@ if (!class_exists('XavisysPlugin')) {
 		}
 
 		public function registerOptionsPage() {
-			if ( is_callable( array( $this, 'options_page' ) ) ) {
-				add_options_page( $this->_pageTitle, $this->_menuTitle, $this->_accessLevel, $this->_hook, array( $this, 'options_page' ), 'http://cdn.xavisys.com/logos/xavisys-logo-32.png' );
+			if ( apply_filters( 'xpf-options_page-'.$this->_slug, true ) && is_callable( array( $this, 'options_page' ) ) ) {
+				add_options_page( $this->_pageTitle, $this->_menuTitle, $this->_accessLevel, $this->_hook, array( $this, 'options_page' ) );
 			}
 		}
 
@@ -186,25 +223,41 @@ if (!class_exists('XavisysPlugin')) {
 			$sidebarBoxes = array_filter( $allBoxes, array( $this, '_filterBoxesSidebar' ) );
 			unset($sidebarBoxes['sidebar']);
 			sort($sidebarBoxes);
+
+			$main_width = empty( $sidebarBoxes )? '100%' : '75%';
 			?>
 				<div class="wrap">
 					<?php $this->screenIconLink(); ?>
 					<h2><?php echo esc_html($this->_pageTitle); ?></h2>
 					<div class="metabox-holder">
-						<div class="postbox-container" style="width:75%;">
-							<form action="options.php" method="post">
-								<?php settings_fields( $this->_optionGroup ); ?>
-								<?php do_meta_boxes( 'xavisys-' . $this->_slug, 'main', '' ); ?>
+						<div class="postbox-container" style="width:<?php echo $main_width; ?>;">
+						<?php
+							do_action( 'xpf-pre-main-metabox', $main_width );
+							if ( in_array( 'main', $allBoxes ) ) {
+						?>
+							<form action="<?php esc_attr_e( $this->_optionsPageAction ); ?>" method="post"<?php do_action( 'xpf-options-page-form-tag' ) ?>>
+								<?php
+								settings_fields( $this->_optionGroup );
+								do_meta_boxes( 'xavisys-' . $this->_slug, 'main', '' );
+								if ( apply_filters( 'xpf-show-general-settings-submit'.$this->_slug, true ) ) {
+								?>
 								<p class="submit">
 									<input type="submit" name="Submit" value="<?php esc_attr_e('Update Options &raquo;', $this->_slug); ?>" />
 								</p>
+								<?php
+								}
+								?>
 							</form>
-							<?php
+						<?php
+							}
 							foreach( $mainBoxes as $context ) {
 								do_meta_boxes( 'xavisys-' . $this->_slug, $context, '' );
 							}
-							?>
+						?>
 						</div>
+						<?php
+						if ( !empty( $sidebarBoxes ) ) {
+						?>
 						<div class="postbox-container" style="width:24%;">
 							<?php
 							foreach( $sidebarBoxes as $context ) {
@@ -212,6 +265,9 @@ if (!class_exists('XavisysPlugin')) {
 							}
 							?>
 						</div>
+						<?php
+						}
+						?>
 					</div>
 				</div>
 				<?php
@@ -276,9 +332,15 @@ if (!class_exists('XavisysPlugin')) {
 		}
 
 		public function addDefaultOptionsMetaBoxes() {
-			add_meta_box( $this->_slug . '-like-this', __('Like this Plugin?', $this->_slug), array($this, 'likeThisMetaBox'), 'xavisys-' . $this->_slug, 'sidebar');
-			add_meta_box( $this->_slug . '-support', __('Need Support?', $this->_slug), array($this, 'supportMetaBox'), 'xavisys-' . $this->_slug, 'sidebar');
-			add_meta_box( $this->_slug . '-xavisys-feed', __('Latest news from Xavisys', $this->_slug), array($this, 'xavisysFeedMetaBox'), 'xavisys-' . $this->_slug, 'sidebar');
+			if ( apply_filters( 'show-xavisys-like-this', true ) ) {
+				add_meta_box( $this->_slug . '-like-this', __('Like this Plugin?', $this->_slug), array($this, 'likeThisMetaBox'), 'xavisys-' . $this->_slug, 'sidebar');
+			}
+			if ( apply_filters( 'show-xavisys-support', true ) ) {
+				add_meta_box( $this->_slug . '-support', __('Need Support?', $this->_slug), array($this, 'supportMetaBox'), 'xavisys-' . $this->_slug, 'sidebar');
+			}
+			if ( apply_filters( 'show-xavisys-feed', true ) ) {
+				add_meta_box( $this->_slug . '-xavisys-feed', __('Latest news from Xavisys', $this->_slug), array($this, 'xavisysFeedMetaBox'), 'xavisys-' . $this->_slug, 'sidebar');
+			}
 		}
 
 		public function likeThisMetaBox() {
@@ -309,7 +371,7 @@ if (!class_exists('XavisysPlugin')) {
 
 		public function xavisysFeedMetaBox() {
 			$args = array(
-				'url'			=> 'http://xavisys.com/feed/',
+				'url'			=> $this->_feed_url,
 				'items'			=> '5',
 			);
 			echo '<div class="rss-widget">';
@@ -318,12 +380,14 @@ if (!class_exists('XavisysPlugin')) {
 		}
 
 		public function addDashboardWidgets() {
-			wp_add_dashboard_widget( 'dashboardb_xavisys' , 'The Latest News From Xavisys' , array( $this, 'dashboardWidget' ) );
+			if ( apply_filters( 'xpf-dashboard-widget', true ) ) {
+				wp_add_dashboard_widget( 'dashboardb_xavisys' , 'The Latest News From Xavisys' , array( $this, 'dashboardWidget' ) );
+			}
 		}
 
 		public function dashboardWidget() {
 			$args = array(
-				'url'			=> 'http://xavisys.com/feed/',
+				'url'			=> $this->_feed_url,
 				'items'			=> '3',
 				'show_date'		=> 1,
 				'show_summary'	=> 1,
@@ -332,17 +396,23 @@ if (!class_exists('XavisysPlugin')) {
 			echo '<a href="http://xavisys.com"><img class="alignright" src="http://cdn.xavisys.com/logos/xavisys-logo-small.png" /></a>';
 			wp_widget_rss_output( $args );
 			echo '<p style="border-top: 1px solid #CCC; padding-top: 10px; font-weight: bold;">';
-			echo '<a href="http://xavisys.com/feed/"><img src="'.get_bloginfo('wpurl').'/wp-includes/images/rss.png" alt=""/> Subscribe with RSS</a>';
+			echo '<a href="' . $this->_feed_url . '"><img src="'.get_bloginfo('wpurl').'/wp-includes/images/rss.png" alt=""/> Subscribe with RSS</a>';
 			echo "</p>";
 			echo "</div>";
 		}
 
 		public function screenIconLink($name = 'xavisys') {
-			echo '<a href="http://xavisys.com">';
-			screen_icon($name);
-			echo '</a>';
+			$link = '<a href="http://xavisys.com">';
+			if ( function_exists( 'get_screen_icon' ) ) {
+				$link .= get_screen_icon( $name );
+			} else {
+				ob_start();
+				screen_icon($name);
+				$link .= ob_get_clean();
+			}
+			$link .= '</a>';
+			echo apply_filters('xpf-screenIconLink', $link, $name );
 		}
-
 
 		public function optionsPageScripts() {
 			if (isset($_GET['page']) && $_GET['page'] == $this->_hook) {
