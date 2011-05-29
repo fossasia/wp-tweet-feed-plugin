@@ -306,20 +306,6 @@ class wpTwitterWidget extends XavisysPlugin {
 	}
 
 	/**
-	 * Returns the user's screen name as a link inside strong tags.
-	 *
-	 * @param object $user - Twitter user
-	 * @return string - Username as link (XHTML)
-	 */
-	private function _getUserName($user) {
-		$attrs = array(
-			'href'	=> "http://twitter.com/{$user->screen_name}",
-			'title'	=> $user->name
-		);
-		return '<strong>' . $this->_buildLink($user->screen_name, $attrs) . '</strong>';
-	}
-
-	/**
 	 * Replace @username with a link to that twitter user
 	 *
 	 * @param string $text - Tweet text
@@ -345,7 +331,7 @@ class wpTwitterWidget extends XavisysPlugin {
 	 * @return string - Tweet text with #hashtags linked
 	 */
 	public function linkHashtags($text) {
-		$text = preg_replace_callback('/(^|\s)(#\w*)/i', array($this, '_hashtagLink'), $text);
+		$text = preg_replace_callback('/(^|\s)(#\w*)/i', array($this, '_linkHashtagsCallback'), $text);
 		return $text;
 	}
 
@@ -355,7 +341,7 @@ class wpTwitterWidget extends XavisysPlugin {
 	 * @param array $matches - Tweet text
 	 * @return string - Tweet text with #hashtags linked
 	 */
-	private function _hashtagLink($matches) {
+	private function _linkHashtagsCallback($matches) {
 		$linkAttrs = array(
 			'href'	=> 'http://search.twitter.com/search?q=' . urlencode($matches[2]),
 			'class'	=> 'twitter-hashtag'
@@ -555,15 +541,11 @@ class wpTwitterWidget extends XavisysPlugin {
 	 * @return array - Array of objects
 	 */
 	private function _getTweets($widgetOptions) {
-		$feedHash = sha1($this->_getFeedUrl($widgetOptions));
-		$tweets = get_option("wptw-{$feedHash}");
-		$cacheAge = get_option("wptw-{$feedHash}-time");
-		//If we don't have cache or it's more than 5 minutes old
-		if ( empty($tweets) || (time() - $cacheAge) > 300 ) {
+		$key = md5( $this->_getFeedUrl( $widgetOptions ) );
+		if ( false === ($tweets = get_site_transient( 'twp_' . $key ) ) ) {
 			try {
 				$tweets = $this->_parseFeed($widgetOptions);
-				update_option("wptw-{$feedHash}", $tweets);
-				update_option("wptw-{$feedHash}-time", time());
+				set_site_transient( 'twp_' . $key, $tweets, 300 ); // cache for 5 minutes
 			} catch (wpTwitterWidgetException $e) {
 				throw $e;
 			}
@@ -582,20 +564,7 @@ class wpTwitterWidget extends XavisysPlugin {
 		$resp = wp_remote_request($feedUrl, array('timeout' => $widgetOptions['fetchTimeOut']));
 
 		if ( !is_wp_error($resp) && $resp['response']['code'] >= 200 && $resp['response']['code'] < 300 ) {
-			if (function_exists('json_decode')) {
-				$decodedResponse = json_decode( $resp['body'] );
-			} else {
-				if ( !class_exists('Services_JSON') ) {
-					require_once( 'class-json.php' );
-				}
-
-				global $wp_json;
-				if ( !is_a($wp_json, 'Services_JSON') ) {
-					$wp_json = new Services_JSON();
-				}
-
-				$decodedResponse =  $wp_json->decode( $resp['body'] );
-			}
+			$decodedResponse = json_decode( $resp['body'] );
 			if ( empty($decodedResponse) ) {
 				if (empty($widgetOptions['errmsg'])) {
 					$widgetOptions['errmsg'] = __('Invalid Twitter Response.', $this->_slug);
