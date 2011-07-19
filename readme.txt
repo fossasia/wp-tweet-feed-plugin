@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.8
 Tested up to: 3.2
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -52,6 +52,7 @@ However, there are more things you can control.
 * errmsg - This is the error message that displays if there's a problem connecting to Twitter
 * hiderss - set to true to hide the RSS icon (defaults to false)
 * hidereplies - set to true to hide @replies that are sent from the account (defaults to false)
+* hidefrom - set to true to hide the "from ____" link that shows the application the tweet was sent from (defaults to false)
 * avatar - set to true to display the avatar from the Twitter account (defaults to false)
 * targetBlank - set to true to have all links open in a new window (defaults to false)
 * showXavisysLink - set to true to display a link to the Twitter Widget Pro page.  We greatly appreciate your support in linking to this page so others can find this useful plugin too!  (defaults to false)
@@ -78,7 +79,16 @@ Aparently the database queries required to display the friends feed was causing 
 3. This is what the widget looks like in the default theme with no added styles.
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
 
+== Upgrade Notice ==
+
+= 2.2.1 =
+Better SEO by adding the ability to remove the "from" links - Thanks <a href="http://yoast.com/">Joost de Valk</a>
+
 == Changelog ==
+
+= 2.2.1 =
+* Add missing space between "from" and "in reply to"
+* Add the ability to remove the "from" links from displaying - Thanks to <a href="http://yoast.com/">Joost de Valk</a> for the request and the patch!
 
 = 2.2.0 =
 * Now uses the Xavisys WordPress Plugin Framework - http://xavisys.com/xavisys-wordpress-plugin-framework/

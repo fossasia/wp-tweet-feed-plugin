@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.2.0
+ * Version: 2.2.1
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * Text Domain: twitter-widget-pro
@@ -80,6 +80,10 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('hidereplies'); ?>" name="<?php echo $this->get_field_name('hidereplies'); ?>"<?php checked($instance['hidereplies'], 'true'); ?> />
 				<label for="<?php echo $this->get_field_id('hidereplies'); ?>"><?php _e('Hide @replies', $this->_slug); ?></label>
+			</p>
+			<p>
+				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id('hidefrom'); ?>" name="<?php echo $this->get_field_name('hidefrom'); ?>"<?php checked($instance['hidefrom'], 'true'); ?> />
+				<label for="<?php echo $this->get_field_id('hidefrom'); ?>"><?php _e('Hide sending applications', $this->_slug); ?></label>
 			</p>
 			<p>
 				<label for="<?php echo $this->get_field_id('errmsg'); ?>"><?php _e('What to display when Twitter is down (optional):', $this->_slug); ?></label>
@@ -287,6 +291,9 @@ class wpTwitterWidget extends XavisysPlugin {
 						<td>
 							<input class="checkbox" type="checkbox" value="true" id="twp_hidereplies" name="twp[hidereplies]"<?php checked($this->_settings['twp']['hidereplies'], 'true'); ?> />
 							<label for="twp_hidereplies"><?php _e('Hide @replies', $this->_slug); ?></label>
+							<br />
+							<input class="checkbox" type="checkbox" value="true" id="twp_hidefrom" name="twp[hidefrom]"<?php checked($this->_settings['twp']['hidefrom'], 'true'); ?> />
+							<label for="twp_hidefrom"><?php _e('Hide sending applications', $this->_slug); ?></label>
 							<br />
 							<input class="checkbox" type="checkbox" value="true" id="twp_hiderss" name="twp[hiderss]"<?php checked($this->_settings['twp']['hiderss'], 'true'); ?> />
 							<label for="twp_hiderss"><?php _e('Hide RSS Icon and Link', $this->_slug); ?></label>
@@ -500,10 +507,11 @@ class wpTwitterWidget extends XavisysPlugin {
 					);
 					$widgetContent .= $this->_buildLink($tweet->ago, $linkAttrs);
 					$widgetContent .= '</span>';
-					$widgetContent .= " <span class='from-meta'>{$from}</span>";
+					if ( 'true' != $args['hidefrom'] )
+						$widgetContent .= " <span class='from-meta'>{$from}</span>";
 					if ( !empty($tweet->in_reply_to_screen_name) ) {
 						$rtLinkText = sprintf( __('in reply to %s', $this->_slug), $tweet->in_reply_to_screen_name );
-						$widgetContent .=  '<span class="in-reply-to-meta">';
+						$widgetContent .=  ' <span class="in-reply-to-meta">';
 						$linkAttrs = array(
 							'href'	=> "http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}",
 							'class'	=> 'reply-to'
@@ -689,6 +697,7 @@ class wpTwitterWidget extends XavisysPlugin {
 			'username'			=> '',
 			'hiderss'			=> false,
 			'hidereplies'		=> false,
+			'hidefrom'			=> false,
 			'avatar'			=> false,
 			'showXavisysLink'	=> false,
 			'targetBlank'		=> false,
@@ -730,6 +739,9 @@ class wpTwitterWidget extends XavisysPlugin {
 		if ( $attr['hidereplies'] && $attr['hidereplies'] != 'false' && $attr['hidereplies'] != '0' ) {
 			$attr['hidereplies'] == true;
 		}
+		if ( $attr['hidefrom'] && $attr['hidefrom'] != 'false' && $attr['hidefrom'] != '0' ) {
+			$attr['hidefrom'] == true;
+		}
 		if ( $attr['avatar'] && $attr['avatar'] != 'false' && $attr['avatar'] != '0' ) {
 			$attr['avatar'] == true;
 		}
@@ -750,6 +762,7 @@ class wpTwitterWidget extends XavisysPlugin {
 								'username'			=> '',
 								'hiderss'			=> false,
 								'hidereplies'		=> false,
+								'hidefrom'			=> false,
 								'avatar'			=> false,
 								'showXavisysLink'	=> false,
 								'targetBlank'		=> false,
