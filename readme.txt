@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.8
 Tested up to: 3.2.1
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -81,10 +81,16 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.2.2 =
+Fixes issue introduced in 2.2.1 with an incorrect function name (sorry about that)
+
 = 2.2.1 =
 Better SEO by adding the ability to remove the "from" links - Thanks <a href="http://yoast.com/">Joost de Valk</a>
 
 == Changelog ==
+
+= 2.2.2 =
+* Fix issue introduced in 2.2.1 with an incorrect function name '_hashtagLink' (sorry about that)
 
 = 2.2.1 =
 * Add missing space between "from" and "in reply to"
