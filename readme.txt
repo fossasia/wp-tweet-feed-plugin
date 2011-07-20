@@ -81,6 +81,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.2.3 =
+Fixes links on 32 bit servers.  If you are suffering from this I would recommend changing hosts (or talking to yours).
+
 = 2.2.2 =
 Fixes issue introduced in 2.2.1 with an incorrect function name (sorry about that)
 
@@ -88,6 +91,9 @@ Fixes issue introduced in 2.2.1 with an incorrect function name (sorry about tha
 Better SEO by adding the ability to remove the "from" links - Thanks <a href="http://yoast.com/">Joost de Valk</a>
 
 == Changelog ==
+
+= 2.2.3 =
+* The Twitter-pocolypse hit a while back but since so many servers are 64 bit it wasn't an issue.  This fixes links for users on 32 bit servers.
 
 = 2.2.2 =
 * Fix issue introduced in 2.2.1 with an incorrect function name '_hashtagLink' (sorry about that)

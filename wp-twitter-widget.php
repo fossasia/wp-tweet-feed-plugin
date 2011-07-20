@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.2.2
+ * Version: 2.2.3-alpha
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * License: GPLv2 or later
@@ -494,7 +494,7 @@ class wpTwitterWidget extends XavisysPlugin {
 		} else {
 			$count = 0;
 			foreach ( $tweets as $tweet ) {
-				if ( $args['hidereplies'] != 'true' || empty( $tweet->in_reply_to_user_id ) ) {
+				if ( $args['hidereplies'] != 'true' || empty( $tweet->in_reply_to_user_id_str ) ) {
 					// Set our "ago" string which converts the date to "# ___(s) ago"
 					$tweet->ago = $this->_timeSince( strtotime( $tweet->created_at ), $args['showts'], $args['dateFormat'] );
 					$entryContent = apply_filters( 'widget_twitter_content', $tweet->text );
@@ -504,7 +504,7 @@ class wpTwitterWidget extends XavisysPlugin {
 					$widgetContent .= " <span class='entry-meta'>";
 					$widgetContent .= "<span class='time-meta'>";
 					$linkAttrs = array(
-						'href'	=> "http://twitter.com/{$tweet->user->screen_name}/statuses/{$tweet->id}"
+						'href'	=> "http://twitter.com/{$tweet->user->screen_name}/statuses/{$tweet->id_str}"
 					);
 					$widgetContent .= $this->_buildLink( $tweet->ago, $linkAttrs );
 					$widgetContent .= '</span>';
@@ -514,7 +514,7 @@ class wpTwitterWidget extends XavisysPlugin {
 						$rtLinkText = sprintf( __( 'in reply to %s', $this->_slug ), $tweet->in_reply_to_screen_name );
 						$widgetContent .=  ' <span class="in-reply-to-meta">';
 						$linkAttrs = array(
-							'href'	=> "http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id}",
+							'href'	=> "http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id_str}",
 							'class'	=> 'reply-to'
 						);
 						$widgetContent .= $this->_buildLink( $rtLinkText, $linkAttrs );
