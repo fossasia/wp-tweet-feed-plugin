@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 2.8
 Tested up to: 3.2.1
-Stable tag: 2.2.2
+Stable tag: 2.2.3
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -94,6 +94,7 @@ Better SEO by adding the ability to remove the "from" links - Thanks <a href="ht
 
 = 2.2.3 =
 * The Twitter-pocolypse hit a while back but since so many servers are 64 bit it wasn't an issue.  This fixes links for users on 32 bit servers.
+* Fix some notices thrown by translated strings
 
 = 2.2.2 =
 * Fix issue introduced in 2.2.1 with an incorrect function name '_hashtagLink' (sorry about that)
