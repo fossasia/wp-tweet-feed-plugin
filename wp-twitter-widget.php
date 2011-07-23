@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.2.3
+ * Version: 2.2.4-alpha
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * License: GPLv2 or later
@@ -80,6 +80,20 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				</select>
 			</p>
 			<p>
+				<label for="<?php echo $this->get_field_id( 'avatar' ); ?>"><?php _e( 'Display profile image?', $this->_slug ); ?></label>
+				<select id="<?php echo $this->get_field_id( 'avatar' ); ?>" name="<?php echo $this->get_field_name( 'avatar' ); ?>">
+					<option value=""<?php selected( $instance['avatar'], '' ) ?>>Do not show</option>
+					<option value=""<?php selected( $instance['avatar'], 'mini' ) ?>>Mini - 24px by 24px</option>
+					<option value=""<?php selected( $instance['avatar'], 'normal' ) ?>>Normal - 48px by 48px</option>
+					<option value=""<?php selected( $instance['avatar'], 'bigger' ) ?>>Bigger - 73px by 73px</option>
+					<option value=""<?php selected( $instance['avatar'], 'original' ) ?>>Original</option>
+				</select>
+			</p>
+			<p>
+				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'showretweets' ); ?>" name="<?php echo $this->get_field_name( 'showretweets' ); ?>"<?php checked( $instance['showretweets'], 'true' ); ?> />
+				<label for="<?php echo $this->get_field_id( 'showretweets' ); ?>"><?php _e( 'Include retweets', $this->_slug ); ?></label>
+			</p>
+			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'hidereplies' ); ?>" name="<?php echo $this->get_field_name( 'hidereplies' ); ?>"<?php checked( $instance['hidereplies'], 'true' ); ?> />
 				<label for="<?php echo $this->get_field_id( 'hidereplies' ); ?>"><?php _e( 'Hide @replies', $this->_slug ); ?></label>
 			</p>
@@ -118,10 +132,6 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'targetBlank' ); ?>" name="<?php echo $this->get_field_name( 'targetBlank' ); ?>"<?php checked( $instance['targetBlank'], 'true' ); ?> />
 				<label for="<?php echo $this->get_field_id( 'targetBlank' ); ?>"><?php _e( 'Open links in a new window', $this->_slug ); ?></label>
-			</p>
-			<p>
-				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'avatar' ); ?>" name="<?php echo $this->get_field_name( 'avatar' ); ?>"<?php checked( $instance['avatar'], 'true' ); ?> />
-				<label for="<?php echo $this->get_field_id( 'avatar' ); ?>"><?php _e( 'Show Profile Image', $this->_slug ); ?></label>
 			</p>
 			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'showXavisysLink' ); ?>" name="<?php echo $this->get_field_name( 'showXavisysLink' ); ?>"<?php checked( $instance['showXavisysLink'], 'true' ); ?> />
@@ -166,6 +176,8 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
  * It also helps us avoid name collisions.
  */
 class wpTwitterWidget extends XavisysPlugin {
+	private $_api_url = 'https://api.twitter.com/1/';
+
 	/**
 	 * @var wpTwitterWidget - Static property to hold our singleton instance
 	 */
@@ -248,6 +260,20 @@ class wpTwitterWidget extends XavisysPlugin {
 					</tr>
 					<tr valign="top">
 						<th scope="row">
+							<label for="twp_avatar"><?php _e( 'Display profile image?', $this->_slug ); ?></label>
+						</th>
+						<td>
+							<select id="twp_avatar" name="twp[avatar]">
+								<option value=""<?php selected( $this->_settings['twp']['avatar'], '' ) ?>>Do not show</option>
+								<option value=""<?php selected( $this->_settings['twp']['avatar'], 'mini' ) ?>>Mini - 24px by 24px</option>
+								<option value=""<?php selected( $this->_settings['twp']['avatar'], 'normal' ) ?>>Normal - 48px by 48px</option>
+								<option value=""<?php selected( $this->_settings['twp']['avatar'], 'bigger' ) ?>>Bigger - 73px by 73px</option>
+								<option value=""<?php selected( $this->_settings['twp']['avatar'], 'original' ) ?>>Original</option>
+							</select>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row">
 							<label for="twp_errmsg"><?php _e( 'What to display when Twitter is down ( optional ):', $this->_slug ); ?></label>
 						</th>
 						<td>
@@ -291,6 +317,9 @@ class wpTwitterWidget extends XavisysPlugin {
 							<?php _e( "Other Setting:", $this->_slug );?>
 						</th>
 						<td>
+							<input class="checkbox" type="checkbox" value="true" id="twp_showretweets" name="twp[showretweets]"<?php checked( $this->_settings['twp']['showretweets'], 'true' ); ?> />
+							<label for="twp_showretweets"><?php _e( 'Include retweets', $this->_slug ); ?></label>
+							<br />
 							<input class="checkbox" type="checkbox" value="true" id="twp_hidereplies" name="twp[hidereplies]"<?php checked( $this->_settings['twp']['hidereplies'], 'true' ); ?> />
 							<label for="twp_hidereplies"><?php _e( 'Hide @replies', $this->_slug ); ?></label>
 							<br />
@@ -302,9 +331,6 @@ class wpTwitterWidget extends XavisysPlugin {
 							<br />
 							<input class="checkbox" type="checkbox" value="true" id="twp_targetBlank" name="twp[targetBlank]"<?php checked( $this->_settings['twp']['targetBlank'], 'true' ); ?> />
 							<label for="twp_targetBlank"><?php _e( 'Open links in a new window', $this->_slug ); ?></label>
-							<br />
-							<input class="checkbox" type="checkbox" value="true" id="twp_avatar" name="twp[avatar]"<?php checked( $this->_settings['twp']['avatar'], 'true' ); ?> />
-							<label for="twp_avatar"><?php _e( 'Show Profile Image', $this->_slug ); ?></label>
 							<br />
 							<input class="checkbox" type="checkbox" value="true" id="twp_showXavisysLink" name="twp[showXavisysLink]"<?php checked( $this->_settings['twp']['showXavisysLink'], 'true' ); ?> />
 							<label for="twp_showXavisysLink"><?php _e( 'Show Link to Twitter Widget Pro', $this->_slug ); ?></label>
@@ -482,9 +508,9 @@ class wpTwitterWidget extends XavisysPlugin {
 		);
 		$args['title'] = $this->_buildLink( $args['title'], $linkAttrs, current_user_can( 'unfiltered_html' ) );
 		$widgetContent .= $args['before_title'] . $args['title'] . $args['after_title'];
-		if ( !is_a( $tweets, 'wpTwitterWidgetException' ) && !empty( $tweets[0] ) && $args['avatar'] == 'true' ) {
+		if ( !is_a( $tweets, 'wpTwitterWidgetException' ) && !empty( $tweets[0] ) && !empty( $args['avatar'] ) ) {
 			$widgetContent .= '<div class="twitter-avatar">';
-			$widgetContent .= $this->_getProfileImage( $tweets[0]->user );
+			$widgetContent .= $this->_getProfileImage( $tweets[0]->user, $args );
 			$widgetContent .= '</div>';
 		}
 		$widgetContent .= '<ul>';
@@ -495,37 +521,35 @@ class wpTwitterWidget extends XavisysPlugin {
 		} else {
 			$count = 0;
 			foreach ( $tweets as $tweet ) {
-				if ( $args['hidereplies'] != 'true' || empty( $tweet->in_reply_to_user_id_str ) ) {
-					// Set our "ago" string which converts the date to "# ___(s) ago"
-					$tweet->ago = $this->_timeSince( strtotime( $tweet->created_at ), $args['showts'], $args['dateFormat'] );
-					$entryContent = apply_filters( 'widget_twitter_content', $tweet->text );
-					$from = sprintf( __( 'from %s', $this->_slug ), str_replace( '&', '&amp;', $tweet->source ) );
-					$widgetContent .= '<li>';
-					$widgetContent .= "<span class='entry-content'>{$entryContent}</span>";
-					$widgetContent .= " <span class='entry-meta'>";
-					$widgetContent .= "<span class='time-meta'>";
+				// Set our "ago" string which converts the date to "# ___(s) ago"
+				$tweet->ago = $this->_timeSince( strtotime( $tweet->created_at ), $args['showts'], $args['dateFormat'] );
+				$entryContent = apply_filters( 'widget_twitter_content', $tweet->text );
+				$from = sprintf( __( 'from %s', $this->_slug ), str_replace( '&', '&amp;', $tweet->source ) );
+				$widgetContent .= '<li>';
+				$widgetContent .= "<span class='entry-content'>{$entryContent}</span>";
+				$widgetContent .= " <span class='entry-meta'>";
+				$widgetContent .= "<span class='time-meta'>";
+				$linkAttrs = array(
+					'href'	=> "http://twitter.com/{$tweet->user->screen_name}/statuses/{$tweet->id_str}"
+				);
+				$widgetContent .= $this->_buildLink( $tweet->ago, $linkAttrs );
+				$widgetContent .= '</span>';
+				if ( 'true' != $args['hidefrom'] )
+					$widgetContent .= " <span class='from-meta'>{$from}</span>";
+				if ( !empty( $tweet->in_reply_to_screen_name ) ) {
+					$rtLinkText = sprintf( __( 'in reply to %s', $this->_slug ), $tweet->in_reply_to_screen_name );
+					$widgetContent .=  ' <span class="in-reply-to-meta">';
 					$linkAttrs = array(
-						'href'	=> "http://twitter.com/{$tweet->user->screen_name}/statuses/{$tweet->id_str}"
+						'href'	=> "http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id_str}",
+						'class'	=> 'reply-to'
 					);
-					$widgetContent .= $this->_buildLink( $tweet->ago, $linkAttrs );
+					$widgetContent .= $this->_buildLink( $rtLinkText, $linkAttrs );
 					$widgetContent .= '</span>';
-					if ( 'true' != $args['hidefrom'] )
-						$widgetContent .= " <span class='from-meta'>{$from}</span>";
-					if ( !empty( $tweet->in_reply_to_screen_name ) ) {
-						$rtLinkText = sprintf( __( 'in reply to %s', $this->_slug ), $tweet->in_reply_to_screen_name );
-						$widgetContent .=  ' <span class="in-reply-to-meta">';
-						$linkAttrs = array(
-							'href'	=> "http://twitter.com/{$tweet->in_reply_to_screen_name}/statuses/{$tweet->in_reply_to_status_id_str}",
-							'class'	=> 'reply-to'
-						);
-						$widgetContent .= $this->_buildLink( $rtLinkText, $linkAttrs );
-						$widgetContent .= '</span>';
-					}
-					$widgetContent .= '</span></li>';
+				}
+				$widgetContent .= '</span></li>';
 
-					if ( ++$count >= $args['items'] ) {
-						break;
-					}
+				if ( ++$count >= $args['items'] ) {
+					break;
 				}
 			}
 		}
@@ -609,20 +633,40 @@ class wpTwitterWidget extends XavisysPlugin {
 		if ( !in_array( $type, array( 'rss', 'json' ) ) ) {
 			$type = 'json';
 		}
+		$req = $this->_api_url . "statuses/user_timeline.{$type}";
+
+		/**
+		 * user_id
+		 * screen_name *
+		 * since_id
+		 * count
+		 * max_id
+		 * page
+		 * trim_user
+		 * include_rts *
+		 * include_entities
+		 * exclude_replies *
+		 * contributor_details
+		 */
+
+		$req = add_query_arg( array( 'screen_name' => $widgetOptions['username'] ), $req );
 		if ( $count ) {
-			$num = ( $widgetOptions['hidereplies'] )? 100:$widgetOptions['items'];
-			$count = sprintf( '?count=%u', $num );
-		} else {
-			$count = '';
+			$req = add_query_arg( array( 'count' => $widgetOptions['items'] ), $req );
 		}
-		return sprintf( 'http://twitter.com/statuses/user_timeline/%1$s.%2$s%3$s', $widgetOptions['username'], $type, $count );
+		if ( $widgetOptions['hidereplies'] ) {
+			$req = add_query_arg( array( 'exclude_replies' => 'true' ), $req );
+		}
+		if ( $widgetOptions['showretweets'] ) {
+			$req = add_query_arg( array( 'include_rts' => 'true' ), $req );
+		}
+		return $req;
 	}
 
 	/**
-	 * Twitter displays all tweets that are less than 24 with something like
-	 * "about 4 hours ago" and ones older than 24 hours with a time and date.
-	 * This function allows us to simulate that functionality, but lets us
-	 * choose where the dividing line is.
+	 * Twitter displays all tweets that are less than 24 hours old with
+	 * something like "about 4 hours ago" and ones older than 24 hours with a
+	 * time and date. This function allows us to simulate that functionality,
+	 * but lets us choose where the dividing line is.
 	 *
 	 * @param int $startTimestamp - The timestamp used to calculate time passed
 	 * @param int $max - Max number of seconds to conver to "ago" messages.  0 for all, -1 for none
@@ -670,14 +714,19 @@ class wpTwitterWidget extends XavisysPlugin {
 	 * Returns the Twitter user's profile image, linked to that user's profile
 	 *
 	 * @param object $user - Twitter User
+	 * @param array $args - Widget Arguments
 	 * @return string - Linked image ( XHTML )
 	 */
-	private function _getProfileImage( $user ) {
+	private function _getProfileImage( $user, $args = array() ) {
 		$linkAttrs = array(
 			'href'  => "http://twitter.com/{$user->screen_name}",
 			'title' => $user->name
 		);
-		return $this->_buildLink( "<img alt='{$user->name}' src='{$user->profile_image_url}' />", $linkAttrs, true );
+		$img = $this->_api_url . 'users/profile_image';
+		$img = add_query_arg( array( 'screen_name' => $user->screen_name ), $img );
+		$img = add_query_arg( array( 'size' => $args['avatar'] ), $img );
+
+		return $this->_buildLink( "<img alt='{$user->name}' src='{$img}' />", $linkAttrs, true );
 	}
 
     /**
@@ -699,8 +748,9 @@ class wpTwitterWidget extends XavisysPlugin {
 			'username'        => '',
 			'hiderss'         => false,
 			'hidereplies'     => false,
+			'showretweets'    => true,
 			'hidefrom'        => false,
-			'avatar'          => false,
+			'avatar'          => '',
 			'showXavisysLink' => false,
 			'targetBlank'     => false,
 			'items'           => 10,
@@ -741,11 +791,14 @@ class wpTwitterWidget extends XavisysPlugin {
 		if ( $attr['hidereplies'] && $attr['hidereplies'] != 'false' && $attr['hidereplies'] != '0' ) {
 			$attr['hidereplies'] == true;
 		}
+		if ( $attr['showretweets'] && $attr['showretweets'] != 'false' && $attr['showretweets'] != '0' ) {
+			$attr['showretweets'] == true;
+		}
 		if ( $attr['hidefrom'] && $attr['hidefrom'] != 'false' && $attr['hidefrom'] != '0' ) {
 			$attr['hidefrom'] == true;
 		}
-		if ( $attr['avatar'] && $attr['avatar'] != 'false' && $attr['avatar'] != '0' ) {
-			$attr['avatar'] == true;
+		if ( !in_array( $attr['avatar'], array( 'bigger', 'normal', 'mini', 'original', '' ) ) ) {
+			$attr['avatar'] = 'normal';
 		}
 		if ( $attr['showXavisysLink'] && $attr['showXavisysLink'] != 'false' && $attr['showXavisysLink'] != '0' ) {
 			$attr['showXavisysLink'] == true;
@@ -765,8 +818,9 @@ class wpTwitterWidget extends XavisysPlugin {
 			'username'        => '',
 			'hiderss'         => false,
 			'hidereplies'     => false,
+			'showretweets'    => true,
 			'hidefrom'        => false,
-			'avatar'          => false,
+			'avatar'          => '',
 			'showXavisysLink' => false,
 			'targetBlank'     => false,
 			'items'           => 10,
@@ -774,11 +828,25 @@ class wpTwitterWidget extends XavisysPlugin {
 			'dateFormat'      => __( 'h:i:s A F d, Y', $this->_slug ),
 		);
 
-		return wp_parse_args( $settings, $defaultArgs );
+		return $this->fixAvatar( wp_parse_args( $settings, $defaultArgs ) );
+	}
+
+	/**
+	 * Now that we support all the profile image sizes we need to convert
+	 * the old true/false to a size string
+	 */
+	private function fixAvatar( $settings ) {
+		if ( false === $settings['avatar'] ) {
+			$settings['avatar'] = '';
+		} elseif ( !in_array( $settings['avatar'], array( 'bigger', 'normal', 'mini', 'original', false ) ) ) {
+			$settings['avatar'] = 'normal';
+		}
+
+		return $settings;
 	}
 
 	public function getSettings( $settings ) {
-		return wp_parse_args( $settings, $this->_settings['twp'] );
+		return $this->fixAvatar( wp_parse_args( $settings, $this->_settings['twp'] ) );
 	}
 }
 // Instantiate our class
