@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 2.2.3
+Stable tag: 2.2.4
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -82,7 +82,7 @@ Aparently the database queries required to display the friends feed was causing 
 == Upgrade Notice ==
 
 = 2.2.4 =
-Uses new API urls, new "hide replies" support in the API,
+Uses new API urls, new "hide replies" support in the API, can show retweets, supports multiple profile image sizes
 
 = 2.2.3 =
 Fixes links on 32 bit servers.  If you are suffering from this I would recommend changing hosts (or talking to yours).
