@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.2.4
+ * Version: 2.3.0-alpha
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * License: GPLv2 or later
@@ -28,8 +28,8 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once( 'tlc-transients.php' );
 require_once( 'xavisys-plugin-framework.php' );
-class wpTwitterWidgetException extends Exception {}
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
@@ -472,11 +472,9 @@ class wpTwitterWidget extends XavisysPlugin {
 			$args['showts'] = 86400;
 		}
 
-		try {
-			$tweets = $this->_getTweets( $args );
-		} catch ( wpTwitterWidgetException $e ) {
-			$tweets = $e;
-		}
+		$tweets = $this->_getTweets( $args );
+		if ( false === $tweets )
+			return '';
 
 		$widgetContent = $args['before_widget'] . '<div>';
 
@@ -508,15 +506,13 @@ class wpTwitterWidget extends XavisysPlugin {
 		);
 		$args['title'] = $this->_buildLink( $args['title'], $linkAttrs, current_user_can( 'unfiltered_html' ) );
 		$widgetContent .= $args['before_title'] . $args['title'] . $args['after_title'];
-		if ( !is_a( $tweets, 'wpTwitterWidgetException' ) && !empty( $tweets[0] ) && !empty( $args['avatar'] ) ) {
+		if ( !empty( $tweets[0] ) && !empty( $args['avatar'] ) ) {
 			$widgetContent .= '<div class="twitter-avatar">';
 			$widgetContent .= $this->_getProfileImage( $tweets[0]->user, $args );
 			$widgetContent .= '</div>';
 		}
 		$widgetContent .= '<ul>';
-		if ( is_a( $tweets, 'wpTwitterWidgetException' ) ) {
-			$widgetContent .= '<li class="wpTwitterWidgetError">' . $tweets->getMessage() . '</li>';
-		} else if ( count( $tweets ) == 0 ) {
+		if ( count( $tweets ) == 0 ) {
 			$widgetContent .= '<li class="wpTwitterWidgetEmpty">' . __( 'No Tweets Available', $this->_slug ) . '</li>';
 		} else {
 			$count = 0;
@@ -575,16 +571,11 @@ class wpTwitterWidget extends XavisysPlugin {
 	 * @return array - Array of objects
 	 */
 	private function _getTweets( $widgetOptions ) {
-		$key = md5( $this->_getFeedUrl( $widgetOptions ) );
-		if ( false === ( $tweets = get_site_transient( 'twp_' . $key ) ) ) {
-			try {
-				$tweets = $this->_parseFeed( $widgetOptions );
-				set_site_transient( 'twp_' . $key, $tweets, 300 ); // cache for 5 minutes
-			} catch ( wpTwitterWidgetException $e ) {
-				throw $e;
-			}
-		}
-		return $tweets;
+		$key = 'twp_' . md5( $this->_getFeedUrl( $widgetOptions ) );
+		return tlc_transient( $key )
+			->expires_in( 300 ) // cache for 5 minutes
+			->updates_with( array( $this, 'parseFeed' ), array( $widgetOptions ) )
+			->get();
 	}
 
 	/**
@@ -593,32 +584,28 @@ class wpTwitterWidget extends XavisysPlugin {
 	 * @param array $widgetOptions - settings needed to get feed url, etc
 	 * @return array
 	 */
-	private function _parseFeed( $widgetOptions ) {
+	public function parseFeed( $widgetOptions ) {
 		$feedUrl = $this->_getFeedUrl( $widgetOptions );
 		$resp = wp_remote_request( $feedUrl, array( 'timeout' => $widgetOptions['fetchTimeOut'] ) );
 
 		if ( !is_wp_error( $resp ) && $resp['response']['code'] >= 200 && $resp['response']['code'] < 300 ) {
 			$decodedResponse = json_decode( $resp['body'] );
 			if ( empty( $decodedResponse ) ) {
-				if ( empty( $widgetOptions['errmsg'] ) ) {
+				if ( empty( $widgetOptions['errmsg'] ) )
 					$widgetOptions['errmsg'] = __( 'Invalid Twitter Response.', $this->_slug );
-				}
-				throw new wpTwitterWidgetException( $widgetOptions['errmsg'] );
 			} elseif( !empty( $decodedResponse->error ) ) {
-				if ( empty( $widgetOptions['errmsg'] ) ) {
+				if ( empty( $widgetOptions['errmsg'] ) )
 					$widgetOptions['errmsg'] = $decodedResponse->error;
-				}
-				throw new wpTwitterWidgetException( $widgetOptions['errmsg'] );
 			} else {
 				return $decodedResponse;
 			}
 		} else {
 			// Failed to fetch url;
-			if ( empty( $widgetOptions['errmsg'] ) ) {
+			if ( empty( $widgetOptions['errmsg'] ) )
 				$widgetOptions['errmsg'] = __( 'Could not connect to Twitter', $this->_slug );
-			}
-			throw new wpTwitterWidgetException( $widgetOptions['errmsg'] );
 		}
+		do_action( 'widget_twitter_parsefeed_error', $resp, $feedUrl, $widgetOptions );
+		throw new Exception( $widgetOptions['errmsg'] );
 	}
 
 	/**
@@ -698,11 +685,11 @@ class wpTwitterWidget extends XavisysPlugin {
 		}
 
 		$messages = array(
-			'year'   => _n( 'about %s year ago', 'about %s years ago', $count, $this->_slug ),
-			'month'  => _n( 'about %s month ago', 'about %s months ago', $count, $this->_slug ),
-			'week'   => _n( 'about %s week ago', 'about %s weeks ago', $count, $this->_slug ),
-			'day'    => _n( 'about %s day ago', 'about %s days ago', $count, $this->_slug ),
-			'hour'   => _n( 'about %s hour ago', 'about %s hours ago', $count, $this->_slug ),
+			'year'   => _n( 'about %s year ago',   'about %s years ago',   $count, $this->_slug ),
+			'month'  => _n( 'about %s month ago',  'about %s months ago',  $count, $this->_slug ),
+			'week'   => _n( 'about %s week ago',   'about %s weeks ago',   $count, $this->_slug ),
+			'day'    => _n( 'about %s day ago',    'about %s days ago',    $count, $this->_slug ),
+			'hour'   => _n( 'about %s hour ago',   'about %s hours ago',   $count, $this->_slug ),
 			'minute' => _n( 'about %s minute ago', 'about %s minutes ago', $count, $this->_slug ),
 			'second' => _n( 'about %s second ago', 'about %s seconds ago', $count, $this->_slug ),
 		);
