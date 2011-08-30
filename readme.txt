@@ -95,6 +95,10 @@ Better SEO by adding the ability to remove the "from" links - Thanks <a href="ht
 
 == Changelog ==
 
+= 2.3.0 =
+* Integrate Mark Jaquith's TLC Transients https://gist.github.com/1149945
+* Add Twitter Web Intents (reply, retweet, favorite)
+
 = 2.2.4 =
 * Use the new API URLs
 * Use the new "hide replies" option in the Twitter API
