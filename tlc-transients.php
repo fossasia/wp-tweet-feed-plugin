@@ -75,8 +75,10 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 				return false;
 			if ( $this->has_update_lock() && !$this->owns_update_lock() )
 				return; // Race... let the other process handle it
-			$data = call_user_func_array( $this->callback, $this->params );
-			$this->set( $data );
+			try {
+				$data = call_user_func_array( $this->callback, $this->params );
+				$this->set( $data );
+			} catch( Exception $e ) {}
 			$this->release_update_lock();
 			return $data;
 		}
