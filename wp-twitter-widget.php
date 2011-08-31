@@ -483,17 +483,11 @@ class wpTwitterWidget extends XavisysPlugin {
 
 		$widgetContent = $args['before_widget'] . '<div>';
 
-		$twitterLink = 'http://twitter.com/' . $args['username'];
-
 		if ( empty( $args['title'] ) )
 			$args['title'] = "Twitter: {$args['username']}";
 
-		$linkAttrs = array(
-			'class'	=> 'twitterwidget twitterwidget-title',
-			'title'	=> "Twitter: {$args['username']}",
-			'href'	=> $twitterLink
-		);
-		$args['title'] = $this->_buildLink( $args['title'], $linkAttrs, current_user_can( 'unfiltered_html' ) );
+		$args['title'] = apply_filters( 'twitter-widget-title', $args['title'], $args );
+		$args['title'] = "<span class='twitterwidget twitterwidget-title'>{$args['title']}</span>";
 		$widgetContent .= $args['before_title'] . $args['title'] . $args['after_title'];
 		if ( !empty( $tweets[0] ) && !empty( $args['avatar'] ) ) {
 			$widgetContent .= '<div class="twitter-avatar">';
