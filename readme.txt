@@ -15,6 +15,8 @@ link parsing.  It supports displaying profiles images, and even lets you control
 whether to display the time and date of a tweet or how log ago it happened
 (about 5 hours ago, etc).  Requires PHP5.
 
+Author: <a href="http://xavisys.com/" title="WordPress development">Aaron D. Campbell</a>
+
 == Installation ==
 
 1. Verify that you have PHP5, which is required for this plugin.
@@ -23,10 +25,6 @@ whether to display the time and date of a tweet or how log ago it happened
 1. In WordPress admin go to 'Appearance' -> 'Widgets' and add "Twitter Widget Pro" to one of your widget-ready areas of your site
 
 == Frequently Asked Questions ==
-
-= Can I use more than one instance of this widget? =
-
-Yes, Twitter Widget Pro employs the multi-widget pattern, which allows you to not only have more than one instance of this widget on your site, but even allows more than one instance of this widget in a single sidebar.
 
 = Can I follow more than one feed? =
 
@@ -68,6 +66,56 @@ You can see these put into action by trying something like:
 * `[twitter-widget username="wpinformer" before_widget="<div class='half-box'>" after_widget="</div>" before_title="<h1>" after_title="</h1>" errmsg="Uh oh!" hiderss="true" hidereplies="true" targetBlank="true" avatar="1" showXavisysLink="1" items="3" showts="60" title="Your Title"]`
 * `[twitter-widget username="wpinformer"]`
 
+= How cna I style it to look nicer? =
+
+There are plenty of CSS classes throughout the HTML that is generated, and you can use those to style things.  Here is some sample CSS that I use with the <a href="essencetheme.com" title="Essence Theme for WordPress">Essence Theme</a>.  You'll need to get the "Everything" sprite from <a href="https://dev.twitter.com/docs/image-resources">Twitter's Image Resources</a>.
+`
+.widget_twitter div {
+	padding:0;
+}
+
+.widget_twitter ul li {
+	margin-bottom:5px;
+}
+
+.widget_twitter .follow-button,
+.widget_twitter .xavisys-link {
+	list-style-type:none;
+	margin-top:10px;
+}
+
+.widget_twitter .entry-meta {
+	display:block;
+	font-size:80%;
+}
+
+.widget_twitter .intent-meta a {
+	background: url(images/everything-spritev2.png); /** from Twitter ressources */
+	display: inline-block;
+	height: 16px;
+	text-indent: -9999px;
+	width: 16px;
+}
+.widget_twitter .intent-meta a.in-reply-to {
+	background-position: 0 center;
+}
+.widget_twitter .intent-meta a:hover.in-reply-to {
+	background-position: -16px center;
+}
+.widget_twitter .intent-meta a.favorite {
+	background-position: -32px center;
+}
+.widget_twitter .intent-meta a:hover.favorite {
+	background-position: -48px center;
+}
+.widget_twitter .intent-meta a.retweet {
+	background-position: -80px center;
+}
+.widget_twitter .intent-meta a:hover.retweet {
+	background-position: -96px center;
+}
+`
+
 = Why can't I display a friends feed anymore? =
 
 Aparently the database queries required to display the friends feed was causing twitter to crash, so they removed it.  Unfortunately, this is outside my control.
@@ -81,23 +129,18 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.3.0 =
+Fewer "could not connect to Twitter" messages, 
+
 = 2.2.4 =
 Uses new API urls, new "hide replies" support in the API, can show retweets, supports multiple profile image sizes
-
-= 2.2.3 =
-Fixes links on 32 bit servers.  If you are suffering from this I would recommend changing hosts (or talking to yours).
-
-= 2.2.2 =
-Fixes issue introduced in 2.2.1 with an incorrect function name (sorry about that)
-
-= 2.2.1 =
-Better SEO by adding the ability to remove the "from" links - Thanks <a href="http://yoast.com/">Joost de Valk</a>
 
 == Changelog ==
 
 = 2.3.0 =
-* Integrate Mark Jaquith's TLC Transients https://gist.github.com/1149945
+* Integrate Mark Jaquith's TLC Transients https://gist.github.com/1149945 which lets us only get rid of old tweets once we have successfully received new ones.
 * Add Twitter Web Intents (reply, retweet, favorite)
+* Add option for Twitter Follow button
 
 = 2.2.4 =
 * Use the new API URLs
