@@ -83,8 +83,7 @@ There are plenty of CSS classes throughout the HTML that is generated, and you c
 
 .widget_twitter .follow-button,
 .widget_twitter .xavisys-link {
-	list-style-type:none;
-	margin-top:10px;
+	margin:0 10px 10px 25px;
 }
 
 .widget_twitter .entry-meta {
