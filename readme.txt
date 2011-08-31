@@ -130,7 +130,7 @@ Aparently the database queries required to display the friends feed was causing 
 == Upgrade Notice ==
 
 = 2.3.0 =
-Fewer "could not connect to Twitter" messages,
+Fewer "could not connect to Twitter" messages, new links (reply, retweet, favorite), new follow button, and avatar fixes
 
 = 2.2.4 =
 Uses new API urls, new "hide replies" support in the API, can show retweets, supports multiple profile image sizes
@@ -141,6 +141,7 @@ Uses new API urls, new "hide replies" support in the API, can show retweets, sup
 * Integrate Mark Jaquith's TLC Transients https://gist.github.com/1149945 which lets us only get rid of old tweets once we have successfully received new ones.
 * Add Twitter Web Intents (reply, retweet, favorite)
 * Add option for Twitter Follow button
+* Fix issues with saving avatar sizes
 
 = 2.2.4 =
 * Use the new API URLs

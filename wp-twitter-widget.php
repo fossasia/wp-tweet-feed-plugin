@@ -83,10 +83,10 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				<label for="<?php echo $this->get_field_id( 'avatar' ); ?>"><?php _e( 'Display profile image?', $this->_slug ); ?></label>
 				<select id="<?php echo $this->get_field_id( 'avatar' ); ?>" name="<?php echo $this->get_field_name( 'avatar' ); ?>">
 					<option value=""<?php selected( $instance['avatar'], '' ) ?>>Do not show</option>
-					<option value=""<?php selected( $instance['avatar'], 'mini' ) ?>>Mini - 24px by 24px</option>
-					<option value=""<?php selected( $instance['avatar'], 'normal' ) ?>>Normal - 48px by 48px</option>
-					<option value=""<?php selected( $instance['avatar'], 'bigger' ) ?>>Bigger - 73px by 73px</option>
-					<option value=""<?php selected( $instance['avatar'], 'original' ) ?>>Original</option>
+					<option value="mini"<?php selected( $instance['avatar'], 'mini' ) ?>>Mini - 24px by 24px</option>
+					<option value="normal"<?php selected( $instance['avatar'], 'normal' ) ?>>Normal - 48px by 48px</option>
+					<option value="bigger"<?php selected( $instance['avatar'], 'bigger' ) ?>>Bigger - 73px by 73px</option>
+					<option value="original"<?php selected( $instance['avatar'], 'original' ) ?>>Original</option>
 				</select>
 			</p>
 			<p>
@@ -273,10 +273,10 @@ class wpTwitterWidget extends XavisysPlugin {
 						<td>
 							<select id="twp_avatar" name="twp[avatar]">
 								<option value=""<?php selected( $this->_settings['twp']['avatar'], '' ) ?>>Do not show</option>
-								<option value=""<?php selected( $this->_settings['twp']['avatar'], 'mini' ) ?>>Mini - 24px by 24px</option>
-								<option value=""<?php selected( $this->_settings['twp']['avatar'], 'normal' ) ?>>Normal - 48px by 48px</option>
-								<option value=""<?php selected( $this->_settings['twp']['avatar'], 'bigger' ) ?>>Bigger - 73px by 73px</option>
-								<option value=""<?php selected( $this->_settings['twp']['avatar'], 'original' ) ?>>Original</option>
+								<option value="mini"<?php selected( $this->_settings['twp']['avatar'], 'mini' ) ?>>Mini - 24px by 24px</option>
+								<option value="normal"<?php selected( $this->_settings['twp']['avatar'], 'normal' ) ?>>Normal - 48px by 48px</option>
+								<option value="bigger"<?php selected( $this->_settings['twp']['avatar'], 'bigger' ) ?>>Bigger - 73px by 73px</option>
+								<option value="original"<?php selected( $this->_settings['twp']['avatar'], 'original' ) ?>>Original</option>
 							</select>
 						</td>
 					</tr>
