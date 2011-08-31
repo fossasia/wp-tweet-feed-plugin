@@ -593,8 +593,9 @@ class wpTwitterWidget extends XavisysPlugin {
 			}
 		}
 
+		$widgetContent .= '</ul>';
 		if ( 'true' == $args['showfollow'] ) {
-			$widgetContent .= '<li class="follow-button">';
+			$widgetContent .= '<div class="follow-button">';
 			$linkText = "@{$args['username']}";
 			$linkAttrs = array(
 				'href'	=> "http://twitter.com/{$args['username']}",
@@ -602,20 +603,20 @@ class wpTwitterWidget extends XavisysPlugin {
 				'title'	=> sprintf( __( 'Follow %s', $this->_slug ), "@{$args['username']}" ),
 			);
 			$widgetContent .= $this->_buildLink( $linkText, $linkAttrs );
-			$widgetContent .= '</li>';
+			$widgetContent .= '</div>';
 		}
 
 		if ( 'true' == $args['showXavisysLink'] ) {
-			$widgetContent .= '<li class="xavisys-link"><span class="xavisys-link-text">';
+			$widgetContent .= '<div class="xavisys-link"><span class="xavisys-link-text">';
 			$linkAttrs = array(
 				'href'	=> 'http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/',
 				'title'	=> __( 'Get Twitter Widget for your WordPress site', $this->_slug )
 			);
 			$widgetContent .= __( 'Powered by', $this->_slug );
 			$widgetContent .= $this->_buildLink( 'WordPress Twitter Widget Pro', $linkAttrs );
-			$widgetContent .= '</span></li>';
+			$widgetContent .= '</span></div>';
 		}
-		$widgetContent .= '</ul></div>' . $args['after_widget'];
+		$widgetContent .= '</div>' . $args['after_widget'];
 
 		if ( 'true' == $args['showintents'] || 'true' == $args['showfollow'] ) {
 			wp_enqueue_script( 'twitter-widgets', 'http://platform.twitter.com/widgets.js', array(), '1.0.0', true );
