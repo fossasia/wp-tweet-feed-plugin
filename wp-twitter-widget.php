@@ -134,10 +134,6 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				<input class="widefat" id="<?php echo $this->get_field_id( 'dateFormat' ); ?>" name="<?php echo $this->get_field_name( 'dateFormat' ); ?>" type="text" value="<?php esc_attr_e( $instance['dateFormat'] ); ?>" />
 			</p>
 			<p>
-				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'hiderss' ); ?>" name="<?php echo $this->get_field_name( 'hiderss' ); ?>"<?php checked( $instance['hiderss'], 'true' ); ?> />
-				<label for="<?php echo $this->get_field_id( 'hiderss' ); ?>"><?php _e( 'Hide RSS Icon and Link', $this->_slug ); ?></label>
-			</p>
-			<p>
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'targetBlank' ); ?>" name="<?php echo $this->get_field_name( 'targetBlank' ); ?>"<?php checked( $instance['targetBlank'], 'true' ); ?> />
 				<label for="<?php echo $this->get_field_id( 'targetBlank' ); ?>"><?php _e( 'Open links in a new window', $this->_slug ); ?></label>
 			</p>
@@ -340,9 +336,6 @@ class wpTwitterWidget extends XavisysPlugin {
 							<input class="checkbox" type="checkbox" value="true" id="twp_showfollow" name="twp[showfollow]"<?php checked( $this->_settings['twp']['showfollow'], 'true' ); ?> />
 							<label for="twp_showfollow"><?php _e( 'Show Follow Link', $this->_slug ); ?></label>
 							<br />
-							<input class="checkbox" type="checkbox" value="true" id="twp_hiderss" name="twp[hiderss]"<?php checked( $this->_settings['twp']['hiderss'], 'true' ); ?> />
-							<label for="twp_hiderss"><?php _e( 'Hide RSS Icon and Link', $this->_slug ); ?></label>
-							<br />
 							<input class="checkbox" type="checkbox" value="true" id="twp_targetBlank" name="twp[targetBlank]"<?php checked( $this->_settings['twp']['targetBlank'], 'true' ); ?> />
 							<label for="twp_targetBlank"><?php _e( 'Open links in a new window', $this->_slug ); ?></label>
 							<br />
@@ -490,22 +483,6 @@ class wpTwitterWidget extends XavisysPlugin {
 
 		$widgetContent = $args['before_widget'] . '<div>';
 
-		// If "hide rss" hasn't been checked, show the linked icon
-		if ( $args['hiderss'] != 'true' ) {
-			if ( file_exists( dirname( __FILE__ ) . '/rss.png' ) )
-				$icon = str_replace( ABSPATH, get_option( 'siteurl' ).'/', dirname( __FILE__ ) ) . '/rss.png';
-			else
-				$icon = get_option( 'siteurl' ).'/wp-includes/images/rss.png';
-
-			$feedUrl = $this->_getFeedUrl( $args, 'rss', false );
-			$linkAttrs = array(
-				'class'	=> 'twitterwidget twitterwidget-rss',
-				'title'	=> __( 'Syndicate this content', $this->_slug ),
-				'href'	=> $feedUrl
-			);
-
-			$args['before_title'] .= $this->_buildLink( "<img style='background:orange;color:white;border:none;' width='14' height='14' src='{$icon}' alt='RSS' />", $linkAttrs, true );
-		}
 		$twitterLink = 'http://twitter.com/' . $args['username'];
 
 		if ( empty( $args['title'] ) )
@@ -801,7 +778,6 @@ class wpTwitterWidget extends XavisysPlugin {
 			'errmsg'          => '',
 			'fetchTimeOut'    => '2',
 			'username'        => '',
-			'hiderss'         => 'false',
 			'hidereplies'     => 'false',
 			'showretweets'    => 'true',
 			'hidefrom'        => 'false',
@@ -842,9 +818,6 @@ class wpTwitterWidget extends XavisysPlugin {
 
         $attr = shortcode_atts( $defaults, $attr );
 
-		if ( $attr['hiderss'] && $attr['hiderss'] != 'false' && $attr['hiderss'] != '0' )
-			$attr['hiderss'] = 'true';
-
 		if ( $attr['hidereplies'] && $attr['hidereplies'] != 'false' && $attr['hidereplies'] != '0' )
 			$attr['hidereplies'] = 'true';
 
@@ -878,7 +851,6 @@ class wpTwitterWidget extends XavisysPlugin {
 			'errmsg'          => '',
 			'fetchTimeOut'    => '2',
 			'username'        => '',
-			'hiderss'         => 'false',
 			'hidereplies'     => 'false',
 			'showretweets'    => 'true',
 			'hidefrom'        => 'false',
