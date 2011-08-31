@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.3.0-alpha
+ * Version: 2.3.0
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * License: GPLv2 or later
@@ -581,7 +581,7 @@ class wpTwitterWidget extends XavisysPlugin {
 			$widgetContent .= '<div class="xavisys-link"><span class="xavisys-link-text">';
 			$linkAttrs = array(
 				'href'	=> 'http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/',
-				'title'	=> __( 'Get Twitter Widget for your WordPress site', $this->_slug )
+				'title'	=> __( 'Twitter Widget brought to you by Xavisys - A WordPress development company', $this->_slug )
 			);
 			$widgetContent .= __( 'Powered by', $this->_slug );
 			$widgetContent .= $this->_buildLink( 'WordPress Twitter Widget Pro', $linkAttrs );
