@@ -66,7 +66,7 @@ You can see these put into action by trying something like:
 * `[twitter-widget username="wpinformer" before_widget="<div class='half-box'>" after_widget="</div>" before_title="<h1>" after_title="</h1>" errmsg="Uh oh!" hiderss="true" hidereplies="true" targetBlank="true" avatar="1" showXavisysLink="1" items="3" showts="60" title="Your Title"]`
 * `[twitter-widget username="wpinformer"]`
 
-= How cna I style it to look nicer? =
+= How can I style it to look nicer? =
 
 There are plenty of CSS classes throughout the HTML that is generated, and you can use those to style things.  Here is some sample CSS that I use with the <a href="essencetheme.com" title="Essence Theme for WordPress">Essence Theme</a>.  You'll need to get the "Everything" sprite from <a href="https://dev.twitter.com/docs/image-resources">Twitter's Image Resources</a>.
 `
@@ -130,7 +130,7 @@ Aparently the database queries required to display the friends feed was causing 
 == Upgrade Notice ==
 
 = 2.3.0 =
-Fewer "could not connect to Twitter" messages, 
+Fewer "could not connect to Twitter" messages,
 
 = 2.2.4 =
 Uses new API urls, new "hide replies" support in the API, can show retweets, supports multiple profile image sizes
