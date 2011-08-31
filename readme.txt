@@ -51,7 +51,7 @@ However, there are more things you can control.
 * hiderss - set to true to hide the RSS icon (defaults to false)
 * hidereplies - set to true to hide @replies that are sent from the account (defaults to false)
 * hidefrom - set to true to hide the "from ____" link that shows the application the tweet was sent from (defaults to false)
-* avatar - set to true to display the avatar from the Twitter account (defaults to false)
+* avatar - set to one of the available sizes (mini, normal, bigger, or original) (defaults to none)
 * targetBlank - set to true to have all links open in a new window (defaults to false)
 * showXavisysLink - set to true to display a link to the Twitter Widget Pro page.  We greatly appreciate your support in linking to this page so others can find this useful plugin too!  (defaults to false)
 * items - The number of items to display (defaults to 10)
@@ -59,6 +59,9 @@ However, there are more things you can control.
 * showts - Number of seconds old a tweet has to be to show ___ ago rather than a date/time (defaults to 86400 seconds which is 24 hours)
 * dateFormat - The format for dates (defaults to'h:i:s A F d, Y' or it's localization)
 * title - The title of the widget (defaults to 'Twitter: Username')
+* showretweets - set to true to show retweets, false to hide them (defaults to true)
+* showintents - set to true to show the reply, retweet, and favorite links for each tweet, false to hide them (defaults to true)
+* showfollow - set to true to show the follow button after tweets, false to hide it (defaults to true)
 
 You can see these put into action by trying something like:
 
