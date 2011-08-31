@@ -581,7 +581,7 @@ class wpTwitterWidget extends XavisysPlugin {
 			$widgetContent .= '<div class="xavisys-link"><span class="xavisys-link-text">';
 			$linkAttrs = array(
 				'href'	=> 'http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/',
-				'title'	=> __( 'Twitter Widget brought to you by Xavisys - A WordPress development company', $this->_slug )
+				'title'	=> __( 'Brought to you by Xavisys - A WordPress development company', $this->_slug )
 			);
 			$widgetContent .= __( 'Powered by', $this->_slug );
 			$widgetContent .= $this->_buildLink( 'WordPress Twitter Widget Pro', $linkAttrs );
