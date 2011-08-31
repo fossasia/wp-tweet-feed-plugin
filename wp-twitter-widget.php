@@ -106,6 +106,10 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				<label for="<?php echo $this->get_field_id( 'showintents' ); ?>"><?php _e( 'Show Tweet Intents (reply, retweet, favorite)', $this->_slug ); ?></label>
 			</p>
 			<p>
+				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'showfollow' ); ?>" name="<?php echo $this->get_field_name( 'showfollow' ); ?>"<?php checked( $instance['showfollow'], 'true' ); ?> />
+				<label for="<?php echo $this->get_field_id( 'showfollow' ); ?>"><?php _e( 'Show Follow Link', $this->_slug ); ?></label>
+			</p>
+			<p>
 				<label for="<?php echo $this->get_field_id( 'errmsg' ); ?>"><?php _e( 'What to display when Twitter is down ( optional ):', $this->_slug ); ?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id( 'errmsg' ); ?>" name="<?php echo $this->get_field_name( 'errmsg' ); ?>" type="text" value="<?php esc_attr_e( $instance['errmsg'] ); ?>" />
 			</p>
@@ -332,6 +336,9 @@ class wpTwitterWidget extends XavisysPlugin {
 							<br />
 							<input class="checkbox" type="checkbox" value="true" id="twp_showintents" name="twp[showintents]"<?php checked( $this->_settings['twp']['showintents'], 'true' ); ?> />
 							<label for="twp_showintents"><?php _e( 'Show Tweet Intents (reply, retweet, favorite)', $this->_slug ); ?></label>
+							<br />
+							<input class="checkbox" type="checkbox" value="true" id="twp_showfollow" name="twp[showfollow]"<?php checked( $this->_settings['twp']['showfollow'], 'true' ); ?> />
+							<label for="twp_showfollow"><?php _e( 'Show Follow Link', $this->_slug ); ?></label>
 							<br />
 							<input class="checkbox" type="checkbox" value="true" id="twp_hiderss" name="twp[hiderss]"<?php checked( $this->_settings['twp']['hiderss'], 'true' ); ?> />
 							<label for="twp_hiderss"><?php _e( 'Hide RSS Icon and Link', $this->_slug ); ?></label>
@@ -586,6 +593,18 @@ class wpTwitterWidget extends XavisysPlugin {
 			}
 		}
 
+		if ( 'true' == $args['showfollow'] ) {
+			$widgetContent .= '<li class="follow-button">';
+			$linkText = "@{$args['username']}";
+			$linkAttrs = array(
+				'href'	=> "http://twitter.com/{$args['username']}",
+				'class'	=> 'twitter-follow-button',
+				'title'	=> sprintf( __( 'Follow %s', $this->_slug ), "@{$args['username']}" ),
+			);
+			$widgetContent .= $this->_buildLink( $linkText, $linkAttrs );
+			$widgetContent .= '</li>';
+		}
+
 		if ( 'true' == $args['showXavisysLink'] ) {
 			$widgetContent .= '<li class="xavisys-link"><span class="xavisys-link-text">';
 			$linkAttrs = array(
@@ -598,11 +617,13 @@ class wpTwitterWidget extends XavisysPlugin {
 		}
 		$widgetContent .= '</ul></div>' . $args['after_widget'];
 
-		wp_enqueue_script( 'twitter-widgets', 'http://platform.twitter.com/widgets.js', array(), '1.0.0', true );
+		if ( 'true' == $args['showintents'] || 'true' == $args['showfollow'] ) {
+			wp_enqueue_script( 'twitter-widgets', 'http://platform.twitter.com/widgets.js', array(), '1.0.0', true );
 
-		if ( ! function_exists( '_wp_footer_scripts' ) ) {
-			// This means we can't just enqueue our script (fixes in WP 3.3)
-			add_action( 'wp_footer', array( $this, 'add_twitter_js' ) );
+			if ( ! function_exists( '_wp_footer_scripts' ) ) {
+				// This means we can't just enqueue our script (fixes in WP 3.3)
+				add_action( 'wp_footer', array( $this, 'add_twitter_js' ) );
+			}
 		}
 		return $widgetContent;
 	}
@@ -784,6 +805,7 @@ class wpTwitterWidget extends XavisysPlugin {
 			'showretweets'    => 'true',
 			'hidefrom'        => 'false',
 			'showintents'     => 'true',
+			'showfollow'      => 'true',
 			'avatar'          => '',
 			'showXavisysLink' => 'false',
 			'targetBlank'     => 'false',
@@ -834,6 +856,9 @@ class wpTwitterWidget extends XavisysPlugin {
 		if ( $attr['showintents'] && $attr['showintents'] != 'true' && $attr['showintents'] != '1' )
 			$attr['showintents'] = 'false';
 
+		if ( $attr['showfollow'] && $attr['showfollow'] != 'true' && $attr['showfollow'] != '1' )
+			$attr['showfollow'] = 'false';
+
 		if ( !in_array( $attr['avatar'], array( 'bigger', 'normal', 'mini', 'original', '' ) ) )
 			$attr['avatar'] = 'normal';
 
@@ -857,6 +882,7 @@ class wpTwitterWidget extends XavisysPlugin {
 			'showretweets'    => 'true',
 			'hidefrom'        => 'false',
 			'showintents'     => 'true',
+			'showfollow'      => 'true',
 			'avatar'          => '',
 			'showXavisysLink' => 'false',
 			'targetBlank'     => 'false',
