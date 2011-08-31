@@ -144,6 +144,8 @@ Uses new API urls, new "hide replies" support in the API, can show retweets, sup
 * Add Twitter Web Intents (reply, retweet, favorite)
 * Add option for Twitter Follow button
 * Fix issues with saving avatar sizes
+* Remove "Hide RSS Icon and Link" option - Decisions not options.
+* Removed link from title.  Use the follow button option or if you have unfiltered_html privileges you can enter the HTML link as the title.
 
 = 2.2.4 =
 * Use the new API URLs
