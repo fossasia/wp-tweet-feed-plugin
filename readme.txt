@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 3.0
 Tested up to: 3.3.0
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -131,6 +131,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.3.1 =
+Fixes an issue with the intents and follow settings not being saved
+
 = 2.3.0 =
 Fewer "could not connect to Twitter" messages, new links (reply, retweet, favorite), new follow button, and avatar fixes
 
@@ -138,6 +141,9 @@ Fewer "could not connect to Twitter" messages, new links (reply, retweet, favori
 Uses new API urls, new "hide replies" support in the API, can show retweets, supports multiple profile image sizes
 
 == Changelog ==
+
+= 2.3.1 =
+* Fixes issue with saving a couple of the settings (tweet intents and follow button)
 
 = 2.3.0 =
 * Integrate Mark Jaquith's TLC Transients https://gist.github.com/1149945 which lets us only get rid of old tweets once we have successfully received new ones.
