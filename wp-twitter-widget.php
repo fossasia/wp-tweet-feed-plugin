@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.3.2
+ * Version: 2.3.3-alpha
  * Author: Aaron D. Campbell
  * Author URI: http://xavisys.com/
  * License: GPLv2 or later
@@ -30,6 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'xavisys-plugin-framework.php' );
+define( 'TWP_VERSION', '2.3.3' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
@@ -211,6 +212,14 @@ class wpTwitterWidget extends XavisysPlugin {
 		add_filter( 'widget_twitter_content', 'convert_chars' );
 		add_filter( $this->_slug .'-opt-twp', array( $this, 'filterSettings' ) );
 		add_shortcode( 'twitter-widget', array( $this, 'handleShortcodes' ) );
+
+		$twp_version = get_option( 'twp_version' );
+		if ( TWP_VERSION != $twp_version ) {
+			update_option( 'twp_version', TWP_VERSION );
+
+			if ( !$twp_version || version_compare( $twp_version, '2.3.3', '<' ) )
+				$this->_fix_stuck_updates();
+		}
 	}
 
 	/**
@@ -221,6 +230,19 @@ class wpTwitterWidget extends XavisysPlugin {
 			self::$instance = new self;
 
 		return self::$instance;
+	}
+
+	/**
+	 * There was a problem in TLC Transients in 2.3.2 that could cause updates
+	 * to get permanently locked.  This sets the timeout for each update
+	 * transient to 5 minutes from now so that they can be forcibly cleared
+	 */
+	private function _fix_stuck_updates() {
+		global $wpdb;
+		$twp_transients = $wpdb->get_results("SELECT * FROM `wp_options` WHERE `option_name` LIKE '_transient_tlc_update__%'");
+		foreach ( $twp_transients as $update_transient) {
+			update_option( str_replace( '_transient_', '_transient_timeout_', $update_transient->option_name ), time() + 300 );
+		}
 	}
 
 	public function get_slug() {
@@ -648,6 +670,7 @@ class wpTwitterWidget extends XavisysPlugin {
 			if ( empty( $widgetOptions['errmsg'] ) )
 				$widgetOptions['errmsg'] = __( 'Could not connect to Twitter', $this->_slug );
 		}
+
 		do_action( 'widget_twitter_parsefeed_error', $resp, $feedUrl, $widgetOptions );
 		throw new Exception( $widgetOptions['errmsg'] );
 	}

@@ -58,7 +58,7 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 
 		private function schedule_background_fetch() {
 			if ( !$this->has_update_lock() ) {
-				set_transient( 'tlc_update__' . $this->key, array( $this->new_update_lock(), $this->key, $this->expiration, $this->callback, $this->params ) );
+				set_transient( 'tlc_update__' . $this->key, array( $this->new_update_lock(), $this->key, $this->expiration, $this->callback, $this->params ), 300 );
 				add_action( 'shutdown', array( $this, 'spawn_server' ) );
 			}
 			return $this;
