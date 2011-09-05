@@ -7,7 +7,7 @@ class TLC_Transient_Update_Server {
 
 	public function init() {
 		if ( isset( $_POST['_tlc_update'] ) ) {
-			$update = get_transient( 'tlc_update__' . $_POST['key'] );
+			$update = get_transient( 'tlc_up__' . $_POST['key'] );
 			if ( $update && $update[0] == $_POST['_tlc_update'] ) {
 				tlc_transient( $update[1] )
 					->expires_in( $update[2] )
@@ -32,7 +32,7 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 		private $force_background_updates = false;
 
 		public function __construct( $key ) {
-			$this->key = $key;
+			$this->key = substr( $key, 0, 37 );
 		}
 
 		public function get() {
@@ -58,7 +58,7 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 
 		private function schedule_background_fetch() {
 			if ( !$this->has_update_lock() ) {
-				set_transient( 'tlc_update__' . $this->key, array( $this->new_update_lock(), $this->key, $this->expiration, $this->callback, $this->params ), 300 );
+				set_transient( 'tlc_up__' . $this->key, array( $this->new_update_lock(), $this->key, $this->expiration, $this->callback, $this->params ), 300 );
 				add_action( 'shutdown', array( $this, 'spawn_server' ) );
 			}
 			return $this;
@@ -104,11 +104,11 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 		}
 
 		private function release_update_lock() {
-			delete_transient( 'tlc_update__' . $this->key );
+			delete_transient( 'tlc_up__' . $this->key );
 		}
 
 		private function get_update_lock() {
-			$lock = get_transient( 'tlc_update__' . $this->key );
+			$lock = get_transient( 'tlc_up__' . $this->key );
 			if ( $lock )
 				return $lock[0];
 			else
