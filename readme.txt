@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%4
 Tags: twitter, widget, feed
 Requires at least: 3.0
 Tested up to: 3.3.0
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
 
@@ -131,6 +131,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.3.3 =
+Fixed issue with updates getting stuck, and add data-lang support for Twitter intents
+
 = 2.3.2 =
 Fixes some strings that were not translatable
 
@@ -141,6 +144,11 @@ Fixes an issue with the intents and follow settings not being saved
 Fewer "could not connect to Twitter" messages, new links (reply, retweet, favorite), new follow button, and avatar fixes
 
 == Changelog ==
+
+= 2.3.3 =
+* Updated TLC to fix issue where updates could get stuck "locked"
+* Add data-lang support for Twitter intents
+* Updated Italian translation - Thanks Gianni Diurno - http://gidibao.net
 
 = 2.3.2 =
 * Fix some strings that were not translatable
