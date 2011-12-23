@@ -1,21 +1,22 @@
 === Twitter Widget Pro ===
 Contributors: aaroncampbell
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal%40xavisys%2ecom&item_name=Twitter%20Widget%20Pro&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9993090
 Tags: twitter, widget, feed
 Requires at least: 3.0
 Tested up to: 3.3.0
 Stable tag: 2.3.4
 
-A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links. Requires PHP5.
+A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links.
 
 == Description ==
 
 A widget that properly handles twitter feeds, including @username, #hashtag, and
 link parsing.  It supports displaying profiles images, and even lets you control
 whether to display the time and date of a tweet or how log ago it happened
-(about 5 hours ago, etc).  Requires PHP5.
+(about 5 hours ago, etc).
 
-Author: <a href="http://xavisys.com/" title="WordPress development">Aaron D. Campbell</a>
+<a href="http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/">Twitter Widget Pro</a>
+Brought to you by <a href="http://bluedogwebservices.com/" title="WordPress Development">BlueDog Web Services</a>
 
 == Installation ==
 
