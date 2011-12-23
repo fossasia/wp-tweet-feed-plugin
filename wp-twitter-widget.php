@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Twitter Widget Pro
- * Plugin URI: http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/
+ * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.3.3
+ * Version: 2.3.4
  * Author: Aaron D. Campbell
- * Author URI: http://xavisys.com/
+ * Author URI: http://bluedogwebservices.com/
  * License: GPLv2 or later
  * Text Domain: twitter-widget-pro
  */
@@ -205,7 +205,7 @@ class wpTwitterWidget extends XavisysPlugin {
 		/**
 		 * Add filters and actions
 		 */
-		add_action( 'widgets_init', array( $this, 'register' ) );
+		add_action( 'widgets_init', array( $this, 'register' ), 11 );
 		add_filter( 'widget_twitter_content', array( $this, 'linkTwitterUsers' ) );
 		add_filter( 'widget_twitter_content', array( $this, 'linkUrls' ) );
 		add_filter( 'widget_twitter_content', array( $this, 'linkHashtags' ) );
@@ -464,6 +464,8 @@ class wpTwitterWidget extends XavisysPlugin {
 	}
 
 	public function register() {
+		// Fix conflict with Jetpack by disabling their Twitter widget
+		unregister_widget( 'Wickett_Twitter_Widget' );
 		register_widget( 'WP_Widget_Twitter_Pro' );
 	}
 
@@ -590,8 +592,8 @@ class wpTwitterWidget extends XavisysPlugin {
 		if ( 'true' == $args['showXavisysLink'] ) {
 			$widgetContent .= '<div class="xavisys-link"><span class="xavisys-link-text">';
 			$linkAttrs = array(
-				'href'	=> 'http://xavisys.com/wordpress-plugins/wordpress-twitter-widget/',
-				'title'	=> __( 'Brought to you by Xavisys - A WordPress development company', $this->_slug )
+				'href'	=> 'http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/',
+				'title'	=> __( 'Brought to you by BlueDog Web Services - A WordPress development company', $this->_slug )
 			);
 			$widgetContent .= __( 'Powered by', $this->_slug );
 			$widgetContent .= $this->_buildLink( 'WordPress Twitter Widget Pro', $linkAttrs );
