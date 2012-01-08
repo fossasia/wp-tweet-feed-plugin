@@ -72,7 +72,7 @@ You can see these put into action by trying something like:
 
 = How can I style it to look nicer? =
 
-There are plenty of CSS classes throughout the HTML that is generated, and you can use those to style things.  Here is some sample CSS that I use with the <a href="essencetheme.com" title="Essence Theme for WordPress">Essence Theme</a>.  You'll need to get the "Everything" sprite from <a href="https://dev.twitter.com/docs/image-resources">Twitter's Image Resources</a>.
+There are plenty of CSS classes throughout the HTML that is generated, and you can use those to style things.  Here is some sample CSS that I use with the <a href="http://essencetheme.com" title="Essence Theme for WordPress">Essence Theme</a>.  You'll need to get the "Everything" sprite from <a href="https://dev.twitter.com/docs/image-resources">Twitter's Image Resources</a>.
 `
 .widget_twitter div {
 	padding:0;
