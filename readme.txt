@@ -3,8 +3,8 @@ Contributors: aaroncampbell
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9993090
 Tags: twitter, widget, feed
 Requires at least: 3.0
-Tested up to: 3.3.0
-Stable tag: 2.3.4
+Tested up to: 3.3.1
+Stable tag: 2.3.5
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links.
 
@@ -132,6 +132,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.3.5 =
+Added HTTP & HTTPS API setting and fixed support forum links
+
 = 2.3.4 =
 Fixed the conflict with Jetpack!  Also a new Arabic translation
 
@@ -148,6 +151,11 @@ Fixes an issue with the intents and follow settings not being saved
 Fewer "could not connect to Twitter" messages, new links (reply, retweet, favorite), new follow button, and avatar fixes
 
 == Changelog ==
+
+= 2.3.5 =
+* Added a setting to allow using the Twtter API via HTTP or HTTPS
+* Fixed support forum links
+* Small alignment adjustment on settings page
 
 = 2.3.4 =
 * Added an Arabic translation - Thanks Yaser Maadan - http://www.englize.com

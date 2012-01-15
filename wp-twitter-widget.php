@@ -30,7 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'xavisys-plugin-framework.php' );
-define( 'TWP_VERSION', '2.3.5-alpha' );
+define( 'TWP_VERSION', '2.3.5' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
