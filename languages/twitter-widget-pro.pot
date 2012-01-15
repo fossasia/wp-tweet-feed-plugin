@@ -1,282 +1,299 @@
-# Copyright (C) 2010 
+# Copyright (C) 2012 
 # This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/twitter-widget-pro\n"
-"POT-Creation-Date: 2011-09-01 20:20:51+00:00\n"
+"POT-Creation-Date: 2012-01-15 19:18:11+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2012-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: wp-twitter-widget.php:43
+#: xavisys-plugin-framework.php:249
+msgid "Update Options &raquo;"
+msgstr ""
+
+#: xavisys-plugin-framework.php:296
+msgid "Donate"
+msgstr ""
+
+#: xavisys-plugin-framework.php:303
+msgid "Support Forum"
+msgstr ""
+
+#: xavisys-plugin-framework.php:311
+msgid "Donate to show your appreciation."
+msgstr ""
+
+#: xavisys-plugin-framework.php:322
+msgid "Settings"
+msgstr ""
+
+#: xavisys-plugin-framework.php:340
+msgid "Like this Plugin?"
+msgstr ""
+
+#: xavisys-plugin-framework.php:343
+msgid "Need Support?"
+msgstr ""
+
+#: xavisys-plugin-framework.php:346
+msgid "Latest news from Xavisys"
+msgstr ""
+
+#: xavisys-plugin-framework.php:352
+msgid "Then please do any or all of the following:"
+msgstr ""
+
+#: xavisys-plugin-framework.php:357
+msgid "Link to it so others can find out about it."
+msgstr ""
+
+#: xavisys-plugin-framework.php:362
+msgid "Give it a good rating on WordPress.org."
+msgstr ""
+
+#: xavisys-plugin-framework.php:372
+msgid ""
+"If you have any problems with this plugin or ideas for improvements or "
+"enhancements, please use the <a href=\"%s\">Support Forums</a>."
+msgstr ""
+
+#: wp-twitter-widget.php:44
 msgid "Follow a Twitter Feed"
 msgstr ""
 
-#: wp-twitter-widget.php:50 wp-twitter-widget.php:195
+#: wp-twitter-widget.php:51 wp-twitter-widget.php:196
 msgid "Twitter Widget Pro"
 msgstr ""
 
-#: wp-twitter-widget.php:65 wp-twitter-widget.php:239
+#: wp-twitter-widget.php:66 wp-twitter-widget.php:271
 msgid "Twitter username:"
 msgstr ""
 
-#: wp-twitter-widget.php:69 wp-twitter-widget.php:247
+#: wp-twitter-widget.php:70 wp-twitter-widget.php:279
 msgid "Give the feed a title ( optional ):"
 msgstr ""
 
-#: wp-twitter-widget.php:73 wp-twitter-widget.php:255
+#: wp-twitter-widget.php:74 wp-twitter-widget.php:287
 msgid "How many items would you like to display?"
 msgstr ""
 
-#: wp-twitter-widget.php:83 wp-twitter-widget.php:269
+#: wp-twitter-widget.php:84 wp-twitter-widget.php:301
 msgid "Display profile image?"
 msgstr ""
 
-#: wp-twitter-widget.php:85 wp-twitter-widget.php:273
+#: wp-twitter-widget.php:86 wp-twitter-widget.php:305
 msgid "Do not show"
 msgstr ""
 
-#: wp-twitter-widget.php:86 wp-twitter-widget.php:274
+#: wp-twitter-widget.php:87 wp-twitter-widget.php:306
 msgid "Mini - 24px by 24px"
 msgstr ""
 
-#: wp-twitter-widget.php:87 wp-twitter-widget.php:275
+#: wp-twitter-widget.php:88 wp-twitter-widget.php:307
 msgid "Normal - 48px by 48px"
 msgstr ""
 
-#: wp-twitter-widget.php:88 wp-twitter-widget.php:276
+#: wp-twitter-widget.php:89 wp-twitter-widget.php:308
 msgid "Bigger - 73px by 73px"
 msgstr ""
 
-#: wp-twitter-widget.php:89 wp-twitter-widget.php:277
+#: wp-twitter-widget.php:90 wp-twitter-widget.php:309
 msgid "Original"
 msgstr ""
 
-#: wp-twitter-widget.php:94 wp-twitter-widget.php:327
+#: wp-twitter-widget.php:95 wp-twitter-widget.php:359
 msgid "Include retweets"
 msgstr ""
 
-#: wp-twitter-widget.php:98 wp-twitter-widget.php:330
+#: wp-twitter-widget.php:99 wp-twitter-widget.php:362
 msgid "Hide @replies"
 msgstr ""
 
-#: wp-twitter-widget.php:102 wp-twitter-widget.php:333
+#: wp-twitter-widget.php:103 wp-twitter-widget.php:365
 msgid "Hide sending applications"
 msgstr ""
 
-#: wp-twitter-widget.php:107 wp-twitter-widget.php:337
+#: wp-twitter-widget.php:108 wp-twitter-widget.php:369
 msgid "Show Tweet Intents (reply, retweet, favorite)"
 msgstr ""
 
-#: wp-twitter-widget.php:112 wp-twitter-widget.php:341
+#: wp-twitter-widget.php:113 wp-twitter-widget.php:373
 msgid "Show Follow Link"
 msgstr ""
 
-#: wp-twitter-widget.php:115 wp-twitter-widget.php:283
+#: wp-twitter-widget.php:116 wp-twitter-widget.php:315
 msgid "What to display when Twitter is down ( optional ):"
 msgstr ""
 
-#: wp-twitter-widget.php:119 wp-twitter-widget.php:291
+#: wp-twitter-widget.php:120 wp-twitter-widget.php:323
 msgid "Number of seconds to wait for a response from Twitter ( default 2 ):"
 msgstr ""
 
-#: wp-twitter-widget.php:123 wp-twitter-widget.php:299
+#: wp-twitter-widget.php:124 wp-twitter-widget.php:331
 msgid "Show date/time of Tweet ( rather than 2 ____ ago ):"
 msgstr ""
 
-#: wp-twitter-widget.php:125 wp-twitter-widget.php:303
+#: wp-twitter-widget.php:126 wp-twitter-widget.php:335
 msgid "Always"
 msgstr ""
 
-#: wp-twitter-widget.php:126 wp-twitter-widget.php:304
+#: wp-twitter-widget.php:127 wp-twitter-widget.php:336
 msgid "If over an hour old"
 msgstr ""
 
-#: wp-twitter-widget.php:127 wp-twitter-widget.php:305
+#: wp-twitter-widget.php:128 wp-twitter-widget.php:337
 msgid "If over a day old"
 msgstr ""
 
-#: wp-twitter-widget.php:128 wp-twitter-widget.php:306
+#: wp-twitter-widget.php:129 wp-twitter-widget.php:338
 msgid "If over a week old"
 msgstr ""
 
-#: wp-twitter-widget.php:129 wp-twitter-widget.php:307
+#: wp-twitter-widget.php:130 wp-twitter-widget.php:339
 msgid "If over a month old"
 msgstr ""
 
-#: wp-twitter-widget.php:130 wp-twitter-widget.php:308
+#: wp-twitter-widget.php:131 wp-twitter-widget.php:340
 msgid "If over a year old"
 msgstr ""
 
-#: wp-twitter-widget.php:131 wp-twitter-widget.php:309
+#: wp-twitter-widget.php:132 wp-twitter-widget.php:341
 msgid "Never"
 msgstr ""
 
-#: wp-twitter-widget.php:135 wp-twitter-widget.php:315
+#: wp-twitter-widget.php:136 wp-twitter-widget.php:347
 msgid ""
 "Format to dispaly the date in, uses <a href=\"%s\">PHP date()</a> format:"
 msgstr ""
 
-#: wp-twitter-widget.php:140 wp-twitter-widget.php:344
+#: wp-twitter-widget.php:141 wp-twitter-widget.php:376
 msgid "Open links in a new window"
 msgstr ""
 
-#: wp-twitter-widget.php:144 wp-twitter-widget.php:347
+#: wp-twitter-widget.php:145 wp-twitter-widget.php:379
 msgid "Show Link to Twitter Widget Pro"
 msgstr ""
 
-#: wp-twitter-widget.php:196
+#: wp-twitter-widget.php:197
 msgid "Twitter Widget"
 msgstr ""
 
-#: wp-twitter-widget.php:231
+#: wp-twitter-widget.php:242
 msgid "General Settings"
 msgstr ""
 
-#: wp-twitter-widget.php:323
+#: wp-twitter-widget.php:243
+msgid "Defaults"
+msgstr ""
+
+#: wp-twitter-widget.php:251
+msgid "HTTP vs HTTPS:"
+msgstr ""
+
+#: wp-twitter-widget.php:255
+msgid "Use Twitter API via HTTPS"
+msgstr ""
+
+#: wp-twitter-widget.php:258
+msgid "Use Twitter API via HTTP"
+msgstr ""
+
+#: wp-twitter-widget.php:355
 msgid "Other Setting:"
 msgstr ""
 
-#: wp-twitter-widget.php:503
+#: wp-twitter-widget.php:537
 msgid "No Tweets Available"
 msgstr ""
 
-#: wp-twitter-widget.php:521
+#: wp-twitter-widget.php:555
 msgid "from %s"
 msgstr ""
 
-#: wp-twitter-widget.php:525
+#: wp-twitter-widget.php:559
 msgid "in reply to %s"
 msgstr ""
 
-#: wp-twitter-widget.php:539
+#: wp-twitter-widget.php:576
 msgid "Reply"
 msgstr ""
 
-#: wp-twitter-widget.php:547
+#: wp-twitter-widget.php:582
 msgid "Retweet"
 msgstr ""
 
-#: wp-twitter-widget.php:555
+#: wp-twitter-widget.php:588
 msgid "Favorite"
 msgstr ""
 
-#: wp-twitter-widget.php:578
+#: wp-twitter-widget.php:609
 msgid "Follow %s"
 msgstr ""
 
-#: wp-twitter-widget.php:588
-msgid "Brought to you by Xavisys - A WordPress development company"
+#: wp-twitter-widget.php:623
+msgid ""
+"Brought to you by BlueDog Web Services - A WordPress development company"
 msgstr ""
 
-#: wp-twitter-widget.php:590
+#: wp-twitter-widget.php:625
 msgid "Powered by"
 msgstr ""
 
-#: wp-twitter-widget.php:639
+#: wp-twitter-widget.php:691
 msgid "Invalid Twitter Response."
 msgstr ""
 
-#: wp-twitter-widget.php:649
+#: wp-twitter-widget.php:701
 msgid "Could not connect to Twitter"
 msgstr ""
 
-#: wp-twitter-widget.php:731
+#: wp-twitter-widget.php:783
 msgid "about %s year ago"
 msgid_plural "about %s years ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:732
+#: wp-twitter-widget.php:784
 msgid "about %s month ago"
 msgid_plural "about %s months ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:733
+#: wp-twitter-widget.php:785
 msgid "about %s week ago"
 msgid_plural "about %s weeks ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:734
+#: wp-twitter-widget.php:786
 msgid "about %s day ago"
 msgid_plural "about %s days ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:735
+#: wp-twitter-widget.php:787
 msgid "about %s hour ago"
 msgid_plural "about %s hours ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:736
+#: wp-twitter-widget.php:788
 msgid "about %s minute ago"
 msgid_plural "about %s minutes ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:737
+#: wp-twitter-widget.php:789
 msgid "about %s second ago"
 msgid_plural "about %s seconds ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: wp-twitter-widget.php:789 wp-twitter-widget.php:862
+#: wp-twitter-widget.php:841 wp-twitter-widget.php:915
 msgid "h:i:s A F d, Y"
-msgstr ""
-
-#: xavisys-plugin-framework.php:245
-msgid "Update Options &raquo;"
-msgstr ""
-
-#: xavisys-plugin-framework.php:292
-msgid "Donate"
-msgstr ""
-
-#: xavisys-plugin-framework.php:299
-msgid "Support Forum"
-msgstr ""
-
-#: xavisys-plugin-framework.php:307
-msgid "Donate to show your appreciation."
-msgstr ""
-
-#: xavisys-plugin-framework.php:318
-msgid "Settings"
-msgstr ""
-
-#: xavisys-plugin-framework.php:336
-msgid "Like this Plugin?"
-msgstr ""
-
-#: xavisys-plugin-framework.php:339
-msgid "Need Support?"
-msgstr ""
-
-#: xavisys-plugin-framework.php:342
-msgid "Latest news from Xavisys"
-msgstr ""
-
-#: xavisys-plugin-framework.php:348
-msgid "Then please do any or all of the following:"
-msgstr ""
-
-#: xavisys-plugin-framework.php:353
-msgid "Link to it so others can find out about it."
-msgstr ""
-
-#: xavisys-plugin-framework.php:358
-msgid "Give it a good rating on WordPress.org."
-msgstr ""
-
-#: xavisys-plugin-framework.php:368
-msgid ""
-"If you have any problems with this plugin or ideas for improvements or "
-"enhancements, please use the <a href=\"%s\">Xavisys Support Forums</a>."
 msgstr ""
