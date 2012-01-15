@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.3.4
+ * Version: 2.3.5
  * Author: Aaron D. Campbell
  * Author URI: http://bluedogwebservices.com/
  * License: GPLv2 or later
@@ -30,7 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'xavisys-plugin-framework.php' );
-define( 'TWP_VERSION', '2.3.3' );
+define( 'TWP_VERSION', '2.3.5-alpha' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
@@ -183,7 +183,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
  * It also helps us avoid name collisions.
  */
 class wpTwitterWidget extends XavisysPlugin {
-	private $_api_url = 'https://api.twitter.com/1/';
+	private $_api_url;
 
 	/**
 	 * @var wpTwitterWidget - Static property to hold our singleton instance
@@ -218,6 +218,12 @@ class wpTwitterWidget extends XavisysPlugin {
 			update_option( 'twp_version', TWP_VERSION );
 	}
 
+	protected function _postSettingsInit() {
+		if ( ! in_array( $this->_settings['twp']['http_vs_https'], array( 'http', 'https' ) ) )
+			$this->_settings['twp']['http_vs_https'] = 'https';
+		$this->_api_url = $this->_settings['twp']['http_vs_https'] . '://api.twitter.com/1/';
+	}
+
 	/**
 	 * Function to instantiate our class and make it a singleton
 	 */
@@ -234,9 +240,30 @@ class wpTwitterWidget extends XavisysPlugin {
 
 	public function addOptionsMetaBoxes() {
 		add_meta_box( $this->_slug . '-general-settings', __( 'General Settings', $this->_slug ), array( $this, 'generalSettingsMetaBox' ), 'xavisys-' . $this->_slug, 'main' );
+		add_meta_box( $this->_slug . '-defaults', __( 'Defaults', $this->_slug ), array( $this, 'defaultSettingsMetaBox' ), 'xavisys-' . $this->_slug, 'main' );
 	}
 
 	public function generalSettingsMetaBox() {
+		?>
+				<table class="form-table">
+					<tr valign="top">
+						<th scope="row">
+							<?php _e( "HTTP vs HTTPS:", $this->_slug );?>
+						</th>
+						<td>
+							<input class="checkbox" type="radio" value="https" id="twp_http_vs_https_https" name="twp[http_vs_https]"<?php checked( $this->_settings['twp']['http_vs_https'], 'https' ); ?> />
+							<label for="twp_http_vs_https_https"><?php _e( 'Use Twitter API via HTTPS', $this->_slug ); ?></label>
+							<br />
+							<input class="checkbox" type="radio" value="http" id="twp_http_vs_https_http" name="twp[http_vs_https]"<?php checked( $this->_settings['twp']['http_vs_https'], 'http' ); ?> />
+							<label for="twp_http_vs_https_http"><?php _e( 'Use Twitter API via HTTP', $this->_slug ); ?></label>
+							<br />
+							<small>Some servers seem to have issues connecting via HTTPS.  If you're experiencing issues with your feed not updating, try setting this to HTTP</small>
+						</td>
+					</tr>
+				</table>
+		<?php
+	}
+	public function defaultSettingsMetaBox() {
 		?>
 				<table class="form-table">
 					<tr valign="top">
@@ -874,6 +901,7 @@ class wpTwitterWidget extends XavisysPlugin {
 			'errmsg'          => '',
 			'fetchTimeOut'    => '2',
 			'username'        => '',
+			'http_vs_https'   => 'https',
 			'hidereplies'     => 'false',
 			'showretweets'    => 'true',
 			'hidefrom'        => 'false',

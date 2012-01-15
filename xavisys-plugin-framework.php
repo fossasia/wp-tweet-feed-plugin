@@ -1,9 +1,13 @@
 <?php
 /**
- * Version: 1.0.13
+ * Version: 1.0.14
  */
 /**
  * Changelog:
+ *
+ * 1.0.14:
+ *  - Fix sidebar alignment on settings page
+ *  - Fix forum link by passing it to the http://wordpress.org/tags/{slug}?forum_id=10
  *
  * 1.0.13:
  *  - Add the 'xpf-dashboard-widget' filter
@@ -258,7 +262,7 @@ if (!class_exists('XavisysPlugin')) {
 						<?php
 						if ( !empty( $sidebarBoxes ) ) {
 						?>
-						<div class="postbox-container" style="width:24%;">
+						<div class="alignright" style="width:24%;">
 							<?php
 							foreach( $sidebarBoxes as $context ) {
 								do_meta_boxes( 'xavisys-' . $this->_slug, $context, '' );
@@ -310,7 +314,7 @@ if (!class_exists('XavisysPlugin')) {
 		}
 
 		public function getSupportForumUrl() {
-			return 'http://xavisys.com/support/forum/'.$this->_slug;
+			return 'http://wordpress.org/tags/' . $this->_slug . '?forum_id=10';
 		}
 
 		public function getOptionsLink( $linkText = '' ) {
@@ -365,7 +369,7 @@ if (!class_exists('XavisysPlugin')) {
 
 		public function supportMetaBox() {
 			echo '<p>';
-			echo sprintf(__('If you have any problems with this plugin or ideas for improvements or enhancements, please use the <a href="%s">Xavisys Support Forums</a>.', $this->_slug), $this->getSupportForumUrl() );
+			echo sprintf(__('If you have any problems with this plugin or ideas for improvements or enhancements, please use the <a href="%s">Support Forums</a>.', $this->_slug), $this->getSupportForumUrl() );
 			echo '</p>';
 		}
 

@@ -191,7 +191,7 @@ Fewer "could not connect to Twitter" messages, new links (reply, retweet, favori
 * Add the ability to remove the "from" links from displaying - Thanks to <a href="http://yoast.com/">Joost de Valk</a> for the request and the patch!
 
 = 2.2.0 =
-* Now uses the Xavisys WordPress Plugin Framework - http://xavisys.com/xavisys-wordpress-plugin-framework/
+* Now uses the Xavisys WordPress Plugin Framework - http://bluedogwebservices.com/xavisys-wordpress-plugin-framework/
 * Added an options page where you can set defaults that apply to widgets, shortcodes, and php calls (everything can be overridden)
 * Added the Xavisys feed to the dashboard (which can be hidden using the screen options)
 * Fixed problem for people with certain WP configs and PHP 5.0-5.1.x that caused the Services_JSON class to get included twice.
@@ -207,7 +207,7 @@ Fewer "could not connect to Twitter" messages, new links (reply, retweet, favori
 
 = 2.1.2 =
 * Fixed spacing issue that was introduced in 2.1.1
-* Added links to the <a href="http://xavisys.com/support/forum/twitter-widget-pro/">Support Forum</a>
+* Added links to the Support Forum
 
 = 2.1.1 =
 * Added an option to open links in new windows
