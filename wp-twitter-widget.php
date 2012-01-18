@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.3.5
+ * Version: 2.3.6
  * Author: Aaron D. Campbell
  * Author URI: http://bluedogwebservices.com/
  * License: GPLv2 or later
@@ -533,7 +533,7 @@ class wpTwitterWidget extends XavisysPlugin {
 			$widgetContent .= '</div>';
 		}
 		$widgetContent .= '<ul>';
-		if ( count( $tweets ) == 0 ) {
+		if ( ! is_array( $tweets ) || count( $tweets ) == 0 ) {
 			$widgetContent .= '<li class="wpTwitterWidgetEmpty">' . __( 'No Tweets Available', $this->_slug ) . '</li>';
 		} else {
 			$count = 0;
@@ -686,7 +686,7 @@ class wpTwitterWidget extends XavisysPlugin {
 
 		if ( !is_wp_error( $resp ) && $resp['response']['code'] >= 200 && $resp['response']['code'] < 300 ) {
 			$decodedResponse = json_decode( $resp['body'] );
-			if ( empty( $decodedResponse ) ) {
+			if ( empty( $decodedResponse ) || ! is_array( $decodedResponse ) ) {
 				if ( empty( $widgetOptions['errmsg'] ) )
 					$widgetOptions['errmsg'] = __( 'Invalid Twitter Response.', $this->_slug );
 			} elseif( !empty( $decodedResponse->error ) ) {

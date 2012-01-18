@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: twitter, widget, feed
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 2.3.5
+Stable tag: 2.3.6
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links.
 
@@ -132,6 +132,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.3.6 =
+Small fix for "invalid argument supplied for foreach" error that some people are getting
+
 = 2.3.5 =
 Added HTTP & HTTPS API setting and fixed support forum links
 
@@ -151,6 +154,9 @@ Fixes an issue with the intents and follow settings not being saved
 Fewer "could not connect to Twitter" messages, new links (reply, retweet, favorite), new follow button, and avatar fixes
 
 == Changelog ==
+
+= 2.3.6 =
+* Make sure we didn't get a string from json_decode()
 
 = 2.3.5 =
 * Added a setting to allow using the Twtter API via HTTP or HTTPS
