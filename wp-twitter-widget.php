@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.3.7
+ * Version: 2.3.8
  * Author: Aaron D. Campbell
  * Author URI: http://bluedogwebservices.com/
  * License: GPLv2 or later
@@ -30,7 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'xavisys-plugin-framework.php' );
-define( 'TWP_VERSION', '2.3.7' );
+define( 'TWP_VERSION', '2.3.8' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
@@ -577,7 +577,7 @@ class wpTwitterWidget extends XavisysPlugin {
 			foreach ( $tweets as $tweet ) {
 				// Set our "ago" string which converts the date to "# ___(s) ago"
 				$tweet->ago = $this->_timeSince( strtotime( $tweet->created_at ), $args['showts'], $args['dateFormat'] );
-				$entryContent = apply_filters( 'widget_twitter_content', $tweet->text );
+				$entryContent = apply_filters( 'widget_twitter_content', $tweet->text, $tweet );
 				$widgetContent .= '<li>';
 				$widgetContent .= "<span class='entry-content'>{$entryContent}</span>";
 				$widgetContent .= " <span class='entry-meta'>";
@@ -666,7 +666,10 @@ class wpTwitterWidget extends XavisysPlugin {
 		$widgetContent .= '</div>' . $args['after_widget'];
 
 		if ( 'true' == $args['showintents'] || 'true' == $args['showfollow'] ) {
-			wp_enqueue_script( 'twitter-widgets', 'http://platform.twitter.com/widgets.js', array(), '1.0.0', true );
+			$script = 'http://platform.twitter.com/widgets.js';
+			if ( is_ssl() )
+				$script = str_replace( 'http://', 'https://', $script );
+			wp_enqueue_script( 'twitter-widgets', $script, array(), '1.0.0', true );
 
 			if ( ! function_exists( '_wp_footer_scripts' ) ) {
 				// This means we can't just enqueue our script (fixes in WP 3.3)

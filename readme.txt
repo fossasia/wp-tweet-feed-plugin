@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: twitter, widget, feed
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 2.3.7
+Stable tag: 2.3.8
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links.
 
@@ -132,6 +132,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.3.8 =
+Fix issue with mixed content warning on HTTPS pages
+
 = 2.3.7 =
 Adds an option to clear update locks, which may fix the updating issue some people are having
 
@@ -157,6 +160,10 @@ Fixes an issue with the intents and follow settings not being saved
 Fewer "could not connect to Twitter" messages, new links (reply, retweet, favorite), new follow button, and avatar fixes
 
 == Changelog ==
+
+= 2.3.8 =
+* Pass $tweet to widget_twitter_content filter
+* Fix issue with mixed content warning on HTTPS pages
 
 = 2.3.7 =
 * Add option to clear TLC update locks
