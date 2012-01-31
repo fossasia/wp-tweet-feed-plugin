@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.3.6
+ * Version: 2.3.7
  * Author: Aaron D. Campbell
  * Author URI: http://bluedogwebservices.com/
  * License: GPLv2 or later
@@ -30,7 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'xavisys-plugin-framework.php' );
-define( 'TWP_VERSION', '2.3.5' );
+define( 'TWP_VERSION', '2.3.7' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
@@ -205,6 +205,8 @@ class wpTwitterWidget extends XavisysPlugin {
 		/**
 		 * Add filters and actions
 		 */
+		add_action( 'admin_init', array( $this, 'handle_actions' ) );
+		add_action( 'admin_notices', array( $this, 'show_messages' ) );
 		add_action( 'widgets_init', array( $this, 'register' ), 11 );
 		add_filter( 'widget_twitter_content', array( $this, 'linkTwitterUsers' ) );
 		add_filter( 'widget_twitter_content', array( $this, 'linkUrls' ) );
@@ -238,12 +240,38 @@ class wpTwitterWidget extends XavisysPlugin {
 		return $this->_slug;
 	}
 
+	public function handle_actions() {
+		if ( empty( $_GET['action'] ) || empty( $_GET['page'] ) || $_GET['page'] != $this->_hook )
+			return;
+
+		if ( 'clear-locks' == $_GET['action'] ) {
+			check_admin_referer( 'clear-locks' );
+			$redirect_args = array( 'message' => strtolower( $_GET['action'] ) );
+			global $wpdb;
+			$locks_q = "DELETE FROM `{$wpdb->options}` WHERE `option_name` LIKE '_transient_tlc_up__twp%'";
+			$redirect_args['locks_cleared'] = $wpdb->query( $locks_q );
+			wp_safe_redirect( add_query_arg( $redirect_args, remove_query_arg( array( 'action', '_wpnonce' ) ) ) );
+			exit;
+		}
+	}
+
+	public function show_messages() {
+		if ( ! empty( $_GET['message'] ) && 'clear-locks' == $_GET['message'] ) {
+			if ( empty( $_GET['locks_cleared'] ) || 0 == $_GET['locks_cleared'] )
+				$msg = __( 'There were no locks to clear!', $this->_slug );
+			else
+				$msg = sprintf( _n( 'Successfully cleared %d lock.', 'Successfully cleared %d locks.', $_GET['locks_cleared'], $this->_slug ), $_GET['locks_cleared'] );
+			echo "<div class='updated'>" . esc_html( $msg ) . '</div>';
+		}
+	}
+
 	public function addOptionsMetaBoxes() {
 		add_meta_box( $this->_slug . '-general-settings', __( 'General Settings', $this->_slug ), array( $this, 'generalSettingsMetaBox' ), 'xavisys-' . $this->_slug, 'main' );
 		add_meta_box( $this->_slug . '-defaults', __( 'Defaults', $this->_slug ), array( $this, 'defaultSettingsMetaBox' ), 'xavisys-' . $this->_slug, 'main' );
 	}
 
 	public function generalSettingsMetaBox() {
+		$clear_locks_url = wp_nonce_url( add_query_arg( array( 'action' => 'clear-locks' ) ), 'clear-locks' );
 		?>
 				<table class="form-table">
 					<tr valign="top">
@@ -257,7 +285,16 @@ class wpTwitterWidget extends XavisysPlugin {
 							<input class="checkbox" type="radio" value="http" id="twp_http_vs_https_http" name="twp[http_vs_https]"<?php checked( $this->_settings['twp']['http_vs_https'], 'http' ); ?> />
 							<label for="twp_http_vs_https_http"><?php _e( 'Use Twitter API via HTTP', $this->_slug ); ?></label>
 							<br />
-							<small>Some servers seem to have issues connecting via HTTPS.  If you're experiencing issues with your feed not updating, try setting this to HTTP</small>
+							<small><?php _e( "Some servers seem to have issues connecting via HTTPS.  If you're experiencing issues with your feed not updating, try setting this to HTTP.", $this->_slug ); ?></small>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<?php _e( "Clear Update Locks:", $this->_slug );?>
+						</th>
+						<td>
+							<a href="<?php echo esc_url( $clear_locks_url ); ?>"><?php _e( 'Clear Update Locks', $this->_slug ); ?></a><br />
+							<small><?php _e( "A small perecntage of servers seem to have issues where an update lock isn't getting cleared.  If you're experiencing issues with your feed not updating, try clearing the update locks.", $this->_slug ); ?></small>
 						</td>
 					</tr>
 				</table>
