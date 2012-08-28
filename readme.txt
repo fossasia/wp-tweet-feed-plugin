@@ -3,8 +3,8 @@ Contributors: aaroncampbell
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9993090
 Tags: twitter, widget, feed
 Requires at least: 3.0
-Tested up to: 3.3.1
-Stable tag: 2.3.8
+Tested up to: 3.4.1
+Stable tag: 2.3.9
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links.
 
@@ -20,9 +20,7 @@ Brought to you by <a href="http://bluedogwebservices.com/" title="WordPress Deve
 
 == Installation ==
 
-1. Verify that you have PHP5, which is required for this plugin.
-1. Upload the whole `twitter-widget-pro` directory to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
+1. Use automatic installer.
 1. In WordPress admin go to 'Appearance' -> 'Widgets' and add "Twitter Widget Pro" to one of your widget-ready areas of your site
 
 == Frequently Asked Questions ==
@@ -132,6 +130,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.3.9 =
+Display dates based on your WordPress timezone setting
+
 = 2.3.8 =
 Fix issue with mixed content warning on HTTPS pages
 
@@ -160,6 +161,9 @@ Fixes an issue with the intents and follow settings not being saved
 Fewer "could not connect to Twitter" messages, new links (reply, retweet, favorite), new follow button, and avatar fixes
 
 == Changelog ==
+
+= 2.3.9 =
+* Display dates based on your WordPress timezone setting
 
 = 2.3.8 =
 * Pass $tweet to widget_twitter_content filter

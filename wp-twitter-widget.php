@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.3.8
+ * Version: 2.3.9
  * Author: Aaron D. Campbell
  * Author URI: http://bluedogwebservices.com/
  * License: GPLv2 or later
@@ -30,7 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'xavisys-plugin-framework.php' );
-define( 'TWP_VERSION', '2.3.8' );
+define( 'TWP_VERSION', '2.3.9' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
@@ -810,7 +810,7 @@ class wpTwitterWidget extends XavisysPlugin {
 		$since = time() - $startTimestamp;
 
 		if ( $max != '-1' && $since >= $max )
-			return date_i18n( $dateFormat, $startTimestamp );
+			return date_i18n( $dateFormat, $startTimestamp + get_option('gmt_offset') * 3600 );
 
 
 		foreach ( $chunks as $key => $seconds ) {
