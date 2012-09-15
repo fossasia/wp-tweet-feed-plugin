@@ -1,9 +1,13 @@
 <?php
 /**
- * Version: 1.0.14
+ * Version: 1.0.15
  */
 /**
  * Changelog:
+ *
+ * 1.0.15:
+ *  - Fix support forum link
+ *  - Update feed to Ran.ge
  *
  * 1.0.14:
  *  - Fix sidebar alignment on settings page
@@ -104,8 +108,7 @@ if (!class_exists('XavisysPlugin')) {
 		/**
 		 * @var string - The feed URL for Xavisys
 		 */
-		//protected $_feed_url = 'http://xavisys.com/feed/';
-		protected $_feed_url = 'http://feeds.feedburner.com/Xavisys';
+		protected $_feed_url = 'http://ran.ge/feed/';
 
 		/**
 		 * @var string - The button ID for the PayPal button, override this generic one with a plugin-specific one
@@ -314,7 +317,7 @@ if (!class_exists('XavisysPlugin')) {
 		}
 
 		public function getSupportForumUrl() {
-			return 'http://wordpress.org/tags/' . $this->_slug . '?forum_id=10';
+			return 'http://wordpress.org/support/plugin/' . $this->_slug;
 		}
 
 		public function getOptionsLink( $linkText = '' ) {
@@ -352,7 +355,7 @@ if (!class_exists('XavisysPlugin')) {
 			_e('Then please do any or all of the following:', $this->_slug);
 			echo '</p><ul>';
 
-			$url = apply_filters('xavisys-plugin-url-'.$this->_slug, 'http://xavisys.com/wordpress-plugins/'.$this->_slug);
+			$url = apply_filters('xavisys-plugin-url-'.$this->_slug, 'http://bluedogwebservices.com/wordpress-plugin/'.$this->_slug);
 			echo "<li><a href='{$url}'>";
 			_e('Link to it so others can find out about it.', $this->_slug);
 			echo "</a></li>";
@@ -385,7 +388,7 @@ if (!class_exists('XavisysPlugin')) {
 
 		public function addDashboardWidgets() {
 			if ( apply_filters( 'xpf-dashboard-widget', true ) ) {
-				wp_add_dashboard_widget( 'dashboardb_xavisys' , 'The Latest News From Xavisys' , array( $this, 'dashboardWidget' ) );
+				wp_add_dashboard_widget( 'dashboardb_xavisys' , 'The Latest News From Range' , array( $this, 'dashboardWidget' ) );
 			}
 		}
 
@@ -397,7 +400,7 @@ if (!class_exists('XavisysPlugin')) {
 				'show_summary'	=> 1,
 			);
 			echo '<div class="rss-widget">';
-			echo '<a href="http://xavisys.com"><img class="alignright" src="http://cdn.xavisys.com/logos/xavisys-logo-small.png" /></a>';
+			echo '<a href="http://ran.ge"><img class="alignright" src="http://s1.ran.ge/content/uploads/2012/06/range-trans.png" /></a>';
 			wp_widget_rss_output( $args );
 			echo '<p style="border-top: 1px solid #CCC; padding-top: 10px; font-weight: bold;">';
 			echo '<a href="' . $this->_feed_url . '"><img src="'.get_bloginfo('wpurl').'/wp-includes/images/rss.png" alt=""/> Subscribe with RSS</a>';
@@ -406,7 +409,7 @@ if (!class_exists('XavisysPlugin')) {
 		}
 
 		public function screenIconLink($name = 'xavisys') {
-			$link = '<a href="http://xavisys.com">';
+			$link = '<a href="http://ran.ge">';
 			if ( function_exists( 'get_screen_icon' ) ) {
 				$link .= get_screen_icon( $name );
 			} else {
