@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.3.10
+ * Version: 2.3.11-beta
  * Author: Aaron D. Campbell
  * Author URI: http://ran.ge/
  * License: GPLv2 or later
@@ -30,7 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'xavisys-plugin-framework.php' );
-define( 'TWP_VERSION', '2.3.10' );
+define( 'TWP_VERSION', '2.3.11' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
@@ -471,30 +471,62 @@ class wpTwitterWidget extends XavisysPlugin {
 	 * @return string - Tweet text with URLs repalced with links
 	 */
 	public function linkUrls( $text ) {
-		/**
-		 * match protocol://address/path/file.extension?some=variable&another=asf%
-		 * $1 is a possible space, this keeps us from linking href="[link]" etc
-		 * $2 is the whole URL
-		 * $3 is protocol://
-		 * $4 is the URL without the protocol://
-		 * $5 is the URL parameters
-		 */
-		$text = preg_replace_callback("/(^|\s)(([a-zA-Z]+:\/\/)([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", array($this, '_linkUrlsCallback'), $text);
+		$text = " {$text} "; // Pad with whitespace to simplify the regexes
 
-		/**
-		 * match www.something.domain/path/file.extension?some=variable&another=asf%
-		 * $1 is a possible space, this keeps us from linking href="[link]" etc
-		 * $2 is the whole URL that was matched.  The protocol is missing, so we assume http://
-		 * $3 is www.
-		 * $4 is the URL matched without the www.
-		 * $5 is the URL parameters
-		 */
-		$text = preg_replace_callback("/(^|\s)(www\.([a-z][a-z0-9_\..-]*[a-z]{2,6})([a-zA-Z0-9~\/*-?&%]*))/i", array($this, '_linkUrlsCallback'), $text);
+		$url_clickable = '~
+			([\\s(<.,;:!?])                                        # 1: Leading whitespace, or punctuation
+			(                                                      # 2: URL
+				[\\w]{1,20}+://                                # Scheme and hier-part prefix
+				(?=\S{1,2000}\s)                               # Limit to URLs less than about 2000 characters long
+				[\\w\\x80-\\xff#%\\~/@\\[\\]*(+=&$-]*+         # Non-punctuation URL character
+				(?:                                            # Unroll the Loop: Only allow puctuation URL character if followed by a non-punctuation URL character
+					[\'.,;:!?)]                            # Punctuation URL character
+					[\\w\\x80-\\xff#%\\~/@\\[\\]*(+=&$-]++ # Non-punctuation URL character
+				)*
+			)
+			(\)?)                                                  # 3: Trailing closing parenthesis (for parethesis balancing post processing)
+		~xS';
+		// The regex is a non-anchored pattern and does not have a single fixed starting character.
+		// Tell PCRE to spend more time optimizing since, when used on a page load, it will probably be used several times.
+
+		$text = preg_replace_callback( $url_clickable, array($this, '_make_url_clickable_cb'), $text );
+
+		$text = preg_replace_callback( '#([\s>])((www|ftp)\.[\w\\x80-\\xff\#$%&~/.\-;:=,?@\[\]+]+)#is', array($this, '_make_web_ftp_clickable_cb' ), $text );
+		$text = preg_replace_callback( '#([\s>])([.0-9a-z_+-]+)@(([0-9a-z-]+\.)+[0-9a-z]{2,})#i', array($this, '_make_email_clickable_cb' ), $text );
+
+		$text = substr( $text, 1, -1 ); // Remove our whitespace padding.
 
 		return $text;
 	}
 
-	private function _linkUrlsCallback ( $matches ) {
+	function _make_web_ftp_clickable_cb($matches) {
+		$ret = '';
+		$dest = $matches[2];
+		$dest = 'http://' . $dest;
+		$dest = esc_url($dest);
+		if ( empty($dest) )
+			return $matches[0];
+
+		// removed trailing [.,;:)] from URL
+		if ( in_array( substr($dest, -1), array('.', ',', ';', ':', ')') ) === true ) {
+			$ret = substr($dest, -1);
+			$dest = substr($dest, 0, strlen($dest)-1);
+		}
+		$linkAttrs = array(
+			'href'	=> $dest
+		);
+		return $matches[1] . $this->_buildLink( $dest, $linkAttrs ) . $ret;
+	}
+
+	private function _make_email_clickable_cb( $matches ) {
+		$email = $matches[2] . '@' . $matches[3];
+		$linkAttrs = array(
+			'href'	=> 'mailto:' . $email
+		);
+		return $matches[1] . $this->_buildLink( $email, $linkAttrs );
+	}
+
+	private function _make_url_clickable_cb ( $matches ) {
 		$linkAttrs = array(
 			'href'	=> $matches[2]
 		);
@@ -509,8 +541,6 @@ class wpTwitterWidget extends XavisysPlugin {
 		$attributes = array_filter( wp_parse_args( $attributes ), array( $this, '_notEmpty' ) );
 		$attributes = apply_filters( 'widget_twitter_link_attributes', $attributes );
 		$attributes = wp_parse_args( $attributes );
-		if ( strtolower( 'www' == substr( $attributes['href'], 0, 3 ) ) )
-			$attributes['href'] = 'http://' . $attributes['href'];
 
 		$text = apply_filters( 'widget_twitter_link_text', $text );
 		$link = '<a';
