@@ -1,21 +1,23 @@
 <?php
 
-class TLC_Transient_Update_Server {
-	public function __construct() {
-		add_action( 'init', array( $this, 'init' ) );
-	}
+if ( !class_exists( 'TLC_Transient_Update_Server' ) ) {
+	class TLC_Transient_Update_Server {
+		public function __construct() {
+			add_action( 'init', array( $this, 'init' ) );
+		}
 
-	public function init() {
-		if ( isset( $_POST['_tlc_update'] ) ) {
-			$update = get_transient( 'tlc_up__' . $_POST['key'] );
-			if ( $update && $update[0] == $_POST['_tlc_update'] ) {
-				tlc_transient( $update[1] )
-					->expires_in( $update[2] )
-					->updates_with( $update[3], (array) $update[4] )
-					->set_lock( $update[0] )
-					->fetch_and_cache();
+		public function init() {
+			if ( isset( $_POST['_tlc_update'] ) ) {
+				$update = get_transient( 'tlc_up__' . $_POST['key'] );
+				if ( $update && $update[0] == $_POST['_tlc_update'] ) {
+					tlc_transient( $update[1] )
+						->expires_in( $update[2] )
+						->updates_with( $update[3], (array) $update[4] )
+						->set_lock( $update[0] )
+						->fetch_and_cache();
+				}
+				exit();
 			}
-			exit();
 		}
 	}
 }
@@ -76,9 +78,11 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 			if ( $this->has_update_lock() && !$this->owns_update_lock() )
 				return; // Race... let the other process handle it
 			try {
-				$data = call_user_func_array( $this->callback, $this->params );
+ 				$data = call_user_func_array( $this->callback, $this->params );
 				$this->set( $data );
-			} catch( Exception $e ) {}
+			} catch( Exception $e ) {
+				$data = false;
+			}
 			$this->release_update_lock();
 			return $data;
 		}
@@ -141,7 +145,31 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 }
 
 // API so you don't have to use "new"
-function tlc_transient( $key ) {
-	$transient = new TLC_Transient( $key );
-	return $transient;
+if ( !function_exists( 'tlc_transient' ) ) {
+	function tlc_transient( $key ) {
+		$transient = new TLC_Transient( $key );
+		return $transient;
+	}
 }
+
+// Example:
+/*
+function sample_fetch_and_append( $url, $append ) {
+	$f  = wp_remote_retrieve_body( wp_remote_get( $url, array( 'timeout' => 30 ) ) );
+	$f .= $append;
+	return $f;
+}
+
+function test_tlc_transient() {
+	$t = tlc_transient( 'foo' )
+		->expires_in( 30 )
+		->background_only()
+		->updates_with( 'sample_fetch_and_append', array( 'http://coveredwebservices.com/tools/long-running-request.php', ' appendfooparam ' ) )
+		->get();
+	var_dump( $t );
+	if ( !$t )
+		echo "The request is false, because it isn't yet in the cache. It'll be there in about 10 seconds. Keep refreshing!";
+}
+
+add_action( 'wp_footer', 'test_tlc_transient' );
+*/
