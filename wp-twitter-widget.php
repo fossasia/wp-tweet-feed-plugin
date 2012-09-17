@@ -393,6 +393,7 @@ class wpTwitterWidget extends RangePlugin {
 							<?php _e( "Other Setting:", $this->_slug );?>
 						</th>
 						<td>
+							<input type="hidden" value="false" name="twp[showretweets]" />
 							<input class="checkbox" type="checkbox" value="true" id="twp_showretweets" name="twp[showretweets]"<?php checked( $this->_settings['twp']['showretweets'], 'true' ); ?> />
 							<label for="twp_showretweets"><?php _e( 'Include retweets', $this->_slug ); ?></label>
 							<br />
