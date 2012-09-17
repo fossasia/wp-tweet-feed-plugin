@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: twitter, widget, feed
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 2.3.10
+Stable tag: 2.3.11
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links.
 
@@ -133,6 +133,9 @@ Aparently the database queries required to display the friends feed was causing 
 = 2.4.0 =
 Better linking to fix issues with links followed by punctuation
 
+= 2.3.11 =
+Fix issue with "Include Retweets" not unchecking
+
 = 2.3.10 =
 Update feeds and links to Ran.ge, moves screenshots outside of plugin zip
 
@@ -174,6 +177,9 @@ Fewer "could not connect to Twitter" messages, new links (reply, retweet, favori
 * Link FTP links
 * Link E-Mail addresses
 * Complete conversion to Range plugin framework from Xavisys framework
+
+= 2.3.11 =
+* Fix issue with "Include Retweets" not unchecking
 
 = 2.3.10 =
 * Update feeds and links to Ran.ge
