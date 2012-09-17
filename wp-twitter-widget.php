@@ -91,6 +91,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				</select>
 			</p>
 			<p>
+				<input type="hidden" value="false" name="<?php echo $this->get_field_name( 'showretweets' ); ?>" />
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'showretweets' ); ?>" name="<?php echo $this->get_field_name( 'showretweets' ); ?>"<?php checked( $instance['showretweets'], 'true' ); ?> />
 				<label for="<?php echo $this->get_field_id( 'showretweets' ); ?>"><?php _e( 'Include retweets', $this->_slug ); ?></label>
 			</p>
@@ -144,7 +145,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'showXavisysLink' ); ?>" name="<?php echo $this->get_field_name( 'showXavisysLink' ); ?>"<?php checked( $instance['showXavisysLink'], 'true' ); ?> />
 				<label for="<?php echo $this->get_field_id( 'showXavisysLink' ); ?>"><?php _e( 'Show Link to Twitter Widget Pro', $this->_slug ); ?></label>
 			</p>
-			<p><?php echo $wpTwitterWidget->getSupportForumLink(); ?></p>
+			<p><?php echo $wpTwitterWidget->get_support_forum_link(); ?></p>
 <?php
 		return;
 	}
