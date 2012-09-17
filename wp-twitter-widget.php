@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.3.11-beta
+ * Version: 2.4.0-beta
  * Author: Aaron D. Campbell
  * Author URI: http://ran.ge/
  * License: GPLv2 or later
@@ -29,8 +29,8 @@
 */
 
 require_once( 'tlc-transients.php' );
-require_once( 'xavisys-plugin-framework.php' );
-define( 'TWP_VERSION', '2.3.11' );
+require_once( 'range-plugin-framework.php' );
+define( 'TWP_VERSION', '2.4.0' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
@@ -182,7 +182,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
  * includes filters that modify tweet content for things like linked usernames.
  * It also helps us avoid name collisions.
  */
-class wpTwitterWidget extends XavisysPlugin {
+class wpTwitterWidget extends RangePlugin {
 	private $_api_url;
 
 	/**
@@ -220,7 +220,7 @@ class wpTwitterWidget extends XavisysPlugin {
 			update_option( 'twp_version', TWP_VERSION );
 	}
 
-	protected function _postSettingsInit() {
+	protected function _post_settings_init() {
 		if ( ! in_array( $this->_settings['twp']['http_vs_https'], array( 'http', 'https' ) ) )
 			$this->_settings['twp']['http_vs_https'] = 'https';
 		$this->_api_url = $this->_settings['twp']['http_vs_https'] . '://api.twitter.com/1/';
@@ -265,12 +265,12 @@ class wpTwitterWidget extends XavisysPlugin {
 		}
 	}
 
-	public function addOptionsMetaBoxes() {
-		add_meta_box( $this->_slug . '-general-settings', __( 'General Settings', $this->_slug ), array( $this, 'generalSettingsMetaBox' ), 'xavisys-' . $this->_slug, 'main' );
-		add_meta_box( $this->_slug . '-defaults', __( 'Defaults', $this->_slug ), array( $this, 'defaultSettingsMetaBox' ), 'xavisys-' . $this->_slug, 'main' );
+	public function add_options_meta_boxes() {
+		add_meta_box( $this->_slug . '-general-settings', __( 'General Settings', $this->_slug ), array( $this, 'general_settings_meta_box' ), 'range-' . $this->_slug, 'main' );
+		add_meta_box( $this->_slug . '-defaults', __( 'Defaults', $this->_slug ), array( $this, 'default_settings_meta_box' ), 'range-' . $this->_slug, 'main' );
 	}
 
-	public function generalSettingsMetaBox() {
+	public function general_settings_meta_box() {
 		$clear_locks_url = wp_nonce_url( add_query_arg( array( 'action' => 'clear-locks' ) ), 'clear-locks' );
 		?>
 				<table class="form-table">
@@ -300,7 +300,7 @@ class wpTwitterWidget extends XavisysPlugin {
 				</table>
 		<?php
 	}
-	public function defaultSettingsMetaBox() {
+	public function default_settings_meta_box() {
 		?>
 				<table class="form-table">
 					<tr valign="top">
@@ -684,7 +684,7 @@ class wpTwitterWidget extends XavisysPlugin {
 		}
 
 		if ( 'true' == $args['showXavisysLink'] ) {
-			$widgetContent .= '<div class="xavisys-link"><span class="xavisys-link-text">';
+			$widgetContent .= '<div class="range-link"><span class="range-link-text">';
 			$linkAttrs = array(
 				'href'	=> 'http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/',
 				'title'	=> __( 'Brought to you by BlueDog Web Services - A WordPress development company', $this->_slug )

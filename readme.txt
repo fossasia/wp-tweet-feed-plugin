@@ -130,7 +130,7 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
-= 2.3.11 =
+= 2.4.0 =
 Better linking to fix issues with links followed by punctuation
 
 = 2.3.10 =
@@ -168,12 +168,12 @@ Fewer "could not connect to Twitter" messages, new links (reply, retweet, favori
 
 == Changelog ==
 
-= 2.3.11 =
+= 2.4.0 =
 * Better linking of URLs, especially handling of punctuation at end of URLs
 * More efficient regex for link parsing
 * Link FTP links
 * Link E-Mail addresses
-
+* Complete conversion to Range plugin framework from Xavisys framework
 
 = 2.3.10 =
 * Update feeds and links to Ran.ge
