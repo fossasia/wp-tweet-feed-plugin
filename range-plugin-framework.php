@@ -346,10 +346,11 @@ if (!class_exists('RangePlugin')) {
 		}
 
 		public function option_page_styles() {
+			$logo_url = sprintf( 'http%s://range-wphost.netdna-ssl.com/assets/range-icon-square-32x32.png' , is_ssl()? 's':'' );
 			?>
 			<style type="text/css">
 				#icon-range {
-					background:transparent url(http://s1.ran.ge/assets/range-icon-square-32x32.png) no-repeat scroll bottom left;
+					background:transparent url(<?php echo esc_url_raw( $logo_url ); ?>) no-repeat scroll bottom left;
 				}
 			</style>
 			<?php
@@ -411,11 +412,13 @@ if (!class_exists('RangePlugin')) {
 				'show_date'		=> 1,
 				'show_summary'	=> 1,
 			);
+			$logo_url = sprintf( 'http%s://range-wphost.netdna-ssl.com/content/uploads/2012/06/range-trans.png' , is_ssl()? 's':'' );
+			$icon = includes_url('images/rss.png');
 			echo '<div class="rss-widget">';
-			echo '<a href="http://ran.ge"><img class="alignright" style="padding:0 0 5px 10px;" src="http://s1.ran.ge/content/uploads/2012/06/range-trans.png" /></a>';
+			echo '<a href="http://ran.ge"><img class="alignright" style="padding:0 0 5px 10px;" src="' . esc_url_raw( $logo_url ) . '" /></a>';
 			wp_widget_rss_output( $args );
 			echo '<p style="border-top: 1px solid #CCC; padding-top: 10px; font-weight: bold;">';
-			echo '<a href="' . $this->_feed_url . '"><img src="'.get_bloginfo('wpurl').'/wp-includes/images/rss.png" alt=""/> Subscribe with RSS</a>';
+			echo '<a href="' . $this->_feed_url . '"><img src="' . $icon . '" alt=""/> Subscribe with RSS</a>';
 			echo "</p>";
 			echo "</div>";
 		}
