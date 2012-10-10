@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/twitter-widget-pro\n"
-"POT-Creation-Date: 2012-10-10 17:31:34+00:00\n"
+"POT-Creation-Date: 2012-10-10 18:44:11+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -300,8 +300,7 @@ msgid "Follow %s"
 msgstr ""
 
 #: wp-twitter-widget.php:723
-msgid ""
-"Brought to you by BlueDog Web Services - A WordPress development company"
+msgid "Brought to you by Range - A WordPress design and development company"
 msgstr ""
 
 #: wp-twitter-widget.php:725
