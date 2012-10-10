@@ -720,7 +720,7 @@ class wpTwitterWidget extends RangePlugin {
 			$widgetContent .= '<div class="range-link"><span class="range-link-text">';
 			$linkAttrs = array(
 				'href'	=> 'http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/',
-				'title'	=> __( 'Brought to you by BlueDog Web Services - A WordPress development company', $this->_slug )
+				'title'	=> __( 'Brought to you by Range - A WordPress design and development company', $this->_slug )
 			);
 			$widgetContent .= __( 'Powered by', $this->_slug );
 			$widgetContent .= $this->_buildLink( 'WordPress Twitter Widget Pro', $linkAttrs );
