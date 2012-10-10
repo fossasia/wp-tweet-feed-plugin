@@ -268,7 +268,7 @@ class wpTwitterWidget extends RangePlugin {
 
 	public function add_options_meta_boxes() {
 		add_meta_box( $this->_slug . '-general-settings', __( 'General Settings', $this->_slug ), array( $this, 'general_settings_meta_box' ), 'range-' . $this->_slug, 'main' );
-		add_meta_box( $this->_slug . '-defaults', __( 'Defaults', $this->_slug ), array( $this, 'default_settings_meta_box' ), 'range-' . $this->_slug, 'main' );
+		add_meta_box( $this->_slug . '-defaults', __( 'Default Settings for Shortcodes', $this->_slug ), array( $this, 'default_settings_meta_box' ), 'range-' . $this->_slug, 'main' );
 	}
 
 	public function general_settings_meta_box() {
@@ -298,11 +298,42 @@ class wpTwitterWidget extends RangePlugin {
 							<small><?php _e( "A small perecntage of servers seem to have issues where an update lock isn't getting cleared.  If you're experiencing issues with your feed not updating, try clearing the update locks.", $this->_slug ); ?></small>
 						</td>
 					</tr>
+					<tr>
+						<th scope="row">
+							<?php _e( 'Current API Usage', $this->_slug );?>
+						</th>
+						<td>
+							<?php
+							$limit_url = $this->_api_url . "account/rate_limit_status.json";
+							$resp = wp_remote_request( $limit_url );
+
+							if ( !is_wp_error( $resp ) && $resp['response']['code'] >= 200 && $resp['response']['code'] < 300 ) {
+								$decodedResponse = json_decode( $resp['body'] );
+								?>
+								<p>
+									<?php echo sprintf( __( 'Used: %d', $this->_slug ), $decodedResponse->hourly_limit - $decodedResponse->remaining_hits ); ?><br />
+									<?php echo sprintf( __( 'Remaining: %d', $this->_slug ), $decodedResponse->remaining_hits ); ?><br />
+									<?php
+									$minutes = ceil( ( $decodedResponse->reset_time_in_seconds - gmdate( 'U' ) ) / 60 );
+									echo sprintf( _n( 'Limits reset in: %d minutes', 'Limits reset in: %d minutes', $minutes, $this->_slug ), $minutes );
+									?><br />
+									<small><?php _e( 'This is overall usage, not just usage from Twitter Widget Pro', $this->_slug ); ?></small>
+								</p>
+								<?php
+							} else {
+								?>
+								<p><?php _e( 'There was an error checking your rate limit.', $this->_slug ); ?></p>
+								<?php
+							}
+							?>
+						</td>
+					</tr>
 				</table>
 		<?php
 	}
 	public function default_settings_meta_box() {
 		?>
+				<p><?php _e( 'These settings are the default for the shortcodes and all of them can be overridden by specifying a different value in the shortcode itself.  All settings for widgets are locate in the individual widget.', $this->_slug ) ?></p>
 				<table class="form-table">
 					<tr valign="top">
 						<th scope="row">
