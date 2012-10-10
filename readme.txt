@@ -173,6 +173,8 @@ Fewer "could not connect to Twitter" messages, new links (reply, retweet, favori
 
 = 2.4.0 =
 * Better linking of URLs, especially handling of punctuation at end of URLs
+* Support for extended characters in hashtags
+* Allow externally linked images to serve via ssl
 * More efficient regex for link parsing
 * Link FTP links
 * Link E-Mail addresses

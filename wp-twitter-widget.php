@@ -448,7 +448,7 @@ class wpTwitterWidget extends RangePlugin {
 	 * @return string - Tweet text with #hashtags linked
 	 */
 	public function linkHashtags( $text ) {
-		$text = preg_replace_callback('/(^|\s)(#\w*)/i', array($this, '_linkHashtagsCallback'), $text);
+		$text = preg_replace_callback('/(^|\s)(#[\w\x{00C0}-\x{00D6}\x{00D8}-\x{00F6}\x{00F8}-\x{00FF}]*)/i', array($this, '_linkHashtagsCallback'), $text);
 		return $text;
 	}
 
