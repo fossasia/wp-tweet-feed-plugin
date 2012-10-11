@@ -134,7 +134,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				</select>
 			</p>
 			<p>
-				<label for="<?php echo $this->get_field_id( 'dateFormat' ); ?>"><?php echo sprintf( __( 'Format to dispaly the date in, uses <a href="%s">PHP date()</a> format:', $this->_slug ), 'http://php.net/date' ); ?></label>
+				<label for="<?php echo $this->get_field_id( 'dateFormat' ); ?>"><?php echo sprintf( __( 'Format to display the date in, uses <a href="%s">PHP date()</a> format:', $this->_slug ), 'http://php.net/date' ); ?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id( 'dateFormat' ); ?>" name="<?php echo $this->get_field_name( 'dateFormat' ); ?>" type="text" value="<?php esc_attr_e( $instance['dateFormat'] ); ?>" />
 			</p>
 			<p>
@@ -295,7 +295,7 @@ class wpTwitterWidget extends RangePlugin {
 						</th>
 						<td>
 							<a href="<?php echo esc_url( $clear_locks_url ); ?>"><?php _e( 'Clear Update Locks', $this->_slug ); ?></a><br />
-							<small><?php _e( "A small perecntage of servers seem to have issues where an update lock isn't getting cleared.  If you're experiencing issues with your feed not updating, try clearing the update locks.", $this->_slug ); ?></small>
+							<small><?php _e( "A small percentage of servers seem to have issues where an update lock isn't getting cleared.  If you're experiencing issues with your feed not updating, try clearing the update locks.", $this->_slug ); ?></small>
 						</td>
 					</tr>
 					<tr>
@@ -413,7 +413,7 @@ class wpTwitterWidget extends RangePlugin {
 					</tr>
 					<tr valign="top">
 						<th scope="row">
-							<label for="twp_dateFormat"><?php echo sprintf( __( 'Format to dispaly the date in, uses <a href="%s">PHP date()</a> format:', $this->_slug ), 'http://php.net/date' ); ?></label>
+							<label for="twp_dateFormat"><?php echo sprintf( __( 'Format to display the date in, uses <a href="%s">PHP date()</a> format:', $this->_slug ), 'http://php.net/date' ); ?></label>
 						</th>
 						<td>
 							<input id="twp_dateFormat" name="twp[dateFormat]" type="text" class="regular-text code" value="<?php esc_attr_e( $this->_settings['twp']['dateFormat'] ); ?>" size="40" />
