@@ -277,7 +277,7 @@ class wpTwitterWidget extends RangePlugin {
 				<table class="form-table">
 					<tr valign="top">
 						<th scope="row">
-							<?php _e( "HTTP vs HTTPS:", $this->_slug );?>
+							<?php _e( "HTTP vs HTTPS", $this->_slug );?>
 						</th>
 						<td>
 							<input class="checkbox" type="radio" value="https" id="twp_http_vs_https_https" name="twp[http_vs_https]"<?php checked( $this->_settings['twp']['http_vs_https'], 'https' ); ?> />
@@ -291,7 +291,7 @@ class wpTwitterWidget extends RangePlugin {
 					</tr>
 					<tr>
 						<th scope="row">
-							<?php _e( "Clear Update Locks:", $this->_slug );?>
+							<?php _e( "Clear Update Locks", $this->_slug );?>
 						</th>
 						<td>
 							<a href="<?php echo esc_url( $clear_locks_url ); ?>"><?php _e( 'Clear Update Locks', $this->_slug ); ?></a><br />
