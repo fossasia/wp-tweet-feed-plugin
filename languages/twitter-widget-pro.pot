@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/twitter-widget-pro\n"
-"POT-Creation-Date: 2012-10-10 18:44:11+00:00\n"
+"POT-Creation-Date: 2012-10-11 14:15:52+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -168,7 +168,7 @@ msgstr ""
 
 #: wp-twitter-widget.php:137 wp-twitter-widget.php:416
 msgid ""
-"Format to dispaly the date in, uses <a href=\"%s\">PHP date()</a> format:"
+"Format to display the date in, uses <a href=\"%s\">PHP date()</a> format:"
 msgstr ""
 
 #: wp-twitter-widget.php:142 wp-twitter-widget.php:446
@@ -202,7 +202,7 @@ msgid "Default Settings for Shortcodes"
 msgstr ""
 
 #: wp-twitter-widget.php:280
-msgid "HTTP vs HTTPS:"
+msgid "HTTP vs HTTPS"
 msgstr ""
 
 #: wp-twitter-widget.php:284
@@ -219,17 +219,13 @@ msgid ""
 "experiencing issues with your feed not updating, try setting this to HTTP."
 msgstr ""
 
-#: wp-twitter-widget.php:294
-msgid "Clear Update Locks:"
-msgstr ""
-
-#: wp-twitter-widget.php:297
+#: wp-twitter-widget.php:294 wp-twitter-widget.php:297
 msgid "Clear Update Locks"
 msgstr ""
 
 #: wp-twitter-widget.php:298
 msgid ""
-"A small perecntage of servers seem to have issues where an update lock isn't "
+"A small percentage of servers seem to have issues where an update lock isn't "
 "getting cleared.  If you're experiencing issues with your feed not updating, "
 "try clearing the update locks."
 msgstr ""
