@@ -3,7 +3,7 @@ Contributors: aaroncampbell, PeteMall, range, saracannon
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9993090
 Tags: twitter, widget, feed
 Requires at least: 3.0
-Tested up to: 3.4.2
+Tested up to: 3.5
 Stable tag: 2.4.0
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links.
@@ -130,6 +130,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.4.1 =
+Better support for hashtags with international characters & new German translation
+
 = 2.4.0 =
 Better linking to fix issues with links followed by punctuation plus support for extended characters in hashtags
 
@@ -170,6 +173,10 @@ Fixes an issue with the intents and follow settings not being saved
 Fewer "could not connect to Twitter" messages, new links (reply, retweet, favorite), new follow button, and avatar fixes
 
 == Changelog ==
+
+= 2.4.1 =
+* Make sure hashtags are parsed UTF-8
+* Add German translation
 
 = 2.4.0 =
 * Better linking of URLs, especially handling of punctuation at end of URLs
