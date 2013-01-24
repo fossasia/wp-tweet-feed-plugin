@@ -96,10 +96,12 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				<label for="<?php echo $this->get_field_id( 'showretweets' ); ?>"><?php _e( 'Include retweets', $this->_slug ); ?></label>
 			</p>
 			<p>
+				<input type="hidden" value="false" name="<?php echo $this->get_field_name( 'hidereplies' ); ?>" />
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'hidereplies' ); ?>" name="<?php echo $this->get_field_name( 'hidereplies' ); ?>"<?php checked( $instance['hidereplies'], 'true' ); ?> />
 				<label for="<?php echo $this->get_field_id( 'hidereplies' ); ?>"><?php _e( 'Hide @replies', $this->_slug ); ?></label>
 			</p>
 			<p>
+				<input type="hidden" value="false" name="<?php echo $this->get_field_name( 'hidefrom' ); ?>" />
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'hidefrom' ); ?>" name="<?php echo $this->get_field_name( 'hidefrom' ); ?>"<?php checked( $instance['hidefrom'], 'true' ); ?> />
 				<label for="<?php echo $this->get_field_id( 'hidefrom' ); ?>"><?php _e( 'Hide sending applications', $this->_slug ); ?></label>
 			</p>
@@ -138,10 +140,12 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				<input class="widefat" id="<?php echo $this->get_field_id( 'dateFormat' ); ?>" name="<?php echo $this->get_field_name( 'dateFormat' ); ?>" type="text" value="<?php esc_attr_e( $instance['dateFormat'] ); ?>" />
 			</p>
 			<p>
+				<input type="hidden" value="false" name="<?php echo $this->get_field_name( 'targetBlank' ); ?>" />
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'targetBlank' ); ?>" name="<?php echo $this->get_field_name( 'targetBlank' ); ?>"<?php checked( $instance['targetBlank'], 'true' ); ?> />
 				<label for="<?php echo $this->get_field_id( 'targetBlank' ); ?>"><?php _e( 'Open links in a new window', $this->_slug ); ?></label>
 			</p>
 			<p>
+				<input type="hidden" value="false" name="<?php echo $this->get_field_name( 'showXavisysLink' ); ?>" />
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'showXavisysLink' ); ?>" name="<?php echo $this->get_field_name( 'showXavisysLink' ); ?>"<?php checked( $instance['showXavisysLink'], 'true' ); ?> />
 				<label for="<?php echo $this->get_field_id( 'showXavisysLink' ); ?>"><?php _e( 'Show Link to Twitter Widget Pro', $this->_slug ); ?></label>
 			</p>
@@ -428,9 +432,11 @@ class wpTwitterWidget extends RangePlugin {
 							<input class="checkbox" type="checkbox" value="true" id="twp_showretweets" name="twp[showretweets]"<?php checked( $this->_settings['twp']['showretweets'], 'true' ); ?> />
 							<label for="twp_showretweets"><?php _e( 'Include retweets', $this->_slug ); ?></label>
 							<br />
+							<input type="hidden" value="false" name="twp[hidereplies]" />
 							<input class="checkbox" type="checkbox" value="true" id="twp_hidereplies" name="twp[hidereplies]"<?php checked( $this->_settings['twp']['hidereplies'], 'true' ); ?> />
 							<label for="twp_hidereplies"><?php _e( 'Hide @replies', $this->_slug ); ?></label>
 							<br />
+							<input type="hidden" value="false" name="twp[hidefrom]" />
 							<input class="checkbox" type="checkbox" value="true" id="twp_hidefrom" name="twp[hidefrom]"<?php checked( $this->_settings['twp']['hidefrom'], 'true' ); ?> />
 							<label for="twp_hidefrom"><?php _e( 'Hide sending applications', $this->_slug ); ?></label>
 							<br />
@@ -442,9 +448,11 @@ class wpTwitterWidget extends RangePlugin {
 							<input class="checkbox" type="checkbox" value="true" id="twp_showfollow" name="twp[showfollow]"<?php checked( $this->_settings['twp']['showfollow'], 'true' ); ?> />
 							<label for="twp_showfollow"><?php _e( 'Show Follow Link', $this->_slug ); ?></label>
 							<br />
+							<input type="hidden" value="false" name="twp[targetBlank]" />
 							<input class="checkbox" type="checkbox" value="true" id="twp_targetBlank" name="twp[targetBlank]"<?php checked( $this->_settings['twp']['targetBlank'], 'true' ); ?> />
 							<label for="twp_targetBlank"><?php _e( 'Open links in a new window', $this->_slug ); ?></label>
 							<br />
+							<input type="hidden" value="false" name="twp[showXavisysLink" />
 							<input class="checkbox" type="checkbox" value="true" id="twp_showXavisysLink" name="twp[showXavisysLink]"<?php checked( $this->_settings['twp']['showXavisysLink'], 'true' ); ?> />
 							<label for="twp_showXavisysLink"><?php _e( 'Show Link to Twitter Widget Pro', $this->_slug ); ?></label>
 						</td>
