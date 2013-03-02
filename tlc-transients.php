@@ -7,11 +7,15 @@ if ( !class_exists( 'TLC_Transient_Update_Server' ) ) {
 		}
 
 		public function init() {
-			if ( isset( $_POST['_tlc_update'] ) ) {
-				$update = get_transient( 'tlc_up__' . $_POST['key'] );
+			if ( isset( $_POST['_tlc_update'] )
+				&& ( 0 === strpos( $_POST['_tlc_update'], 'tlc_lock_' ) )
+				&& isset( $_POST['key'] )
+			) {
+				$update = get_transient( 'tlc_up__' . md5( $_POST['key'] ) );
 				if ( $update && $update[0] == $_POST['_tlc_update'] ) {
 					tlc_transient( $update[1] )
 						->expires_in( $update[2] )
+						->extend_on_fail( $update[5] )
 						->updates_with( $update[3], (array) $update[4] )
 						->set_lock( $update[0] )
 						->fetch_and_cache();
@@ -20,25 +24,32 @@ if ( !class_exists( 'TLC_Transient_Update_Server' ) ) {
 			}
 		}
 	}
-}
 
-new TLC_Transient_Update_Server;
+	new TLC_Transient_Update_Server;
+}
 
 if ( !class_exists( 'TLC_Transient' ) ) {
 	class TLC_Transient {
 		public $key;
+		public $raw_key;
 		private $lock;
 		private $callback;
 		private $params;
 		private $expiration = 0;
+		private $extend_on_fail = 0;
 		private $force_background_updates = false;
 
 		public function __construct( $key ) {
-			$this->key = substr( $key, 0, 37 );
+			$this->raw_key = $key;
+			$this->key = md5( $key );
+		}
+
+		private function raw_get() {
+			return get_transient( 'tlc__' . $this->key );
 		}
 
 		public function get() {
-			$data = get_transient( $this->key );
+			$data = $this->raw_get();
 			if ( false === $data ) {
 				// Hard expiration
 				if ( $this->force_background_updates ) {
@@ -60,7 +71,7 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 
 		private function schedule_background_fetch() {
 			if ( !$this->has_update_lock() ) {
-				set_transient( 'tlc_up__' . $this->key, array( $this->new_update_lock(), $this->key, $this->expiration, $this->callback, $this->params ), 300 );
+				set_transient( 'tlc_up__' . $this->key, array( $this->new_update_lock(), $this->raw_key, $this->expiration, $this->callback, $this->params, $this->extend_on_fail ), 300 );
 				add_action( 'shutdown', array( $this, 'spawn_server' ) );
 			}
 			return $this;
@@ -68,7 +79,7 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 
 		public function spawn_server() {
 			$server_url = home_url( '/?tlc_transients_request' );
-			wp_remote_post( $server_url, array( 'body' => array( '_tlc_update' => $this->lock, 'key' => $this->key ), 'timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) ) );
+			wp_remote_post( $server_url, array( 'body' => array( '_tlc_update' => $this->lock, 'key' => $this->raw_key ), 'timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) ) );
 		}
 
 		public function fetch_and_cache() {
@@ -81,7 +92,18 @@ if ( !class_exists( 'TLC_Transient' ) ) {
  				$data = call_user_func_array( $this->callback, $this->params );
 				$this->set( $data );
 			} catch( Exception $e ) {
-				$data = false;
+				if ( $this->extend_on_fail > 0 ) {
+					$data = $this->raw_get();
+					if ( $data ) {
+						$data = $data[1];
+						$old_expiration = $this->expiration;
+						$this->expiration = $this->extend_on_fail;
+						$this->set( $data );
+						$this->expiration = $old_expiration;
+					}
+				} else {
+					$data = false;
+				}
 			}
 			$this->release_update_lock();
 			return $data;
@@ -89,9 +111,10 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 
 		public function set( $data ) {
 			// We set the timeout as part of the transient data.
-			// The actual transient has no TTL. This allows for soft expiration.
+			// The actual transient has a far-future TTL. This allows for soft expiration.
 			$expiration = ( $this->expiration > 0 ) ? time() + $this->expiration : 0;
-			set_transient( $this->key, array( $expiration, $data ) );
+			$transient_expiration = ( $this->expiration > 0 ) ? $this->expiration + 31536000 : 0; // 31536000 = 60*60*24*365 ~= one year
+			set_transient( 'tlc__' . $this->key, array( $expiration, $data ), $transient_expiration );
 			return $this;
 		}
 
@@ -103,7 +126,7 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 		}
 
 		private function new_update_lock() {
-			$this->lock = md5( uniqid( microtime() . mt_rand(), true ) );
+			$this->lock = uniqid( 'tlc_lock_', true );
 			return $this->lock;
 		}
 
@@ -129,6 +152,11 @@ if ( !class_exists( 'TLC_Transient' ) ) {
 
 		public function expires_in( $seconds ) {
 			$this->expiration = (int) $seconds;
+			return $this;
+		}
+
+		public function extend_on_fail( $seconds ) {
+			$this->extend_on_fail = (int) $seconds;
 			return $this;
 		}
 

@@ -130,6 +130,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.5.0 =
+Upgrade to the new Twitter API and add support for lists
+
 = 2.4.1 =
 Better support for hashtags with international characters & new German translation
 
@@ -173,6 +176,11 @@ Fixes an issue with the intents and follow settings not being saved
 Fewer "could not connect to Twitter" messages, new links (reply, retweet, favorite), new follow button, and avatar fixes
 
 == Changelog ==
+
+= 2.5.0 =
+* Use the new Twitter API with oAuth
+* Adds support for lists
+* No longer supports non-https Twitter requests (Twitter API requirement)
 
 = 2.4.1 =
 * Make sure hashtags are parsed UTF-8
