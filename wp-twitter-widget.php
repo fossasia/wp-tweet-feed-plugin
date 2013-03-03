@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.5.0-alpha
+ * Version: 2.5.0
  * Author: Aaron D. Campbell
  * Author URI: http://ran.ge/
  * License: GPLv2 or later
@@ -30,7 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'range-plugin-framework.php' );
-define( 'TWP_VERSION', '2.5.0-alpha' );
+define( 'TWP_VERSION', '2.5.0' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
