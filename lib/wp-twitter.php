@@ -102,15 +102,12 @@ class wpTwitter {
 		$this->sign_request( $parameters, $request_url );
 		switch ($method) {
 			case 'GET':
-				$request_url = $this->get_normalized_http_url( $request_url ) . '?' . OAuthUtil::build_http_query( $parameters );
+				$request_url = $this->get_normalized_http_url( $request_url ) . '?' . twpOAuthUtil::build_http_query( $parameters );
 				$resp = wp_remote_get($request_url);
 				break;
 			default:
 				$resp = wp_remote_request($request_url, array( 'method'=>$method, 'body'=>$parameters));
 		}
-
-		if ( 'account/verify_credentials' == $method )
-			dump( $resp, '$resp' );
 
 		if ( !is_wp_error( $resp ) && $resp['response']['code'] >= 200 && $resp['response']['code'] < 300 ) {
 			$decoded_response = json_decode( $resp['body'] );
@@ -118,6 +115,8 @@ class wpTwitter {
 				$decoded_response = wp_parse_args( $resp['body'] );
 			return $decoded_response;
 		} else {
+			if ( is_wp_error( $resp ) )
+				return $resp;
 			return new WP_Error( $resp['response']['code'], 'Could not recognize the response from Twitter' );
 		}
 	}
@@ -155,7 +154,7 @@ class wpTwitter {
 		if ( isset( $parameters['oauth_signature'] ) )
 			unset( $parameters['oauth_signature'] );
 
-		return OAuthUtil::build_http_query( $parameters );
+		return twpOAuthUtil::build_http_query( $parameters );
 	}
 
 	public function build_signature( $parameters, $request_url, $method = 'GET' ) {
@@ -165,7 +164,7 @@ class wpTwitter {
 			$this->get_signable_parameters( $parameters )
 		);
 
-		$parts = OAuthUtil::urlencode_rfc3986($parts);
+		$parts = twpOAuthUtil::urlencode_rfc3986($parts);
 
 		$base_string = implode('&', $parts);
 		$token_secret = '';
@@ -178,7 +177,7 @@ class wpTwitter {
 			$token_secret,
 		);
 
-		$key_parts = OAuthUtil::urlencode_rfc3986( $key_parts );
+		$key_parts = twpOAuthUtil::urlencode_rfc3986( $key_parts );
 		$key = implode( '&', $key_parts );
 
 		return base64_encode( hash_hmac( 'sha1', $base_string, $key, true ) );

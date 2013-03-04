@@ -1,8 +1,8 @@
 <?php
-class OAuthUtil {
+class twpOAuthUtil {
 	public static function urlencode_rfc3986( $input ) {
 		if ( is_array( $input ) )
-			return array_map( array( 'OAuthUtil', 'urlencode_rfc3986' ), $input );
+			return array_map( array( 'twpOAuthUtil', 'urlencode_rfc3986' ), $input );
 		else if ( is_scalar( $input ) )
 			return str_replace( '+', ' ', str_replace( '%7E', '~', rawurlencode( $input ) ) );
 		else
@@ -28,7 +28,7 @@ class OAuthUtil {
 			$header_name = $matches[2][0];
 			$header_content = ( isset( $matches[5] ) ) ? $matches[5][0] : $matches[4][0];
 			if ( preg_match( '/^oauth_/', $header_name ) || ! $only_allow_oauth_parameters )
-				$params[$header_name] = OAuthUtil::urldecode_rfc3986($header_content);
+				$params[$header_name] = twpOAuthUtil::urldecode_rfc3986($header_content);
 
 			$offset = $match[1] + strlen($match[0]);
 		}
@@ -87,8 +87,8 @@ class OAuthUtil {
 		$parsed_parameters = array();
 		foreach ( $pairs as $pair ) {
 			$split = explode( '=', $pair, 2 );
-			$parameter = OAuthUtil::urldecode_rfc3986( $split[0] );
-			$value = isset( $split[1] ) ? OAuthUtil::urldecode_rfc3986( $split[1] ) : '';
+			$parameter = twpOAuthUtil::urldecode_rfc3986( $split[0] );
+			$value = isset( $split[1] ) ? twpOAuthUtil::urldecode_rfc3986( $split[1] ) : '';
 
 			if ( isset( $parsed_parameters[$parameter] ) ) {
 				// We have already recieved parameter(s) with this name, so add to the
@@ -112,8 +112,8 @@ class OAuthUtil {
 			return '';
 
 		// Urlencode both keys and values
-		$keys = OAuthUtil::urlencode_rfc3986( array_keys( $params ) );
-		$values = OAuthUtil::urlencode_rfc3986( array_values( $params ) );
+		$keys = twpOAuthUtil::urlencode_rfc3986( array_keys( $params ) );
+		$values = twpOAuthUtil::urlencode_rfc3986( array_values( $params ) );
 		$params = array_combine( $keys, $values );
 
 		// Parameters are sorted by name, using lexicographical byte value ordering.
