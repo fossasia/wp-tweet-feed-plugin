@@ -59,8 +59,9 @@ class wpTwitter {
 		return $this->_token;
 	}
 
-	private function _get_oauth_params() {
+	private function _get_request_defaults() {
 		$params = array(
+			'sslverify'          => apply_filters( 'twp_sslverify', false ),
 			'oauth_version'      => '1.0',
 			'oauth_nonce'        => md5( microtime() . mt_rand() ),
 			'oauth_timestamp'    => time(),
@@ -96,7 +97,7 @@ class wpTwitter {
 	 * Format and sign an OAuth / API request
 	 */
 	public function send_authed_request( $request_url, $method, $parameters = array() ) {
-		$parameters = wp_parse_args( $parameters, $this->_get_oauth_params() );
+		$parameters = wp_parse_args( $parameters, $this->_get_request_defaults() );
 		if ( ! filter_var( $request_url , FILTER_VALIDATE_URL ) )
 			$request_url = self::get_api_endpoint( $request_url );
 		$this->sign_request( $parameters, $request_url );

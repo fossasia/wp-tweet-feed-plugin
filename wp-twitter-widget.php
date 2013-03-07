@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.5.1
+ * Version: 2.5.2
  * Author: Aaron D. Campbell
  * Author URI: http://ran.ge/
  * License: GPLv2 or later
@@ -30,7 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'range-plugin-framework.php' );
-define( 'TWP_VERSION', '2.5.1' );
+define( 'TWP_VERSION', '2.5.2' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
@@ -166,10 +166,6 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 			<p>
 				<label for="<?php echo $this->get_field_id( 'errmsg' ); ?>"><?php _e( 'What to display when Twitter is down ( optional ):', $this->_slug ); ?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id( 'errmsg' ); ?>" name="<?php echo $this->get_field_name( 'errmsg' ); ?>" type="text" value="<?php esc_attr_e( $instance['errmsg'] ); ?>" />
-			</p>
-			<p>
-				<label for="<?php echo $this->get_field_id( 'fetchTimeOut' ); ?>"><?php _e( 'Number of seconds to wait for a response from Twitter ( default 2 ):', $this->_slug ); ?></label>
-				<input class="widefat" id="<?php echo $this->get_field_id( 'fetchTimeOut' ); ?>" name="<?php echo $this->get_field_name( 'fetchTimeOut' ); ?>" type="text" value="<?php esc_attr_e( $instance['fetchTimeOut'] ); ?>" />
 			</p>
 			<p>
 				<label for="<?php echo $this->get_field_id( 'showts' ); ?>"><?php _e( 'Show date/time of Tweet ( rather than 2 ____ ago ):', $this->_slug ); ?></label>
@@ -363,7 +359,8 @@ class wpTwitterWidget extends RangePlugin {
 				else
 					$msg = __( 'There was a problem authorizing your account.', $this->_slug );
 			}
-			echo "<div class='updated'><p>" . esc_html( $msg ) . '</p></div>';
+			if ( ! empty( $msg ) )
+				echo "<div class='updated'><p>" . esc_html( $msg ) . '</p></div>';
 		}
 
 		if ( empty( $this->_settings['twp']['consumer-key'] ) || empty( $this->_settings['twp']['consumer-secret'] ) ) {
@@ -633,14 +630,6 @@ class wpTwitterWidget extends RangePlugin {
 					</tr>
 					<tr valign="top">
 						<th scope="row">
-							<label for="twp_fetchTimeOut"><?php _e( 'Number of seconds to wait for a response from Twitter ( default 2 ):', $this->_slug ); ?></label>
-						</th>
-						<td>
-							<input id="twp_fetchTimeOut" name="twp[fetchTimeOut]" type="text" class="regular-text code" value="<?php esc_attr_e( $this->_settings['twp']['fetchTimeOut'] ); ?>" size="40" />
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row">
 							<label for="twp_showts"><?php _e( 'Show date/time of Tweet ( rather than 2 ____ ago ):', $this->_slug ); ?></label>
 						</th>
 						<td>
@@ -721,7 +710,7 @@ class wpTwitterWidget extends RangePlugin {
 	}
 
 	/**
-	 * Replace #hashtag with a link to search.twitter.com for that hashtag
+	 * Replace #hashtag with a link to twitter.com for that hashtag
 	 *
 	 * @param string $text - Tweet text
 	 * @return string - Tweet text with #hashtags linked
@@ -732,14 +721,14 @@ class wpTwitterWidget extends RangePlugin {
 	}
 
 	/**
-	 * Replace #hashtag with a link to search.twitter.com for that hashtag
+	 * Replace #hashtag with a link to twitter.com for that hashtag
 	 *
 	 * @param array $matches - Tweet text
 	 * @return string - Tweet text with #hashtags linked
 	 */
 	private function _linkHashtagsCallback( $matches ) {
 		$linkAttrs = array(
-			'href'	=> 'http://search.twitter.com/search?q=' . urlencode( $matches[2] ),
+			'href'	=> 'http://twitter.com/search?q=' . urlencode( $matches[2] ),
 			'class'	=> 'twitter-hashtag'
 		);
 		return $matches[1] . $this->_buildLink( $matches[2], $linkAttrs );
@@ -1094,8 +1083,8 @@ class wpTwitterWidget extends RangePlugin {
 		if ( 'true' == $widgetOptions['hidereplies'] )
 			$parameters['exclude_replies'] = 'true';
 
-		if ( 'true' == $widgetOptions['showretweets'] )
-			$parameters['include_rts'] = 'true';
+		if ( 'true' != $widgetOptions['showretweets'] )
+			$parameters['include_rts'] = 'false';
 
 		return $parameters;
 
@@ -1181,7 +1170,6 @@ class wpTwitterWidget extends RangePlugin {
 			'after_title'     => '</h2>',
 			'title'           => '',
 			'errmsg'          => '',
-			'fetchTimeOut'    => '2',
 			'username'        => '',
 			'hidereplies'     => 'false',
 			'showretweets'    => 'true',
@@ -1200,10 +1188,6 @@ class wpTwitterWidget extends RangePlugin {
 		 * Attribute names are strtolower'd, so we need to fix them to match
 		 * the names used through the rest of the plugin
 		 */
-		if ( array_key_exists( 'fetchtimeout', $attr ) ) {
-			$attr['fetchTimeOut'] = $attr['fetchtimeout'];
-			unset( $attr['fetchtimeout'] );
-		}
 		if ( array_key_exists( 'showxavisyslink', $attr ) ) {
 			$attr['showXavisysLink'] = $attr['showxavisyslink'];
 			unset( $attr['showxavisyslink'] );
@@ -1262,7 +1246,6 @@ class wpTwitterWidget extends RangePlugin {
 			'consumer-secret' => '',
 			'title'           => '',
 			'errmsg'          => '',
-			'fetchTimeOut'    => '2',
 			'username'        => '',
 			'list'            => '',
 			'http_vs_https'   => 'https',

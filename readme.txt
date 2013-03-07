@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: twitter, widget, feed
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links.
 
@@ -130,6 +130,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.5.2 =
+Fixes hashtag links, ignoring of retweets, and SSL verification
+
 = 2.5.1 =
 Fix potential conflict with other oAuth plugins
 
@@ -179,6 +182,12 @@ Fixes an issue with the intents and follow settings not being saved
 Fewer "could not connect to Twitter" messages, new links (reply, retweet, favorite), new follow button, and avatar fixes
 
 == Changelog ==
+
+= 2.5.2 =
+* Don't force verification of Twitter's SSL certificate
+* Fix empty admin notice
+* Fix bug with retweets not being ignored
+* Fix hashtag links
 
 = 2.5.1 =
 * Rename OAuthUtil class to twpOAuthUtil
