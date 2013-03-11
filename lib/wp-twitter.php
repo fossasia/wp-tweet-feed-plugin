@@ -61,15 +61,17 @@ class wpTwitter {
 
 	private function _get_request_defaults() {
 		$params = array(
-			'sslverify'          => apply_filters( 'twp_sslverify', false ),
-			'oauth_version'      => '1.0',
-			'oauth_nonce'        => md5( microtime() . mt_rand() ),
-			'oauth_timestamp'    => time(),
-			'oauth_consumer_key' => $this->_consumer_key
+			'sslverify' => apply_filters( 'twp_sslverify', false ),
+			'body'      => array(
+				'oauth_version'      => '1.0',
+				'oauth_nonce'        => md5( microtime() . mt_rand() ),
+				'oauth_timestamp'    => time(),
+				'oauth_consumer_key' => $this->_consumer_key,
+			),
 		);
 
 		if ( ! empty( $this->_token['oauth_token'] ) )
-			$params['oauth_token'] = $this->_token['oauth_token'];
+			$params['body']['oauth_token'] = $this->_token['oauth_token'];
 
 		return $params;
 	}
@@ -96,18 +98,21 @@ class wpTwitter {
 	/**
 	 * Format and sign an OAuth / API request
 	 */
-	public function send_authed_request( $request_url, $method, $parameters = array() ) {
-		$parameters = wp_parse_args( $parameters, $this->_get_request_defaults() );
+	public function send_authed_request( $request_url, $method, $body_parameters = array() ) {
+		$parameters = $this->_get_request_defaults();
+		$parameters['body'] = wp_parse_args( $body_parameters, $parameters['body'] );
 		if ( ! filter_var( $request_url , FILTER_VALIDATE_URL ) )
 			$request_url = self::get_api_endpoint( $request_url );
 		$this->sign_request( $parameters, $request_url );
 		switch ($method) {
 			case 'GET':
-				$request_url = $this->get_normalized_http_url( $request_url ) . '?' . twpOAuthUtil::build_http_query( $parameters );
-				$resp = wp_remote_get($request_url);
+				$request_url = $this->get_normalized_http_url( $request_url ) . '?' . twpOAuthUtil::build_http_query( $parameters['body'] );
+				unset( $parameters['body'] );
+				$resp = wp_remote_get( $request_url, $parameters );
 				break;
 			default:
-				$resp = wp_remote_request($request_url, array( 'method'=>$method, 'body'=>$parameters));
+				$parameters['method'] = $method;
+				$resp = wp_remote_request( $request_url, $parameters );
 		}
 
 		if ( !is_wp_error( $resp ) && $resp['response']['code'] >= 200 && $resp['response']['code'] < 300 ) {
@@ -141,8 +146,8 @@ class wpTwitter {
 	}
 
 	public function sign_request( &$parameters, $request_url, $method = 'GET' ) {
-		$parameters['oauth_signature_method'] = 'HMAC-SHA1';
-		$parameters['oauth_signature'] = $this->build_signature( $parameters, $request_url, $method );
+		$parameters['body']['oauth_signature_method'] = 'HMAC-SHA1';
+		$parameters['body']['oauth_signature'] = $this->build_signature( $parameters['body'], $request_url, $method );
 	}
 
 	/**

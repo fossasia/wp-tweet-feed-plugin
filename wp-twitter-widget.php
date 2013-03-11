@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.5.2
+ * Version: 2.5.3
  * Author: Aaron D. Campbell
  * Author URI: http://ran.ge/
  * License: GPLv2 or later
@@ -318,8 +318,10 @@ class wpTwitterWidget extends RangePlugin {
 			check_admin_referer( 'authorize' );
 			$auth_redirect = add_query_arg( array( 'action' => 'authorized' ), $this->get_options_url() );
 			$token = $this->_wp_twitter_oauth->getRequestToken( $auth_redirect );
-			if ( is_wp_error( $token ) )
+			if ( is_wp_error( $token ) ) {
+				$this->_error = $token;
 				return;
+			}
 			update_option( '_twp_request_token_'.$token['nonce'], $token );
 			$screen_name = empty( $_GET['screen_name'] )? '':$_GET['screen_name'];
 			wp_redirect( $this->_wp_twitter_oauth->get_authorize_url( $screen_name ) );
@@ -361,6 +363,11 @@ class wpTwitterWidget extends RangePlugin {
 			}
 			if ( ! empty( $msg ) )
 				echo "<div class='updated'><p>" . esc_html( $msg ) . '</p></div>';
+		}
+
+		if ( ! empty( $this->_error ) && is_wp_error( $this->_error ) ) {
+			$msg = '<p>' . implode( '</p><p>', $this->_error->get_error_messages() ) . '</p>';
+			echo '<div class="error">' . $msg . '</div>';
 		}
 
 		if ( empty( $this->_settings['twp']['consumer-key'] ) || empty( $this->_settings['twp']['consumer-secret'] ) ) {
@@ -864,7 +871,7 @@ class wpTwitterWidget extends RangePlugin {
 		$args['title'] = apply_filters( 'twitter-widget-title', $args['title'], $args );
 		$args['title'] = "<span class='twitterwidget twitterwidget-title'>{$args['title']}</span>";
 		$widgetContent .= $args['before_title'] . $args['title'] . $args['after_title'];
-		if ( !empty( $tweets[0] ) && !empty( $args['avatar'] ) ) {
+		if ( !empty( $tweets[0] ) && is_object( $tweets[0] ) && !empty( $args['avatar'] ) ) {
 			$widgetContent .= '<div class="twitter-avatar">';
 			$widgetContent .= $this->_getProfileImage( $tweets[0]->user, $args );
 			$widgetContent .= '</div>';
@@ -1171,6 +1178,7 @@ class wpTwitterWidget extends RangePlugin {
 			'title'           => '',
 			'errmsg'          => '',
 			'username'        => '',
+			'list'            => '',
 			'hidereplies'     => 'false',
 			'showretweets'    => 'true',
 			'hidefrom'        => 'false',
