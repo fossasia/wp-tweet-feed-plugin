@@ -20,7 +20,9 @@ Brought to you by <a href="http://ran.ge/" title="WordPress Development">Ran.ge<
 
 == Installation ==
 
-1. Use automatic installer.
+1. Use automatic installer to install and active the plugin.
+1. You should see a notice appear in your admin that links you to the settings page.
+1. Follow the instructions to setup your Twitter app and authenticate your account (an unfortunate step made necessary by Twitter's API changes).
 1. In WordPress admin go to 'Appearance' -> 'Widgets' and add "Twitter Widget Pro" to one of your widget-ready areas of your site
 
 == Frequently Asked Questions ==
