@@ -10,12 +10,9 @@ A widget that properly handles twitter feeds, including parsing @username, #hash
 
 == Description ==
 
-A widget that properly handles twitter feeds, including parsing @username,
-#hashtag, and URLs into links.  It supports displaying profiles images, and even
-lets you control whether to display the time and date of a tweet or how log ago
-it happened (about 5 hours ago, etc).
+A widget that properly handles twitter feeds, including parsing @username, #hashtag, and URLs into links.  It supports displaying profiles images, and even lets you control whether to display the time and date of a tweet or how log ago it happened (about 5 hours ago, etc).
 
-<a href="http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/">Twitter Widget Pro</a>
+<a href="http://ran.ge/wordpress-plugin/twitter-widget-pro/">Twitter Widget Pro</a>
 Brought to you by <a href="http://ran.ge/" title="WordPress Development">Ran.ge</a>
 
 == Installation ==

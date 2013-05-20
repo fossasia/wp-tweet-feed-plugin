@@ -151,11 +151,6 @@ if (!class_exists('RangePlugin')) {
 			add_action ( 'in_plugin_update_message-'.$this->_file , array ( $this , 'changelog' ), null, 2 );
 		}
 
-		/**
-		 * Function to instantiate our class and make it a singleton
-		 */
-		abstract public static function getInstance();
-
 		public function init_locale() {
 			$lang_dir = basename(dirname(__FILE__)) . '/languages';
 			load_plugin_textdomain( $this->_slug, 'wp-content/plugins/' . $lang_dir, $lang_dir);
