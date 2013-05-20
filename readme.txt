@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: twitter, widget, feed
 Requires at least: 3.0
 Tested up to: 3.6
-Stable tag: 2.5.3
+Stable tag: 2.5.4
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links.
 
@@ -131,6 +131,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.5.4 =
+Minor fix for a strict PHP notice
+
 = 2.5.3 =
 Another SSL verification fix and add Twitter List support to shortcodes
 
@@ -186,6 +189,9 @@ Fixes an issue with the intents and follow settings not being saved
 Fewer "could not connect to Twitter" messages, new links (reply, retweet, favorite), new follow button, and avatar fixes
 
 == Changelog ==
+
+= 2.5.4 =
+* Minor fix for a strict PHP notice
 
 = 2.5.3 =
 * Don't force verification of Twitter's SSL certificate
