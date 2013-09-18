@@ -117,7 +117,19 @@ class wpTwitter {
 
 		if ( !is_wp_error( $resp ) && $resp['response']['code'] >= 200 && $resp['response']['code'] < 300 ) {
 			$decoded_response = json_decode( $resp['body'] );
-			if ( empty( $decoded_response ) && ! empty( $resp['body'] ) )
+			/**
+			 * There is a problem with some versions of PHP that will cause
+			 * json_decode to return the string passed to it in certain cases
+			 * when the string isn't valid JSON.  This is causing me all sorts
+			 * of pain.  The solution so far is to check if the return isset()
+			 * which is the correct response if the string isn't JSON.  Then
+			 * also check if a string is returned that has an = in it and if
+			 * that's the case assume it's a string that needs to fall back to
+			 * using wp_parse_args()
+			 * @see https://bugs.php.net/bug.php?id=45989
+			 * @see https://github.com/OpenRange/twitter-widget-pro/pull/8
+			 */
+			if ( ( ! isset( $decoded_response ) && ! empty( $resp['body'] ) ) || ( is_string( $decoded_response ) && false !== strpos( $resp['body'], '=' ) ) )
 				$decoded_response = wp_parse_args( $resp['body'] );
 			return $decoded_response;
 		} else {

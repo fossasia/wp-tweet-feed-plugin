@@ -3,7 +3,7 @@
  * Plugin Name: Twitter Widget Pro
  * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.5.4
+ * Version: 2.6.0
  * Author: Aaron D. Campbell
  * Author URI: http://ran.ge/
  * License: GPLv2 or later
@@ -30,7 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'range-plugin-framework.php' );
-define( 'TWP_VERSION', '2.5.2' );
+define( 'TWP_VERSION', '2.6.0' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
@@ -194,6 +194,14 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				<label for="<?php echo $this->get_field_id( 'showXavisysLink' ); ?>"><?php _e( 'Show Link to Twitter Widget Pro', $this->_slug ); ?></label>
 			</p>
 			<p><?php echo $wpTwitterWidget->get_support_forum_link(); ?></p>
+			<script type="text/javascript">
+				jQuery( '#<?php echo $this->get_field_id( 'username' ) ?>' ).on( 'change', function() {
+					jQuery('#<?php echo $this->get_field_id( 'list' ) ?>' ).val(0);
+				});
+				jQuery( '#<?php echo $this->get_field_id( 'list' ) ?>' ).on( 'change', function() {
+					jQuery('#<?php echo $this->get_field_id( 'username' ) ?>' ).val(0);
+				});
+			</script>
 <?php
 		return;
 	}
@@ -314,6 +322,20 @@ class wpTwitterWidget extends RangePlugin {
 			exit;
 		}
 
+		if ( 'remove' == $_GET['action'] ) {
+			check_admin_referer( 'remove-' . $_GET['screen_name'] );
+
+			$redirect_args = array(
+				'message'    => 'removed',
+				'removed' => '',
+			);
+			unset( $this->_settings['twp-authed-users'][strtolower($_GET['screen_name'])] );
+			if ( update_option( 'twp-authed-users', $this->_settings['twp-authed-users'] ) );
+				$redirect_args['removed'] = $_GET['screen_name'];
+
+			wp_safe_redirect( add_query_arg( $redirect_args, $this->get_options_url() ) );
+			exit;
+		}
 		if ( 'authorize' == $_GET['action'] ) {
 			check_admin_referer( 'authorize' );
 			$auth_redirect = add_query_arg( array( 'action' => 'authorized' ), $this->get_options_url() );
@@ -339,10 +361,12 @@ class wpTwitterWidget extends RangePlugin {
 			delete_option( '_twp_request_token_'.$_GET['nonce'] );
 
 			$token = $this->_wp_twitter_oauth->get_access_token( $_GET['oauth_verifier'] );
-			$this->_settings['twp-authed-users'][strtolower($token['screen_name'])] = $token;
-			update_option( 'twp-authed-users', $this->_settings['twp-authed-users'] );
+			if ( ! is_wp_error( $token ) ) {
+				$this->_settings['twp-authed-users'][strtolower($token['screen_name'])] = $token;
+				update_option( 'twp-authed-users', $this->_settings['twp-authed-users'] );
 
-			$redirect_args['authorized'] = $token['screen_name'];
+				$redirect_args['authorized'] = $token['screen_name'];
+			}
 			wp_safe_redirect( add_query_arg( $redirect_args, $this->get_options_url() ) );
 			exit;
 		}
@@ -360,6 +384,11 @@ class wpTwitterWidget extends RangePlugin {
 					$msg = sprintf( __( 'Successfully authorized @%s', $this->_slug ), $_GET['authorized'] );
 				else
 					$msg = __( 'There was a problem authorizing your account.', $this->_slug );
+			} elseif ( 'removed' == $_GET['message'] ) {
+				if ( ! empty( $_GET['removed'] ) )
+					$msg = sprintf( __( 'Successfully removed @%s', $this->_slug ), $_GET['removed'] );
+				else
+					$msg = __( 'There was a problem removing your account.', $this->_slug );
 			}
 			if ( ! empty( $msg ) )
 				echo "<div class='updated'><p>" . esc_html( $msg ) . '</p></div>';
@@ -419,10 +448,16 @@ class wpTwitterWidget extends RangePlugin {
 				$style = 'color:red;';
 				$auth_link = ' - <a href="' . esc_url( $authorize_user_url ) . '">' . __( 'Reauthorize', $this->_slug ) . '</a>';
 			}
+			$query_args = array(
+				'action' => 'remove',
+				'screen_name' => $u['screen_name'],
+			);
+			$remove_user_url = wp_nonce_url( add_query_arg( $query_args ), 'remove-' . $u['screen_name'] );
 			?>
 				<tr valign="top">
 					<th scope="row" style="<?php echo esc_attr( $style ); ?>">
-						<strong>@<?php echo esc_html( $u['screen_name'] ) . $auth_link; ?></strong>
+						<strong>@<?php echo esc_html( $u['screen_name'] ) . $auth_link;?></strong>
+						<br /><a href="<?php echo esc_url( $remove_user_url ) ?>"><?php _e( 'Remove', $this->_slug ) ?></a>
 					</th>
 					<?php
 					if ( ! is_wp_error( $rates ) ) {
@@ -1044,10 +1079,11 @@ class wpTwitterWidget extends RangePlugin {
 					return $response;
 			}
 		} elseif ( ! empty( $parameters['list_id'] ) ) {
-			$user = array_shift( explode( '::', $widgetOptions['list'] ) );
+			$list_info = explode( '::', $widgetOptions['list'] );
+			$user = array_shift( $list_info );
 			$this->_wp_twitter_oauth->set_token( $this->_settings['twp-authed-users'][strtolower( $user )] );
 
-			$response = $this->_wp_twitter_oauth->send_authed_request( 'statuses/user_timeline', 'GET', $parameters );
+			$response = $this->_wp_twitter_oauth->send_authed_request( 'lists/statuses', 'GET', $parameters );
 			if ( ! is_wp_error( $response ) )
 				return $response;
 		}
@@ -1083,10 +1119,12 @@ class wpTwitterWidget extends RangePlugin {
 			'count'       => $widgetOptions['items'],
 		);
 
-		if ( ! empty( $widgetOptions['username'] ) )
+		if ( ! empty( $widgetOptions['username'] ) ) {
 			$parameters['screen_name'] = $widgetOptions['username'];
-		elseif ( ! empty( $widgetOptions['list'] ) )
-			$parameters['list_id'] = array_pop( explode( '::', $widgetOptions['list'] ) );
+		} elseif ( ! empty( $widgetOptions['list'] ) ) {
+			$list_info = explode( '::', $widgetOptions['list'] );
+			$parameters['list_id'] = array_pop( $list_info );
+		}
 
 		if ( 'true' == $widgetOptions['hidereplies'] )
 			$parameters['exclude_replies'] = 'true';
