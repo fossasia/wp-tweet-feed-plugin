@@ -1,9 +1,15 @@
 <?php
 /**
- * Version: 1.1.0
+ * Version: 1.2.1
  */
 /**
  * Changelog:
+ *
+ * 1.2.1:
+ *  - Fix leftover bluedog link to point to aarondcampbell.com
+ *
+ * 1.2.0:
+ *  - Complete change to Aaron framework
  *
  * 1.1.0:
  *  - Complete change to Range framework
@@ -54,13 +60,13 @@
  * 1.0.3:
  *  - Changed to use new cdn for images
  */
-if (!class_exists('RangePlugin')) {
+if (!class_exists('AaronPlugin')) {
 	/**
-	 * Abstract class RangePlugin used as a WordPress Plugin framework
+	 * Abstract class AaronPlugin used as a WordPress Plugin framework
 	 *
 	 * @abstract
 	 */
-	abstract class RangePlugin {
+	abstract class AaronPlugin {
 		/**
 		 * @var array Plugin settings
 		 */
@@ -112,9 +118,9 @@ if (!class_exists('RangePlugin')) {
 		protected $_slug = '';
 
 		/**
-		 * @var string - The feed URL for Range
+		 * @var string - The feed URL for AaronDCampbell.com
 		 */
-		protected $_feed_url = 'http://ran.ge/feed/';
+		protected $_feed_url = 'http://aarondcampbell.com/feed/';
 
 		/**
 		 * @var string - The button ID for the PayPal button, override this generic one with a plugin-specific one
@@ -144,7 +150,6 @@ if (!class_exists('RangePlugin')) {
 				add_action( 'admin_init', array( $this, 'add_options_meta_boxes' ) );
 
 			add_action( 'admin_init', array( $this, 'add_default_options_meta_boxes' ) );
-			add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widgets' ), null, 9 );
 			add_action( 'admin_print_scripts', array( $this,'admin_print_scripts' ) );
 			add_action( 'admin_enqueue_scripts', array( $this,'admin_enqueue_scripts' ) );
 
@@ -217,7 +222,7 @@ if (!class_exists('RangePlugin')) {
 
 		public function options_page() {
 			global $wp_meta_boxes;
-			$allBoxes = array_keys( $wp_meta_boxes['range-'.$this->_slug] );
+			$allBoxes = array_keys( $wp_meta_boxes['aaron-'.$this->_slug] );
 			$mainBoxes = array_filter( $allBoxes, array( $this, '_filter_boxes_main' ) );
 			unset($mainBoxes['main']);
 			sort($mainBoxes);
@@ -239,7 +244,7 @@ if (!class_exists('RangePlugin')) {
 							<form action="<?php esc_attr_e( $this->_optionsPageAction ); ?>" method="post"<?php do_action( 'rpf-options-page-form-tag' ) ?>>
 								<?php
 								settings_fields( $this->_optionGroup );
-								do_meta_boxes( 'range-' . $this->_slug, 'main', '' );
+								do_meta_boxes( 'aaron-' . $this->_slug, 'main', '' );
 								if ( apply_filters( 'rpf-show-general-settings-submit'.$this->_slug, true ) ) {
 								?>
 								<p class="submit">
@@ -252,7 +257,7 @@ if (!class_exists('RangePlugin')) {
 						<?php
 							}
 							foreach( $mainBoxes as $context ) {
-								do_meta_boxes( 'range-' . $this->_slug, $context, '' );
+								do_meta_boxes( 'aaron-' . $this->_slug, $context, '' );
 							}
 						?>
 						</div>
@@ -262,7 +267,7 @@ if (!class_exists('RangePlugin')) {
 						<div class="alignright" style="width:24%;">
 							<?php
 							foreach( $sidebarBoxes as $context ) {
-								do_meta_boxes( 'range-' . $this->_slug, $context, '' );
+								do_meta_boxes( 'aaron-' . $this->_slug, $context, '' );
 							}
 							?>
 						</div>
@@ -336,30 +341,18 @@ if (!class_exists('RangePlugin')) {
 		public function admin_enqueue_scripts() {
 			if (isset($_GET['page']) && $_GET['page'] == $this->_hook) {
 				wp_enqueue_style('dashboard');
-				add_action( 'admin_print_styles-settings_page_' . $this->_hook, array( $this, 'option_page_styles' ) );
 			}
 		}
 
-		public function option_page_styles() {
-			$logo_url = sprintf( 'http%s://range-wphost.netdna-ssl.com/assets/range-icon-square-32x32.png' , is_ssl()? 's':'' );
-			?>
-			<style type="text/css">
-				#icon-range {
-					background:transparent url(<?php echo esc_url_raw( $logo_url ); ?>) no-repeat scroll bottom left;
-				}
-			</style>
-			<?php
-		}
-
 		public function add_default_options_meta_boxes() {
-			if ( apply_filters( 'show-range-like-this', true ) )
-				add_meta_box( $this->_slug . '-like-this', __('Like this Plugin?', $this->_slug), array($this, 'like_this_meta_box'), 'range-' . $this->_slug, 'sidebar');
+			if ( apply_filters( 'show-aaron-like-this', true ) )
+				add_meta_box( $this->_slug . '-like-this', __('Like this Plugin?', $this->_slug), array($this, 'like_this_meta_box'), 'aaron-' . $this->_slug, 'sidebar');
 
-			if ( apply_filters( 'show-range-support', true ) )
-				add_meta_box( $this->_slug . '-support', __('Need Support?', $this->_slug), array($this, 'support_meta_box'), 'range-' . $this->_slug, 'sidebar');
+			if ( apply_filters( 'show-aaron-support', true ) )
+				add_meta_box( $this->_slug . '-support', __('Need Support?', $this->_slug), array($this, 'support_meta_box'), 'aaron-' . $this->_slug, 'sidebar');
 
-			if ( apply_filters( 'show-range-feed', true ) )
-				add_meta_box( $this->_slug . '-range-feed', __('Latest news from Range', $this->_slug), array($this, 'range_feed_meta_box'), 'range-' . $this->_slug, 'sidebar');
+			if ( apply_filters( 'show-aaron-feed', true ) )
+				add_meta_box( $this->_slug . '-aaron-feed', __('Latest news from Aaron', $this->_slug), array($this, 'aaron_feed_meta_box'), 'aaron-' . $this->_slug, 'sidebar');
 		}
 
 		public function like_this_meta_box() {
@@ -367,7 +360,7 @@ if (!class_exists('RangePlugin')) {
 			_e('Then please do any or all of the following:', $this->_slug);
 			echo '</p><ul>';
 
-			$url = apply_filters('range-plugin-url-'.$this->_slug, 'http://bluedogwebservices.com/wordpress-plugin/'.$this->_slug);
+			$url = apply_filters('aaron-plugin-url-'.$this->_slug, 'https://aarondcampbell.com/wordpress-plugin/'.$this->_slug);
 			echo "<li><a href='{$url}'>";
 			_e('Link to it so others can find out about it.', $this->_slug);
 			echo "</a></li>";
@@ -385,7 +378,7 @@ if (!class_exists('RangePlugin')) {
 			echo '</p>';
 		}
 
-		public function range_feed_meta_box() {
+		public function aaron_feed_meta_box() {
 			$args = array(
 				'url'			=> $this->_feed_url,
 				'items'			=> '5',
@@ -395,31 +388,8 @@ if (!class_exists('RangePlugin')) {
 			echo "</div>";
 		}
 
-		public function add_dashboard_widgets() {
-			if ( apply_filters( 'rpf-dashboard-widget', true ) )
-				wp_add_dashboard_widget( 'dashboardb_range' , 'The Latest News From Range' , array( $this, 'dashboard_widget' ) );
-		}
-
-		public function dashboard_widget() {
-			$args = array(
-				'url'			=> $this->_feed_url,
-				'items'			=> '3',
-				'show_date'		=> 1,
-				'show_summary'	=> 1,
-			);
-			$logo_url = sprintf( 'http%s://range-wphost.netdna-ssl.com/content/uploads/2012/06/range-trans.png' , is_ssl()? 's':'' );
-			$icon = includes_url('images/rss.png');
-			echo '<div class="rss-widget">';
-			echo '<a href="http://ran.ge"><img class="alignright" style="padding:0 0 5px 10px;" src="' . esc_url_raw( $logo_url ) . '" /></a>';
-			wp_widget_rss_output( $args );
-			echo '<p style="border-top: 1px solid #CCC; padding-top: 10px; font-weight: bold;">';
-			echo '<a href="' . $this->_feed_url . '"><img src="' . $icon . '" alt=""/> Subscribe with RSS</a>';
-			echo "</p>";
-			echo "</div>";
-		}
-
-		public function screen_icon_link($name = 'range') {
-			$link = '<a href="http://ran.ge">';
+		public function screen_icon_link($name = 'aaron') {
+			$link = '<a href="http://aarondcampbell.com">';
 			if ( function_exists( 'get_screen_icon' ) ) {
 				$link .= get_screen_icon( $name );
 			} else {

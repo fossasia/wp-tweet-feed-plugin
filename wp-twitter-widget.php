@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Twitter Widget Pro
- * Plugin URI: http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/
+ * Plugin URI: https://aarondcampbell.com/wordpress-plugin/twitter-widget-pro/
  * Description: A widget that properly handles twitter feeds, including @username, #hashtag, and link parsing.  It can even display profile images for the users.  Requires PHP5.
- * Version: 2.6.0
+ * Version: 2.7.0
  * Author: Aaron D. Campbell
- * Author URI: http://ran.ge/
+ * Author URI: https://aarondcampbell.com/
  * License: GPLv2 or later
  * Text Domain: twitter-widget-pro
  */
@@ -29,14 +29,14 @@
 */
 
 require_once( 'tlc-transients.php' );
-require_once( 'range-plugin-framework.php' );
-define( 'TWP_VERSION', '2.6.0' );
+require_once( 'aaron-plugin-framework.php' );
+define( 'TWP_VERSION', '2.7.0' );
 
 /**
  * WP_Widget_Twitter_Pro is the class that handles the main widget.
  */
 class WP_Widget_Twitter_Pro extends WP_Widget {
-	public function WP_Widget_Twitter_Pro () {
+	public function __construct () {
 		$this->_slug = 'twitter-widget-pro';
 		$wpTwitterWidget = wpTwitterWidget::getInstance();
 		$widget_ops = array(
@@ -50,7 +50,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 		);
 		$name = __( 'Twitter Widget Pro', $wpTwitterWidget->get_slug() );
 
-		$this->WP_Widget( 'twitter', $name, $widget_ops, $control_ops );
+		parent::__construct( 'twitter', $name, $widget_ops, $control_ops );
 	}
 
 	private function _getInstanceSettings ( $instance ) {
@@ -188,11 +188,6 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'targetBlank' ); ?>" name="<?php echo $this->get_field_name( 'targetBlank' ); ?>"<?php checked( $instance['targetBlank'], 'true' ); ?> />
 				<label for="<?php echo $this->get_field_id( 'targetBlank' ); ?>"><?php _e( 'Open links in a new window', $this->_slug ); ?></label>
 			</p>
-			<p>
-				<input type="hidden" value="false" name="<?php echo $this->get_field_name( 'showXavisysLink' ); ?>" />
-				<input class="checkbox" type="checkbox" value="true" id="<?php echo $this->get_field_id( 'showXavisysLink' ); ?>" name="<?php echo $this->get_field_name( 'showXavisysLink' ); ?>"<?php checked( $instance['showXavisysLink'], 'true' ); ?> />
-				<label for="<?php echo $this->get_field_id( 'showXavisysLink' ); ?>"><?php _e( 'Show Link to Twitter Widget Pro', $this->_slug ); ?></label>
-			</p>
 			<p><?php echo $wpTwitterWidget->get_support_forum_link(); ?></p>
 			<script type="text/javascript">
 				jQuery( '#<?php echo $this->get_field_id( 'username' ) ?>' ).on( 'change', function() {
@@ -239,7 +234,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
  * includes filters that modify tweet content for things like linked usernames.
  * It also helps us avoid name collisions.
  */
-class wpTwitterWidget extends RangePlugin {
+class wpTwitterWidget extends AaronPlugin {
 	/**
 	 * @var wpTwitter
 	 */
@@ -267,6 +262,7 @@ class wpTwitterWidget extends RangePlugin {
 		/**
 		 * Add filters and actions
 		 */
+		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_init', array( $this, 'handle_actions' ) );
 		add_action( 'admin_notices', array( $this, 'show_messages' ) );
 		add_action( 'widgets_init', array( $this, 'register' ), 11 );
@@ -411,9 +407,9 @@ class wpTwitterWidget extends RangePlugin {
 	}
 
 	public function add_options_meta_boxes() {
-		add_meta_box( $this->_slug . '-oauth', __( 'Authenticated Twitter Accounts', $this->_slug ), array( $this, 'oauth_meta_box' ), 'range-' . $this->_slug, 'main' );
-		add_meta_box( $this->_slug . '-general-settings', __( 'General Settings', $this->_slug ), array( $this, 'general_settings_meta_box' ), 'range-' . $this->_slug, 'main' );
-		add_meta_box( $this->_slug . '-defaults', __( 'Default Settings for Shortcodes', $this->_slug ), array( $this, 'default_settings_meta_box' ), 'range-' . $this->_slug, 'main' );
+		add_meta_box( $this->_slug . '-oauth', __( 'Authenticated Twitter Accounts', $this->_slug ), array( $this, 'oauth_meta_box' ), 'aaron-' . $this->_slug, 'main' );
+		add_meta_box( $this->_slug . '-general-settings', __( 'General Settings', $this->_slug ), array( $this, 'general_settings_meta_box' ), 'aaron-' . $this->_slug, 'main' );
+		add_meta_box( $this->_slug . '-defaults', __( 'Default Settings for Shortcodes', $this->_slug ), array( $this, 'default_settings_meta_box' ), 'aaron-' . $this->_slug, 'main' );
 	}
 
 	public function oauth_meta_box() {
@@ -558,6 +554,37 @@ class wpTwitterWidget extends RangePlugin {
 						<td>
 							<a href="<?php echo esc_url( $clear_locks_url ); ?>"><?php _e( 'Clear Update Locks', $this->_slug ); ?></a><br />
 							<small><?php _e( "A small percentage of servers seem to have issues where an update lock isn't getting cleared.  If you're experiencing issues with your feed not updating, try clearing the update locks.", $this->_slug ); ?></small>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<?php _e( 'Local requests:', $this->_slug ); ?>
+						</th>
+						<td>
+						<?php
+							if ( ! empty( $_GET['action'] ) && 'test-local-request' == $_GET['action'] ) {
+								check_admin_referer( 'test-local-request' );
+
+								$server_url = home_url( '/?twp-test-local-request' );
+								$resp = wp_remote_post( $server_url, array( 'body' => array( '_twp-test-local-request' => 'test' ), 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) ) );
+								if ( !is_wp_error( $resp ) && $resp['response']['code'] >= 200 && $resp['response']['code'] < 300 ) {
+									if ( 'success' === wp_remote_retrieve_body( $resp ) )
+										_e( '<p style="color:green;">Local requests appear to be functioning normally.</p>', $this->_slug );
+									else
+										_e( '<p style="color:red;">The request went through, but an unexpected response was received.</p>', $this->_slug );
+								} else {
+									printf( __( '<p style="color:red;">Failed.  Your server said: %s</p>', $this->_slug ), $resp['response']['message'] );
+								}
+							}
+							$query_args = array(
+								'action' => 'test-local-request',
+							);
+							$test_local_url = wp_nonce_url( add_query_arg( $query_args, $this->get_options_url() ), 'test-local-request' );
+							?>
+							<a href="<?php echo esc_url( $test_local_url ); ?>" class="button">
+								<?php _e( 'Test local requests', $this->_slug ); ?>
+							</a><br />
+							<small><?php _e( "Twitter Widget Pro updates tweets in the background by placing a local request to your server.  If your Tweets aren't updating, test this.  If it fails, let your host know that loopback requests aren't working on your site.", $this->_slug ); ?></small>
 						</td>
 					</tr>
 				</table>
@@ -722,10 +749,6 @@ class wpTwitterWidget extends RangePlugin {
 							<input type="hidden" value="false" name="twp[targetBlank]" />
 							<input class="checkbox" type="checkbox" value="true" id="twp_targetBlank" name="twp[targetBlank]"<?php checked( $this->_settings['twp']['targetBlank'], 'true' ); ?> />
 							<label for="twp_targetBlank"><?php _e( 'Open links in a new window', $this->_slug ); ?></label>
-							<br />
-							<input type="hidden" value="false" name="twp[showXavisysLink" />
-							<input class="checkbox" type="checkbox" value="true" id="twp_showXavisysLink" name="twp[showXavisysLink]"<?php checked( $this->_settings['twp']['showXavisysLink'], 'true' ); ?> />
-							<label for="twp_showXavisysLink"><?php _e( 'Show Link to Twitter Widget Pro', $this->_slug ); ?></label>
 						</td>
 					</tr>
 				</table>
@@ -996,16 +1019,6 @@ class wpTwitterWidget extends RangePlugin {
 			$widgetContent .= '</div>';
 		}
 
-		if ( 'true' == $args['showXavisysLink'] ) {
-			$widgetContent .= '<div class="range-link"><span class="range-link-text">';
-			$linkAttrs = array(
-				'href'	=> 'http://bluedogwebservices.com/wordpress-plugin/twitter-widget-pro/',
-				'title'	=> __( 'Brought to you by Range - A WordPress design and development company', $this->_slug )
-			);
-			$widgetContent .= __( 'Powered by', $this->_slug );
-			$widgetContent .= $this->_buildLink( 'WordPress Twitter Widget Pro', $linkAttrs );
-			$widgetContent .= '</span></div>';
-		}
 		$widgetContent .= '</div>' . $args['after_widget'];
 
 		if ( 'true' == $args['showintents'] || 'true' == $args['showfollow'] ) {
@@ -1224,7 +1237,6 @@ class wpTwitterWidget extends RangePlugin {
 			'showintents'     => 'true',
 			'showfollow'      => 'true',
 			'avatar'          => '',
-			'showXavisysLink' => 'false',
 			'targetBlank'     => 'false',
 			'items'           => 10,
 			'showts'          => 60 * 60 * 24,
@@ -1235,10 +1247,6 @@ class wpTwitterWidget extends RangePlugin {
 		 * Attribute names are strtolower'd, so we need to fix them to match
 		 * the names used through the rest of the plugin
 		 */
-		if ( array_key_exists( 'showxavisyslink', $attr ) ) {
-			$attr['showXavisysLink'] = $attr['showxavisyslink'];
-			unset( $attr['showxavisyslink'] );
-		}
 		if ( array_key_exists( 'targetblank', $attr ) ) {
 			$attr['targetBlank'] = $attr['targetblank'];
 			unset( $attr['targetblank'] );
@@ -1272,9 +1280,6 @@ class wpTwitterWidget extends RangePlugin {
 		if ( !in_array( $attr['avatar'], array( 'bigger', 'normal', 'mini', 'original', '' ) ) )
 			$attr['avatar'] = 'normal';
 
-		if ( $attr['showXavisysLink'] && $attr['showXavisysLink'] != 'false' && $attr['showXavisysLink'] != '0' )
-			$attr['showXavisysLink'] = 'true';
-
 		if ( $attr['targetBlank'] && $attr['targetBlank'] != 'false' && $attr['targetBlank'] != '0' )
 			$attr['targetBlank'] = 'true';
 
@@ -1302,7 +1307,6 @@ class wpTwitterWidget extends RangePlugin {
 			'showintents'     => 'true',
 			'showfollow'      => 'true',
 			'avatar'          => '',
-			'showXavisysLink' => 'false',
 			'targetBlank'     => 'false',
 			'items'           => 10,
 			'showts'          => 60 * 60 * 24,
@@ -1362,6 +1366,13 @@ class wpTwitterWidget extends RangePlugin {
 		}
 		return $this->_lists;
 	}
+
+	public function init() {
+		if ( isset( $_GET['twp-test-local-request'] ) && ! empty( $_POST['_twp-test-local-request'] ) && 'test' === $_POST['_twp-test-local-request'] ) {
+			die( 'success' );
+		}
+	}
+
 }
 // Instantiate our class
 $wpTwitterWidget = wpTwitterWidget::getInstance();

@@ -1,10 +1,10 @@
 === Twitter Widget Pro ===
-Contributors: aaroncampbell, PeteMall, range, saracannon
+Contributors: aaroncampbell
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9993090
 Tags: twitter, widget, feed
 Requires at least: 3.0
 Tested up to: 3.6
-Stable tag: 2.6.0
+Stable tag: 2.7.0
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtags, and URLs into links.
 
@@ -131,6 +131,9 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Upgrade Notice ==
 
+= 2.7.0 =
+Updates to avoid notices in WordPress 4.3 and PHP 7
+
 = 2.6.0 =
 Fix lists and add ability to remove accounts, as well as plenty of minor bug fixes.
 
@@ -150,6 +153,12 @@ Fix potential conflict with other oAuth plugins
 Upgrade to the new Twitter API and add support for lists
 
 == Changelog ==
+
+= 2.7.0 =
+* Use __contrsuct instead of WP_Widget->WP_Widget
+* Move away from Range
+* Ability to test loop back requests...consider this beta :)
+* Removes even opt-in credit link
 
 = 2.6.0 =
 * Add ability to remove accounts
