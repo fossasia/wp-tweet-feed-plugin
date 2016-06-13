@@ -30,6 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'aaron-plugin-framework.php' );
+require_once('loklak_php_api/Lib/loklak-api-admin.php');
 define( 'TWP_VERSION', '2.7.0' );
 
 /**
@@ -68,7 +69,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 			<p>
 				<label for="<?php echo $this->get_field_id( 'username' ); ?>"><?php _e( 'Twitter username:', $this->_slug ); ?></label>
 				<?php
-				if(get_option( 'loklak-settings[loklak_api]' )) {
+				if(loklak_settings_get_option()) {
 					?>
 						<input class="widefat" id="<?php echo $this->get_field_id( 'username' ); ?>" name="<?php echo $this->get_field_name( 'username' ); ?>" type="text" class="regular-text code" value="<?php echo esc_attr( strtolower( $instance['username'] ) ); ?>"/>
 			    	<?php
@@ -110,7 +111,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				</select>
 			</p>
 			<?php
-			if( ! get_option( 'loklak-settings[loklak_api]') ){
+			if( ! loklak_settings_get_option() ){
 				if ( ! $selected && ! empty( $instance['username'] ) ) {
 					$query_args = array(
 						'action' => 'authorize',
@@ -427,7 +428,6 @@ class wpTwitterWidget extends AaronPlugin {
 	}
 
 	public function loklak_api_settings_meta_box() {
-		require_once('loklak_php_api/Lib/loklak-api-admin.php');
 		loklak_init();
 		?>
 		<table class="form-table">
@@ -959,7 +959,15 @@ class wpTwitterWidget extends AaronPlugin {
 		if ( !isset( $args['showts'] ) )
 			$args['showts'] = 86400;
 
-		$tweets = $this->_getTweets( $args );
+		if( loklak_settings_get_option() ) {
+            $tweets = $loklak->search('', null, null, $args['username'], $args['items']);
+            $tweets = json_decode($tweets, true);
+            $tweets = json_decode($tweets['body'], true); 
+            $tweets = $tweets['statuses'];
+		}
+		else
+			$tweets = $this->_getTweets( $args );
+
 		if ( false === $tweets )
 			return '';
 
