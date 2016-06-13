@@ -67,19 +67,30 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 ?>
 			<p>
 				<label for="<?php echo $this->get_field_id( 'username' ); ?>"><?php _e( 'Twitter username:', $this->_slug ); ?></label>
-				<select id="<?php echo $this->get_field_id( 'username' ); ?>" name="<?php echo $this->get_field_name( 'username' ); ?>">
-					<option></option>
-					<?php
-					$selected = false;
-					foreach ( $users as $u ) {
-						?>
-						<option value="<?php echo esc_attr( strtolower( $u['screen_name'] ) ); ?>"<?php $s = selected( strtolower( $u['screen_name'] ), strtolower( $instance['username'] ) ) ?>><?php echo esc_html( $u['screen_name'] ); ?></option>
-						<?php
-						if ( ! empty( $s ) )
-							$selected = true;
-					}
+				<?php
+				if(get_option( 'loklak-settings[loklak_api]' )) {
 					?>
-				</select>
+						<input class="widefat" id="<?php echo $this->get_field_id( 'username' ); ?>" name="<?php echo $this->get_field_name( 'username' ); ?>" type="text" class="regular-text code" value="<?php echo esc_attr( strtolower( $instance['username'] ) ); ?>"/>
+			    	<?php
+			    }
+			    else {
+			    	?>
+					<select id="<?php echo $this->get_field_id( 'username' ); ?>" name="<?php echo $this->get_field_name( 'username' ); ?>">
+						<option></option>
+						<?php
+						$selected = false;
+						foreach ( $users as $u ) {
+							?>
+							<option value="<?php echo esc_attr( strtolower( $u['screen_name'] ) ); ?>"<?php $s = selected( strtolower( $u['screen_name'] ), strtolower( $instance['username'] ) ) ?>><?php echo esc_html( $u['screen_name'] ); ?></option>
+							<?php
+							if ( ! empty( $s ) )
+								$selected = true;
+						}
+						?>
+					</select>
+					<?php
+				}
+				?>
 			</p>
 			<p>
 				<label for="<?php echo $this->get_field_id( 'list' ); ?>"><?php _e( 'Twitter list:', $this->_slug ); ?></label>
@@ -99,19 +110,21 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				</select>
 			</p>
 			<?php
-			if ( ! $selected && ! empty( $instance['username'] ) ) {
-				$query_args = array(
-					'action' => 'authorize',
-					'screen_name' => $instance['username'],
-				);
-				$authorize_user_url = wp_nonce_url( add_query_arg( $query_args, $wpTwitterWidget->get_options_url() ), 'authorize' );
-				?>
-			<p>
-				<a href="<?php echo esc_url( $authorize_user_url ); ?>" style="color:red;">
-					<?php _e( 'You need to authorize this account.', $this->_slug ); ?>
-				</a>
-			</p>
-				<?php
+			if( ! get_option( 'loklak-settings[loklak_api]') ){
+				if ( ! $selected && ! empty( $instance['username'] ) ) {
+					$query_args = array(
+						'action' => 'authorize',
+						'screen_name' => $instance['username'],
+					);
+					$authorize_user_url = wp_nonce_url( add_query_arg( $query_args, $wpTwitterWidget->get_options_url() ), 'authorize' );
+					?>
+				<p>
+					<a href="<?php echo esc_url( $authorize_user_url ); ?>" style="color:red;">
+						<?php _e( 'You need to authorize this account.', $this->_slug ); ?>
+					</a>
+				</p>
+					<?php
+				}
 			}
 			?>
 			<p>
@@ -420,7 +433,7 @@ class wpTwitterWidget extends AaronPlugin {
 		<table class="form-table">
 			<tr valign="top">
 				<th scope="row">
-					<label for="twp_loklak_api"><?php _e( 'Loklak API', $this->_slug );?></label>
+					<label><?php _e( 'Loklak API', $this->_slug );?></label>
 				</th>
 				<td>
 					<?php loklak_api_html_render(); ?>
@@ -620,33 +633,42 @@ class wpTwitterWidget extends AaronPlugin {
 							<label for="twp_username"><?php _e( 'Twitter username:', $this->_slug ); ?></label>
 						</th>
 						<td>
-							<select id="twp_username" name="twp[username]">
-								<option></option>
-								<?php
-								$selected = false;
-								foreach ( $users as $u ) {
-									?>
-									<option value="<?php echo esc_attr( strtolower( $u['screen_name'] ) ); ?>"<?php $s = selected( strtolower( $u['screen_name'] ), strtolower( $this->_settings['twp']['username'] ) ) ?>><?php echo esc_html( $u['screen_name'] ); ?></option>
-									<?php
-									if ( ! empty( $s ) )
-										$selected = true;
-								}
-								?>
-							</select>
 							<?php
-							if ( ! $selected && ! empty( $this->_settings['twp']['username'] ) ) {
-								$query_args = array(
-									'action' => 'authorize',
-									'screen_name' => $this->_settings['twp']['username'],
-								);
-								$authorize_user_url = wp_nonce_url( add_query_arg( $query_args, $this->get_options_url() ), 'authorize' );
+							if(get_option( 'loklak-settings[loklak_api]') == true) {
 								?>
-							<p>
-								<a href="<?php echo esc_url( $authorize_user_url ); ?>" style="color:red;">
-									<?php _e( 'You need to authorize this account.', $this->_slug ); ?>
-								</a>
-							</p>
+									<input id="twp_username" name="twp[username]" type="text" class="regular-text code" value="<?php esc_attr_e( $this->_settings['twp']['username'] ); ?>" size="40" />
+						    	<?php
+						    }
+						    else {
+						    	?>
+								<select id="twp_username" name="twp[username]">
+									<option></option>
+									<?php
+									$selected = false;
+									foreach ( $users as $u ) {
+										?>
+										<option value="<?php echo esc_attr( strtolower( $u['screen_name'] ) ); ?>"<?php $s = selected( strtolower( $u['screen_name'] ), strtolower( $this->_settings['twp']['username'] ) ) ?>><?php echo esc_html( $u['screen_name'] ); ?></option>
+										<?php
+										if ( ! empty( $s ) )
+											$selected = true;
+									}
+									?>
+								</select>
 								<?php
+								if ( ! $selected && ! empty( $this->_settings['twp']['username'] ) ) {
+									$query_args = array(
+										'action' => 'authorize',
+										'screen_name' => $this->_settings['twp']['username'],
+									);
+									$authorize_user_url = wp_nonce_url( add_query_arg( $query_args, $this->get_options_url() ), 'authorize' );
+									?>
+								<p>
+									<a href="<?php echo esc_url( $authorize_user_url ); ?>" style="color:red;">
+										<?php _e( 'You need to authorize this account.', $this->_slug ); ?>
+									</a>
+								</p>
+									<?php
+								}
 							}
 							?>
 						</td>
