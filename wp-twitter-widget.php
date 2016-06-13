@@ -407,9 +407,28 @@ class wpTwitterWidget extends AaronPlugin {
 	}
 
 	public function add_options_meta_boxes() {
+		add_meta_box( $this->_slug. '-loklak-api', __( 'Loklak API settings', $this->_slug ), array( $this, 'loklak_api_settings_meta_box' ), 'aaron-' . $this->_slug, 'main' );
 		add_meta_box( $this->_slug . '-oauth', __( 'Authenticated Twitter Accounts', $this->_slug ), array( $this, 'oauth_meta_box' ), 'aaron-' . $this->_slug, 'main' );
 		add_meta_box( $this->_slug . '-general-settings', __( 'General Settings', $this->_slug ), array( $this, 'general_settings_meta_box' ), 'aaron-' . $this->_slug, 'main' );
 		add_meta_box( $this->_slug . '-defaults', __( 'Default Settings for Shortcodes', $this->_slug ), array( $this, 'default_settings_meta_box' ), 'aaron-' . $this->_slug, 'main' );
+	}
+
+	public function loklak_api_settings_meta_box() {
+		require_once('loklak_php_api/Lib/loklak-api-admin.php');
+		loklak_init();
+		?>
+		<table class="form-table">
+			<tr valign="top">
+				<th scope="row">
+					<label for="twp_loklak_api"><?php _e( 'Loklak API', $this->_slug );?></label>
+				</th>
+				<td>
+					<?php loklak_api_html_render(); ?>
+				</td>
+			</tr>
+			</table>
+		<?php
+
 	}
 
 	public function oauth_meta_box() {
