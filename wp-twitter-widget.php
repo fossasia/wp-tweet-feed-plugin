@@ -409,12 +409,12 @@ class wpTwitterWidget extends AaronPlugin {
 			echo '<div class="error">' . $msg . '</div>';
 		}
 
-		if ( empty( $this->_settings['twp']['consumer-key'] ) || empty( $this->_settings['twp']['consumer-secret'] ) ) {
+		if ( (empty( $this->_settings['twp']['consumer-key'] ) || empty( $this->_settings['twp']['consumer-secret'] ) ) && !$this->_settings['twp']['loklak_api'] ) {
 			$msg = sprintf( __( 'You need to <a href="%s">set up your Twitter app keys</a>.', $this->_slug ), $this->get_options_url() );
 			echo '<div class="error"><p>' . $msg . '</p></div>';
 		}
 
-		if ( empty( $this->_settings['twp-authed-users'] ) ) {
+		if ( empty( $this->_settings['twp-authed-users'] ) && !$this->_settings['twp']['loklak_api']) {
 			$msg = sprintf( __( 'You need to <a href="%s">authorize your Twitter accounts</a>.', $this->_slug ), $this->get_options_url() );
 			echo '<div class="error"><p>' . $msg . '</p></div>';
 		}
@@ -524,7 +524,7 @@ class wpTwitterWidget extends AaronPlugin {
 		?>
 		</table>
 		<?php
-		if ( empty( $this->_settings['twp']['consumer-key'] ) || empty( $this->_settings['twp']['consumer-secret'] ) ) {
+		if ( empty( $this->_settings['twp']['consumer-key'] ) || empty( $this->_settings['twp']['consumer-secret'] )	 ) {
 		?>
 		<p>
 			<strong><?php _e( 'You need to fill in the Consumer key and Consumer secret before you can authorize accounts.', $this->_slug ) ?></strong>
