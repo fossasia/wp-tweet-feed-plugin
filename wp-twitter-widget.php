@@ -963,9 +963,10 @@ class wpTwitterWidget extends AaronPlugin {
 		if( loklak_settings_get_option() ) {
 			$loklak = new Loklak();
             $tweets = $loklak->search('', null, null, $args['username'], $args['items']);
+
             $tweets = json_decode($tweets, true);
             $tweets = json_decode($tweets['body'], true); 
-            $tweets = $tweets['statuses'];
+            $tweets = $tweets['statuses'];            
 		}
 		else
 			$tweets = $this->_getTweets( $args );
@@ -992,6 +993,8 @@ class wpTwitterWidget extends AaronPlugin {
 		} else {
 			$count = 0;
 			foreach ( $tweets as $tweet ) {
+				$tweet = (object)$tweet;
+				$tweet->user = (object)$tweet->user;
 				// Set our "ago" string which converts the date to "# ___(s) ago"
 				$tweet->ago = $this->_timeSince( strtotime( $tweet->created_at ), $args['showts'], $args['dateFormat'] );
 				$entryContent = apply_filters( 'widget_twitter_content', $tweet->text, $tweet );
@@ -1006,10 +1009,10 @@ class wpTwitterWidget extends AaronPlugin {
 				$widgetContent .= '</span>';
 
 				if ( 'true' != $args['hidefrom'] ) {
-					$from = sprintf( __( 'from %s', $this->_slug ), str_replace( '&', '&amp;', $tweet->source ) );
+					$from = sprintf( __( 'from %s', $this->_slug ), str_replace( '&', '&amp;', ucwords(strtolower($tweet->source_type))) );
 					$widgetContent .= " <span class='from-meta'>{$from}</span>";
 				}
-				if ( !empty( $tweet->in_reply_to_screen_name ) ) {
+				if ( !empty( $tweet->in_reply_to_screen_name ) && !$loklak) {
 					$rtLinkText = sprintf( __( 'in reply to %s', $this->_slug ), $tweet->in_reply_to_screen_name );
 					$widgetContent .=  ' <span class="in-reply-to-meta">';
 					$linkAttrs = array(
