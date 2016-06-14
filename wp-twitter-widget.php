@@ -30,6 +30,7 @@
 
 require_once( 'tlc-transients.php' );
 require_once( 'aaron-plugin-framework.php' );
+require_once( 'loklak_php_api/loklak.php');
 require_once('loklak_php_api/Lib/loklak-api-admin.php');
 define( 'TWP_VERSION', '2.7.0' );
 
@@ -960,6 +961,7 @@ class wpTwitterWidget extends AaronPlugin {
 			$args['showts'] = 86400;
 
 		if( loklak_settings_get_option() ) {
+			$loklak = new Loklak();
             $tweets = $loklak->search('', null, null, $args['username'], $args['items']);
             $tweets = json_decode($tweets, true);
             $tweets = json_decode($tweets['body'], true); 
