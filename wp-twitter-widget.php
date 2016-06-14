@@ -31,7 +31,6 @@
 require_once( 'tlc-transients.php' );
 require_once( 'aaron-plugin-framework.php' );
 require_once( 'loklak_php_api/loklak.php');
-require_once('loklak_php_api/Lib/loklak-api-admin.php');
 define( 'TWP_VERSION', '2.7.0' );
 
 /**
@@ -70,7 +69,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 			<p>
 				<label for="<?php echo $this->get_field_id( 'username' ); ?>"><?php _e( 'Twitter username:', $this->_slug ); ?></label>
 				<?php
-				if(loklak_settings_get_option()) {
+				if($instance['loklak_api']) {
 					?>
 						<input class="widefat" id="<?php echo $this->get_field_id( 'username' ); ?>" name="<?php echo $this->get_field_name( 'username' ); ?>" type="text" class="regular-text code" value="<?php echo esc_attr( strtolower( $instance['username'] ) ); ?>"/>
 			    	<?php
@@ -112,7 +111,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				</select>
 			</p>
 			<?php
-			if( ! loklak_settings_get_option() ){
+			if( !$instance['loklak_api'] ){
 				if ( ! $selected && ! empty( $instance['username'] ) ) {
 					$query_args = array(
 						'action' => 'authorize',
@@ -429,7 +428,6 @@ class wpTwitterWidget extends AaronPlugin {
 	}
 
 	public function loklak_api_settings_meta_box() {
-		loklak_init();
 		?>
 		<table class="form-table">
 			<tr valign="top">
@@ -437,12 +435,11 @@ class wpTwitterWidget extends AaronPlugin {
 					<label><?php _e( 'Loklak API', $this->_slug );?></label>
 				</th>
 				<td>
-					<?php loklak_api_html_render(); ?>
+					<input class="checkbox" type="checkbox" value="true" id="twp_loklak_api" name="twp[loklak_api]"<?php checked( $this->_settings['twp']['loklak_api'], 'true' ); ?> />Use anonymous API of <a href="http://loklak.org/">loklak.org</a> and get plugin data through loklak (no registration and authentication required). <a href="http://loklak.org/">Find out more</a>
 				</td>
 			</tr>
-			</table>
+		</table>
 		<?php
-
 	}
 
 	public function oauth_meta_box() {
@@ -635,7 +632,7 @@ class wpTwitterWidget extends AaronPlugin {
 						</th>
 						<td>
 							<?php
-							if(get_option( 'loklak-settings[loklak_api]') == true) {
+							if( $this->_settings['twp']['loklak_api'] == true) {
 								?>
 									<input id="twp_username" name="twp[username]" type="text" class="regular-text code" value="<?php esc_attr_e( $this->_settings['twp']['username'] ); ?>" size="40" />
 						    	<?php
@@ -960,10 +957,9 @@ class wpTwitterWidget extends AaronPlugin {
 		if ( !isset( $args['showts'] ) )
 			$args['showts'] = 86400;
 
-		if( loklak_settings_get_option() ) {
+		if( $args['loklak_api'] == true ) {
 			$loklak = new Loklak();
             $tweets = $loklak->search('', null, null, $args['username'], $args['items']);
-
             $tweets = json_decode($tweets, true);
             $tweets = json_decode($tweets['body'], true); 
             $tweets = $tweets['statuses'];            
@@ -1009,7 +1005,7 @@ class wpTwitterWidget extends AaronPlugin {
 				$widgetContent .= '</span>';
 
 				if ( 'true' != $args['hidefrom'] ) {
-					$from = sprintf( __( 'from %s', $this->_slug ), str_replace( '&', '&amp;', ucwords(strtolower($tweet->source_type))) );
+					$from = sprintf( __( 'from %s', $this->_slug ), str_replace( '&', '&amp;', $args['loklak_api'] ? ucwords(strtolower($tweet->source_type)) : $tweet->source ) );
 					$widgetContent .= " <span class='from-meta'>{$from}</span>";
 				}
 				if ( !empty( $tweet->in_reply_to_screen_name ) && !$loklak) {
@@ -1348,6 +1344,7 @@ class wpTwitterWidget extends AaronPlugin {
 
 	public function filterSettings( $settings ) {
 		$defaultArgs = array(
+			'loklak_api'      => '',
 			'consumer-key'    => '',
 			'consumer-secret' => '',
 			'title'           => '',
