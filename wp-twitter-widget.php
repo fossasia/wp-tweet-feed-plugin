@@ -61,15 +61,18 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 
 	public function form( $instance ) {
 		$instance = $this->_getInstanceSettings( $instance );
+
 		$wpTwitterWidget = wpTwitterWidget::getInstance();
 		$users = $wpTwitterWidget->get_users_list( true );
 		$lists = $wpTwitterWidget->get_lists();
+
+		$default_settings = $wpTwitterWidget->getSettings( array() );
 
 ?>
 			<p>
 				<label for="<?php echo $this->get_field_id( 'username' ); ?>"><?php _e( 'Twitter username:', $this->_slug ); ?></label>
 				<?php
-				if($instance['loklak_api']) {
+				if($default_settings['loklak_api']) {
 					?>
 						<input class="widefat" id="<?php echo $this->get_field_id( 'username' ); ?>" name="<?php echo $this->get_field_name( 'username' ); ?>" type="text" class="regular-text code" value="<?php echo esc_attr( strtolower( $instance['username'] ) ); ?>"/>
 			    	<?php
@@ -111,7 +114,7 @@ class WP_Widget_Twitter_Pro extends WP_Widget {
 				</select>
 			</p>
 			<?php
-			if( !$instance['loklak_api'] ){
+			if( !$default_settings['loklak_api'] ){
 				if ( ! $selected && ! empty( $instance['username'] ) ) {
 					$query_args = array(
 						'action' => 'authorize',
@@ -630,44 +633,37 @@ class wpTwitterWidget extends AaronPlugin {
 						<th scope="row">
 							<label for="twp_username"><?php _e( 'Twitter username:', $this->_slug ); ?></label>
 						</th>
-						<td>
-							<?php
-							if( $this->_settings['twp']['loklak_api'] == true) {
-								?>
-									<input id="twp_username" name="twp[username]" type="text" class="regular-text code" value="<?php esc_attr_e( $this->_settings['twp']['username'] ); ?>" size="40" />
-						    	<?php
-						    }
-						    else {
-						    	?>
-								<select id="twp_username" name="twp[username]">
-									<option></option>
-									<?php
-									$selected = false;
-									foreach ( $users as $u ) {
-										?>
-										<option value="<?php echo esc_attr( strtolower( $u['screen_name'] ) ); ?>"<?php $s = selected( strtolower( $u['screen_name'] ), strtolower( $this->_settings['twp']['username'] ) ) ?>><?php echo esc_html( $u['screen_name'] ); ?></option>
-										<?php
-										if ( ! empty( $s ) )
-											$selected = true;
-									}
-									?>
-								</select>
+						<td>						
+							<input id="twp_username" name="twp[username]" type="text" class="regular-text code twp_username_input" value="<?php esc_attr_e( $this->_settings['twp']['username'] ); ?>" size="40" style="display:none;" />
+					    
+							<select id="twp_username" name="twp[username]" class="twp_username_select">
+								<option></option>
 								<?php
-								if ( ! $selected && ! empty( $this->_settings['twp']['username'] ) ) {
-									$query_args = array(
-										'action' => 'authorize',
-										'screen_name' => $this->_settings['twp']['username'],
-									);
-									$authorize_user_url = wp_nonce_url( add_query_arg( $query_args, $this->get_options_url() ), 'authorize' );
+								$selected = false;
+								foreach ( $users as $u ) {
 									?>
-								<p>
-									<a href="<?php echo esc_url( $authorize_user_url ); ?>" style="color:red;">
-										<?php _e( 'You need to authorize this account.', $this->_slug ); ?>
-									</a>
-								</p>
+									<option value="<?php echo esc_attr( strtolower( $u['screen_name'] ) ); ?>"<?php $s = selected( strtolower( $u['screen_name'] ), strtolower( $this->_settings['twp']['username'] ) ) ?>><?php echo esc_html( $u['screen_name'] ); ?></option>
 									<?php
+									if ( ! empty( $s ) )
+										$selected = true;
 								}
-							}
+								?>
+							</select>
+							<?php
+							if ( ! $selected && ! empty( $this->_settings['twp']['username'] ) ) {
+								$query_args = array(
+									'action' => 'authorize',
+									'screen_name' => $this->_settings['twp']['username'],
+								);
+								$authorize_user_url = wp_nonce_url( add_query_arg( $query_args, $this->get_options_url() ), 'authorize' );
+								?>
+							<p>
+								<a href="<?php echo esc_url( $authorize_user_url ); ?>" style="color:red;">
+									<?php _e( 'You need to authorize this account.', $this->_slug ); ?>
+								</a>
+							</p>
+								<?php
+							}							
 							?>
 						</td>
 					</tr>
@@ -961,7 +957,7 @@ class wpTwitterWidget extends AaronPlugin {
 			$loklak = new Loklak();
             $tweets = $loklak->search('', null, null, $args['username'], $args['items']);
             $tweets = json_decode($tweets, true);
-            $tweets = json_decode($tweets['body'], true); 
+            $tweets = json_decode($tweets['body'], true);
             $tweets = $tweets['statuses'];            
 		}
 		else
@@ -1272,7 +1268,7 @@ class wpTwitterWidget extends AaronPlugin {
 	 * @return string - formatted XHTML replacement for the shortCode
 	 */
     public function handleShortcodes( $attr, $content = '' ) {
-		$defaults = array(
+		$defaults = array(	
 			'before_widget'   => '',
 			'after_widget'    => '',
 			'before_title'    => '<h2>',
