@@ -154,7 +154,7 @@ if (!class_exists('AaronPlugin')) {
 			add_action( 'admin_enqueue_scripts', array( $this,'admin_enqueue_scripts' ) );
 
 			add_action ( 'in_plugin_update_message-'.$this->_file , array ( $this , 'changelog' ), null, 2 );
-			add_action('wp_loaded', array( $this, 'add_wp_twitter_widget_script' ) );
+			add_action('admin_enqueue_scripts', array( $this, 'add_wp_twitter_widget_script' ) );
 		}
 
 		public function init_locale() {
@@ -413,7 +413,7 @@ if (!class_exists('AaronPlugin')) {
 			register_widget('tp_widget_recent_tweets');
 		}
 		public function add_wp_twitter_widget_script() {
-			wp_register_script('twitter_widget_script', plugin_dir_url( __FILE__ ).'/assets/js/wp-twitter-widget.js', array('jquery'));
+			wp_register_script('twitter_widget_script', plugin_dir_url( __FILE__ ).'assets/js/wp-twitter-widget.js', array('jquery'));
 			wp_enqueue_script('twitter_widget_script');
 
 		}
