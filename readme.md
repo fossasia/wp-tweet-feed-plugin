@@ -129,19 +129,19 @@ Aparently the database queries required to display the friends feed was causing 
 
 1. To use the widget, go to Appearance -> Widgets and Add "Twitter Widget Pro" widget.
 
-![Widget Appearance](./assets/images/screenshot-1.png)
+	![Widget Appearance](./assets/images/screenshot-1.png)
 
 2. Each widget has settings that need to be set, so the next step is to click the down arrow on the right of the newly added widget and adjust all the settings.  When you're done click "Save"
 
-![Settings](./assets/images/screenshot-2.png)
+	![Settings](./assets/images/screenshot-2.png)
 
 3. This is what the widget looks like in the default theme with no added styles.
 
-![Default Design](./assets/images/screenshot-3.png)
+	![Default Design](./assets/images/screenshot-3.png)
 
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
 
-![Styling](./assets/images/screenshot-4.png)
+	![Styling](./assets/images/screenshot-4.png)
 
 == Upgrade Notice ==
 
