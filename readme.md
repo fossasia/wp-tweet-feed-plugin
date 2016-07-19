@@ -1,4 +1,5 @@
 === Twitter Widget Pro ===
+
 Contributors: aaroncampbell
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9993090
 Tags: twitter, widget, feed
@@ -38,6 +39,7 @@ You can now use the twitter-widget shortcode to embed this widget into a post or
 page.  The simplest form of this would be `[twitter-widget username="yourTwitterUsername"]`
 
 = How exactly do you use the twitter-widget shortcode? =
+
 The simplest form of this would be `[twitter-widget username="yourTwitterUsername"]`
 However, there are more things you can control.
 
@@ -72,7 +74,8 @@ You can see these put into action by trying something like:
 = How can I style it to look nicer? =
 
 There are plenty of CSS classes throughout the HTML that is generated, and you can use those to style things.  Here is some sample CSS that I use with the <a href="http://essencetheme.com" title="Essence Theme for WordPress">Essence Theme</a>.  You'll need to get the "Everything" sprite from <a href="https://dev.twitter.com/docs/image-resources">Twitter's Image Resources</a>.
-`
+
+```
 .widget_twitter div {
 	padding:0;
 }
@@ -116,7 +119,7 @@ There are plenty of CSS classes throughout the HTML that is generated, and you c
 .widget_twitter .intent-meta a:hover.retweet {
 	background-position: -96px center;
 }
-`
+```
 
 = Why can't I display a friends feed anymore? =
 
@@ -125,9 +128,20 @@ Aparently the database queries required to display the friends feed was causing 
 == Screenshots ==
 
 1. To use the widget, go to Appearance -> Widgets and Add "Twitter Widget Pro" widget.
+
+![Widget Appearance](./assets/images/screenshot-1.png)
+
 2. Each widget has settings that need to be set, so the next step is to click the down arrow on the right of the newly added widget and adjust all the settings.  When you're done click "Save"
+
+![Settings](./assets/images/screenshot-2.png)
+
 3. This is what the widget looks like in the default theme with no added styles.
+
+![Default Design](./assets/images/screenshot-3.png)
+
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
+
+![Styling](./assets/images/screenshot-4.png)
 
 == Upgrade Notice ==
 
