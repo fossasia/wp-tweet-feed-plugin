@@ -1,72 +1,14 @@
 <?php
 /**
- * Version: 1.2.1
+ * Version: 1.0
  */
-/**
- * Changelog:
- *
- * 1.2.1:
- *  - Fix leftover bluedog link to point to aarondcampbell.com
- *
- * 1.2.0:
- *  - Complete change to Aaron framework
- *
- * 1.1.0:
- *  - Complete change to Range framework
- *  - Coding standards
- *  - Move from camelCase to underscores for function names
- *  - Drop support for WP 2.8 & 2.9
- *
- * 1.0.15:
- *  - Fix support forum link
- *  - Update feed to Ran.ge
- *
- * 1.0.14:
- *  - Fix sidebar alignment on settings page
- *  - Fix forum link by passing it to the http://wordpress.org/tags/{slug}?forum_id=10
- *
- * 1.0.13:
- *  - Add the 'xpf-dashboard-widget' filter
- *
- * 1.0.12:
- *  - Add the xpf-show-general-settings-submit filter
- *
- * 1.0.11:
- *  - Add the xpf-pre-main-metabox action
- *
- * 1.0.10:
- *  - Allow the screen icon to be overridden
- *
- * 1.0.9:
- *  - Allow removal of Xavisys sidebar boxes
- *
- * 1.0.8:
- *  - Allow an auto-created options page that doesn't have a main meta box
- *
- * 1.0.7:
- *  - Add the ability to modify the form action on the options page
- *  - Add an action in the options page form tag
- *
- * 1.0.6:
- *  - Add ability to not have a settings page
- *
- * 1.0.5:
- *  - Added XavisysPlugin::_feed_url
- *  - Changed feed to the feed burner URL because of a redirect issue with 2.9.x
- *
- * 1.0.4:
- *  - Added donate link to the plugin meta
- *
- * 1.0.3:
- *  - Changed to use new cdn for images
- */
-if (!class_exists('AaronPlugin')) {
+if (!class_exists('TwitterPlugin')) {
 	/**
-	 * Abstract class AaronPlugin used as a WordPress Plugin framework
+	 * Abstract class TwitterPlugin used as a WordPress Plugin framework
 	 *
 	 * @abstract
 	 */
-	abstract class AaronPlugin {
+	abstract class TwitterPlugin {
 		/**
 		 * @var array Plugin settings
 		 */
@@ -223,7 +165,7 @@ if (!class_exists('AaronPlugin')) {
 
 		public function options_page() {
 			global $wp_meta_boxes;
-			$allBoxes = array_keys( $wp_meta_boxes['aaron-'.$this->_slug] );
+			$allBoxes = array_keys( $wp_meta_boxes['twitter-'.$this->_slug] );
 			$mainBoxes = array_filter( $allBoxes, array( $this, '_filter_boxes_main' ) );
 			unset($mainBoxes['main']);
 			sort($mainBoxes);
@@ -245,7 +187,7 @@ if (!class_exists('AaronPlugin')) {
 							<form action="<?php esc_attr_e( $this->_optionsPageAction ); ?>" method="post"<?php do_action( 'rpf-options-page-form-tag' ) ?>>
 								<?php
 								settings_fields( $this->_optionGroup );
-								do_meta_boxes( 'aaron-' . $this->_slug, 'main', '' );
+								do_meta_boxes( 'twitter-' . $this->_slug, 'main', '' );
 								if ( apply_filters( 'rpf-show-general-settings-submit'.$this->_slug, true ) ) {
 								?>
 								<p class="submit">
@@ -258,7 +200,7 @@ if (!class_exists('AaronPlugin')) {
 						<?php
 							}
 							foreach( $mainBoxes as $context ) {
-								do_meta_boxes( 'aaron-' . $this->_slug, $context, '' );
+								do_meta_boxes( 'twitter-' . $this->_slug, $context, '' );
 							}
 						?>
 						</div>
@@ -268,7 +210,7 @@ if (!class_exists('AaronPlugin')) {
 						<div class="alignright" style="width:24%;">
 							<?php
 							foreach( $sidebarBoxes as $context ) {
-								do_meta_boxes( 'aaron-' . $this->_slug, $context, '' );
+								do_meta_boxes( 'twitter-' . $this->_slug, $context, '' );
 							}
 							?>
 						</div>
@@ -346,14 +288,14 @@ if (!class_exists('AaronPlugin')) {
 		}
 
 		public function add_default_options_meta_boxes() {
-			if ( apply_filters( 'show-aaron-like-this', true ) )
-				add_meta_box( $this->_slug . '-like-this', __('Like this Plugin?', $this->_slug), array($this, 'like_this_meta_box'), 'aaron-' . $this->_slug, 'sidebar');
+			if ( apply_filters( 'show-twitter-like-this', true ) )
+				add_meta_box( $this->_slug . '-like-this', __('Like this Plugin?', $this->_slug), array($this, 'like_this_meta_box'), 'twitter-' . $this->_slug, 'sidebar');
 
-			if ( apply_filters( 'show-aaron-support', true ) )
-				add_meta_box( $this->_slug . '-support', __('Need Support?', $this->_slug), array($this, 'support_meta_box'), 'aaron-' . $this->_slug, 'sidebar');
+			if ( apply_filters( 'show-twitter-support', true ) )
+				add_meta_box( $this->_slug . '-support', __('Need Support?', $this->_slug), array($this, 'support_meta_box'), 'twitter-' . $this->_slug, 'sidebar');
 
-			if ( apply_filters( 'show-aaron-feed', true ) )
-				add_meta_box( $this->_slug . '-aaron-feed', __('Latest news from Aaron', $this->_slug), array($this, 'aaron_feed_meta_box'), 'aaron-' . $this->_slug, 'sidebar');
+			if ( apply_filters( 'show-twitter-feed', true ) )
+				add_meta_box( $this->_slug . '-twitter-feed', __('Latest news from twitter', $this->_slug), array($this, 'twitter_feed_meta_box'), 'twitter-' . $this->_slug, 'sidebar');
 		}
 
 		public function like_this_meta_box() {
@@ -361,7 +303,7 @@ if (!class_exists('AaronPlugin')) {
 			_e('Then please do any or all of the following:', $this->_slug);
 			echo '</p><ul>';
 
-			$url = apply_filters('aaron-plugin-url-'.$this->_slug, 'https://aarondcampbell.com/wordpress-plugin/'.$this->_slug);
+			$url = apply_filters('twitter-plugin-url-'.$this->_slug, 'https://aarondcampbell.com/wordpress-plugin/'.$this->_slug);
 			echo "<li><a href='{$url}'>";
 			_e('Link to it so others can find out about it.', $this->_slug);
 			echo "</a></li>";
@@ -379,7 +321,7 @@ if (!class_exists('AaronPlugin')) {
 			echo '</p>';
 		}
 
-		public function aaron_feed_meta_box() {
+		public function twitter_feed_meta_box() {
 			$args = array(
 				'url'			=> $this->_feed_url,
 				'items'			=> '5',
@@ -389,7 +331,7 @@ if (!class_exists('AaronPlugin')) {
 			echo "</div>";
 		}
 
-		public function screen_icon_link($name = 'aaron') {
+		public function screen_icon_link($name = 'twitter') {
 			$link = '<a href="http://aarondcampbell.com">';
 			if ( function_exists( 'get_screen_icon' ) ) {
 				$link .= get_screen_icon( $name );
