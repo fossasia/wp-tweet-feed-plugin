@@ -2,11 +2,17 @@
 /**
  * Version: 1.0
  */
+/**
+ * Changelog:
+ *
+ * 1.0:
+ *  - First version of the plugin!
+ **/
 if (!class_exists('TwitterPlugin')) {
 	/**
 	 * Abstract class TwitterPlugin used as a WordPress Plugin framework
 	 *
-	 * @abstract
+	 * @abstractet Feed Plugin
 	 */
 	abstract class TwitterPlugin {
 		/**
@@ -58,16 +64,6 @@ if (!class_exists('TwitterPlugin')) {
 		 * @var string - The plugin slug used on WordPress.org
 		 */
 		protected $_slug = '';
-
-		/**
-		 * @var string - The feed URL for AaronDCampbell.com
-		 */
-		protected $_feed_url = 'http://aarondcampbell.com/feed/';
-
-		/**
-		 * @var string - The button ID for the PayPal button, override this generic one with a plugin-specific one
-		 */
-		protected $_paypalButtonId = '9925248';
 
 		protected $_optionsPageAction = 'options.php';
 
@@ -227,10 +223,6 @@ if (!class_exists('TwitterPlugin')) {
 				// Add Widget Page link to our plugin
 				$link = $this->get_options_link();
 				array_unshift( $links, $link );
-
-				// Add Support Forum link to our plugin
-				$link = $this->get_support_forum_link();
-				array_unshift( $links, $link );
 			}
 			return $links;
 		}
@@ -239,25 +231,6 @@ if (!class_exists('TwitterPlugin')) {
 			if ( $file == $this->_file )
 				$meta[] = $this->get_plugin_link(__('Rate Plugin'));
 			return $meta;
-		}
-
-		public function get_support_forum_link( $linkText = '' ) {
-			if ( empty($linkText) ) {
-				$linkText = __( 'Support', $this->_slug );
-			}
-			return '<a href="' . $this->get_support_forum_url() . '">' . $linkText . '</a>';
-		}
-
-		public function get_donate_link( $linkText = '' ) {
-			$url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=' . $this->_paypalButtonId;
-			if ( empty($linkText) ) {
-				$linkText = __( 'Donate to show your appreciation.', $this->_slug );
-			}
-			return "<a href='{$url}'>{$linkText}</a>";
-		}
-
-		public function get_support_forum_url() {
-			return 'http://wordpress.org/support/plugin/' . $this->_slug;
 		}
 
 		public function get_plugin_link( $linkText = '' ) {
@@ -293,46 +266,12 @@ if (!class_exists('TwitterPlugin')) {
 
 			if ( apply_filters( 'show-twitter-support', true ) )
 				add_meta_box( $this->_slug . '-support', __('Need Support?', $this->_slug), array($this, 'support_meta_box'), 'twitter-' . $this->_slug, 'sidebar');
-
 			if ( apply_filters( 'show-twitter-feed', true ) )
 				add_meta_box( $this->_slug . '-twitter-feed', __('Latest news from twitter', $this->_slug), array($this, 'twitter_feed_meta_box'), 'twitter-' . $this->_slug, 'sidebar');
 		}
 
-		public function like_this_meta_box() {
-			echo '<p>';
-			_e('Then please do any or all of the following:', $this->_slug);
-			echo '</p><ul>';
-
-			$url = apply_filters('twitter-plugin-url-'.$this->_slug, 'https://aarondcampbell.com/wordpress-plugin/'.$this->_slug);
-			echo "<li><a href='{$url}'>";
-			_e('Link to it so others can find out about it.', $this->_slug);
-			echo "</a></li>";
-
-			echo '<li>' . $this->get_plugin_link() . '</li>';
-
-			echo '<li>' . $this->get_donate_link() . '</li>';
-
-			echo '</ul>';
-		}
-
-		public function support_meta_box() {
-			echo '<p>';
-			echo sprintf(__('If you have any problems with this plugin or ideas for improvements or enhancements, please use the <a href="%s">Support Forums</a>.', $this->_slug), $this->get_support_forum_url() );
-			echo '</p>';
-		}
-
-		public function twitter_feed_meta_box() {
-			$args = array(
-				'url'			=> $this->_feed_url,
-				'items'			=> '5',
-			);
-			echo '<div class="rss-widget">';
-			wp_widget_rss_output( $args );
-			echo "</div>";
-		}
-
 		public function screen_icon_link($name = 'twitter') {
-			$link = '<a href="http://aarondcampbell.com">';
+			$link = '<a href="http://fossasia.org">';
 			if ( function_exists( 'get_screen_icon' ) ) {
 				$link .= get_screen_icon( $name );
 			} else {
@@ -355,7 +294,7 @@ if (!class_exists('TwitterPlugin')) {
 			register_widget('tp_widget_recent_tweets');
 		}
 		public function add_wp_twitter_widget_script() {
-			wp_register_script('twitter_widget_script', plugin_dir_url( __FILE__ ).'assets/js/wp-twitter-widget.js', array('jquery'));
+			wp_register_script('twitter_widget_script', plugin_dir_url( __FILE__ ).'assets/js/wp-tweet-feed-plugin.js', array('jquery'));
 			wp_enqueue_script('twitter_widget_script');
 
 		}
