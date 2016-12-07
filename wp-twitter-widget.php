@@ -270,7 +270,7 @@ class wpTwitterWidget extends TwitterPlugin {
 		$this->_accessLevel = 'manage_options';
 		$this->_optionGroup = 'twp-options';
 		$this->_optionNames = array( 'twp' );
-		$this->_optionCallbacks = array();
+		$this->_optionCallbacks = array( 'twp' => array($this, 'sanitize_settings') );
 		$this->_slug = 'tweet-feed-plugin';
 		$this->_paypalButtonId = '9993090';
 
@@ -1375,6 +1375,11 @@ class wpTwitterWidget extends TwitterPlugin {
 			$settings['avatar'] = 'normal';
 
 		return $settings;
+	}
+
+	public function sanitize_settings( $input ) {
+		// TODO: Add sanitizing
+		return $input;
 	}
 
 	public function getSettings( $settings ) {
