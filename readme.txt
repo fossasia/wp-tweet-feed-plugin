@@ -11,7 +11,7 @@ A widget that properly handles twitter feeds, including parsing @username, #hash
 
 A widget that properly handles twitter feeds, including parsing @username, #hashtag, and URLs into links.  It supports displaying profiles images, and even lets you control whether to display the time and date of a tweet or how log ago it happened (about 5 hours ago, etc).
 
-Tweet Feed plugin
+Tweet Feed Widget
 Brought to you by <a href="http://fossasia.org/" title="WordPress Development">FOSSASIA</a>
 
 == Installation ==
@@ -19,7 +19,7 @@ Brought to you by <a href="http://fossasia.org/" title="WordPress Development">F
 1. Use automatic installer to install and active the plugin.
 1. You should see a notice appear in your admin that links you to the settings page.
 1. Use Loklak API or Follow the instructions to setup your Twitter app and authenticate your account (an unfortunate step made necessary by Twitter's API changes).
-1. In WordPress admin go to 'Appearance' -> 'Widgets' and add "Tweet Feed Plugin" to one of your widget-ready areas of your site
+1. In WordPress admin go to 'Appearance' -> 'Widgets' and add "Tweet Feed Widget" to one of your widget-ready areas of your site
 
 == Frequently Asked Questions ==
 
@@ -52,7 +52,7 @@ However, there are more things you can control.
 * hidefrom - set to true to hide the "from ____" link that shows the application the tweet was sent from (defaults to false)
 * avatar - set to one of the available sizes (mini, normal, bigger, or original) (defaults to none)
 * targetBlank - set to true to have all links open in a new window (defaults to false)
-* showXavisysLink - set to true to display a link to the Tweet Feed Plugin page.  We greatly appreciate your support in linking to this page so others can find this useful plugin too!  (defaults to false)
+* showXavisysLink - set to true to display a link to the Tweet Feed Widget page.  We greatly appreciate your support in linking to this page so others can find this useful plugin too!  (defaults to false)
 * items - The number of items to display (defaults to 10)
 * fetchTimeOut - The number of seconds to wait for a response from Twitter (defaults to 2)
 * showts - Number of seconds old a tweet has to be to show ___ ago rather than a date/time (defaults to 86400 seconds which is 24 hours)
@@ -123,7 +123,7 @@ Aparently the database queries required to display the friends feed was causing 
 
 == Screenshots ==
 
-1. To use the widget, go to Appearance -> Widgets and Add "Tweet Feed Plugin" widget.
+1. To use the widget, go to Appearance -> Widgets and Add "Tweet Feed Widget" widget.
 2. Each widget has settings that need to be set, so the next step is to click the down arrow on the right of the newly added widget and adjust all the settings.  When you're done click "Save"
 3. This is what the widget looks like in the default theme with no added styles.
 4. By using some (X)HTML in the title element and adding a few styles and a background image, you could make it look like this.
